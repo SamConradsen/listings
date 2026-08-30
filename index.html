@@ -266,6 +266,8 @@
                 <option value="size">Sorter efter størrelse</option>
                 <option value="brand">Sorter efter mærke</option>
                 <option value="id">Sorter efter ID</option>
+				<option value="vintedOrder">Vinted rækkefølge</option>
+    			<option value="tiseOrder">Tise rækkefølge</option>
             </select>
 
             <input type="text" id="searchInput" placeholder="Søg..." oninput="renderItems()">
@@ -603,6 +605,28 @@
                 activeItems.sort((a, b) => (a.brand || "").localeCompare(b.brand || ""));
             } else if (sortType === 'id') {
                 activeItems.sort((a, b) => a.id - b.id);
+            } else if (sortType === 'vintedOrder') {
+                activeItems.sort((a, b) => {
+                    let hasA = a.vintedOrder !== "" && a.vintedOrder !== undefined && !isNaN(a.vintedOrder);
+                    let hasB = b.vintedOrder !== "" && b.vintedOrder !== undefined && !isNaN(b.vintedOrder);
+                    
+                    if (hasA && !hasB) return -1;
+                    if (!hasA && hasB) return 1;
+                    if (!hasA && !hasB) return 0;
+                    
+                    return Number(b.vintedOrder) - Number(a.vintedOrder);
+                });
+            } else if (sortType === 'tiseOrder') {
+                activeItems.sort((a, b) => {
+                    let hasA = a.tiseOrder !== "" && a.tiseOrder !== undefined && !isNaN(a.tiseOrder);
+                    let hasB = b.tiseOrder !== "" && b.tiseOrder !== undefined && !isNaN(b.tiseOrder);
+                    
+                    if (hasA && !hasB) return -1;
+                    if (!hasA && hasB) return 1;
+                    if (!hasA && !hasB) return 0;
+                    
+                    return Number(b.tiseOrder) - Number(a.tiseOrder);
+                });
             }
 
             const mainContainer = document.getElementById('mainContainer');
