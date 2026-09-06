@@ -330,15 +330,15 @@
                     
                     const rawStates = data.states || {};
                     Object.keys(rawStates).forEach(id => {
-                        const st = rawStates[id];
+                        const st = rawStates[id] || {};
                         itemStates[id] = {
-                            sold: !!st.sold,
-                            vinted_up: !!st.vinted_up,
-                            vinted_mod: !!st.vinted_mod,
-                            tradera_up: !!st.tradera_up,
-                            tradera_mod: !!st.tradera_mod,
-                            tise_up: !!st.tise_up,
-                            tise_mod: !!st.tise_mod
+                            sold: Boolean(st.sold),
+                            vinted_up: Boolean(st.vinted_up),
+                            vinted_mod: Boolean(st.vinted_mod),
+                            tradera_up: Boolean(st.tradera_up),
+                            tradera_mod: Boolean(st.tradera_mod),
+                            tise_up: Boolean(st.tise_up),
+                            tise_mod: Boolean(st.tise_mod)
                         };
                     });
                 }
