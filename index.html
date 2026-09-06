@@ -333,19 +333,19 @@
                         const st = rawStates[id];
                         itemStates[id] = {
                             sold: st.sold,
-                            up_vinted: st.up_vinted !== undefined ? st.up_vinted : (st.vinted_up || false),
-                            ud_vinted: st.ud_vinted !== undefined ? st.ud_vinted : (st.vinted_mod || false),
-                            up_tradera: st.up_tradera !== undefined ? st.up_tradera : (st.tradera_up || false),
-                            ud_tradera: st.ud_tradera !== undefined ? st.ud_tradera : (st.tradera_mod || false),
-                            up_tise: st.up_tise !== undefined ? st.up_tise : (st.tise_up || false),
-                            ud_tise: st.ud_tise !== undefined ? st.ud_tise : (st.tise_mod || false),
+                            vinted_up: st.vinted_up !== undefined ? st.vinted_up : (st.vinted_up || false),
+                            vinted_mod: st.vinted_mod !== undefined ? st.vinted_mod : (st.vinted_mod || false),
+                            tradera_up: st.tradera_up !== undefined ? st.tradera_up : (st.tradera_up || false),
+                            tradera_mod: st.tradera_mod !== undefined ? st.tradera_mod : (st.tradera_mod || false),
+                            tise_up: st.tise_up !== undefined ? st.tise_up : (st.tise_up || false),
+                            tise_mod: st.tise_mod !== undefined ? st.tise_mod : (st.tise_mod || false),
                             
-                            vinted_up: st.up_vinted !== undefined ? st.up_vinted : (st.vinted_up || false),
-                            vinted_mod: st.ud_vinted !== undefined ? st.ud_vinted : (st.vinted_mod || false),
-                            tradera_up: st.up_tradera !== undefined ? st.up_tradera : (st.tradera_up || false),
-                            tradera_mod: st.ud_tradera !== undefined ? st.ud_tradera : (st.tradera_mod || false),
-                            tise_up: st.up_tise !== undefined ? st.up_tise : (st.tise_up || false),
-                            tise_mod: st.ud_tise !== undefined ? st.ud_tise : (st.tise_mod || false)
+                            vinted_up: st.vinted_up !== undefined ? st.vinted_up : (st.vinted_up || false),
+                            vinted_mod: st.vinted_mod !== undefined ? st.vinted_mod : (st.vinted_mod || false),
+                            tradera_up: st.tradera_up !== undefined ? st.tradera_up : (st.tradera_up || false),
+                            tradera_mod: st.tradera_mod !== undefined ? st.tradera_mod : (st.tradera_mod || false),
+                            tise_up: st.tise_up !== undefined ? st.tise_up : (st.tise_up || false),
+                            tise_mod: st.tise_mod !== undefined ? st.tise_mod : (st.tise_mod || false)
                         };
                     });
                 }
@@ -457,9 +457,9 @@
             if (confirm("Vil du nulstille alle opdateringer?")) {
                 Object.keys(itemStates).forEach(id => {
                     if (itemStates[id]) {
-                        itemStates[id].ud_vinted = false;
-                        itemStates[id].ud_tradera = false;
-                        itemStates[id].ud_tise = false;
+                        itemStates[id].vinted_mod = false;
+                        itemStates[id].tradera_mod = false;
+                        itemStates[id].tise_mod = false;
                         itemStates[id].vinted_mod = false;
                         itemStates[id].tradera_mod = false;
                         itemStates[id].tise_mod = false;
@@ -479,12 +479,12 @@
                     soldTotal++;
                 } else {
                     activeTotal++;
-                    if (st.up_vinted) upV++;
-                    if (st.ud_vinted) udV++;
-                    if (st.up_tradera) upT++;
-                    if (st.ud_tradera) udT++;
-                    if (st.up_tise) upTi++;
-                    if (st.ud_tise) udTi++;
+                    if (st.vinted_up) upV++;
+                    if (st.vinted_mod) udV++;
+                    if (st.tradera_up) upT++;
+                    if (st.tradera_mod) udT++;
+                    if (st.tise_up) upTi++;
+                    if (st.tise_mod) udTi++;
                 }
             });
 
@@ -533,26 +533,26 @@
 
                 if (!matchesSearch) return false;
 
-                if (currentFilter === 'uploaded_vinted') return st.up_vinted;
-                if (currentFilter === 'missing_upload_vinted') return !st.up_vinted;
-                if (currentFilter === 'updated_vinted') return st.ud_vinted;
-                if (currentFilter === 'missing_update_vinted') return !st.ud_vinted;
+                if (currentFilter === 'uploaded_vinted') return st.vinted_up;
+                if (currentFilter === 'missing_upload_vinted') return !st.vinted_up;
+                if (currentFilter === 'updated_vinted') return st.vinted_mod;
+                if (currentFilter === 'missing_update_vinted') return !st.vinted_mod;
 
-                if (currentFilter === 'uploaded_tradera') return st.up_tradera;
-                if (currentFilter === 'missing_upload_tradera') return !st.up_tradera;
-                if (currentFilter === 'updated_tradera') return st.ud_tradera;
-                if (currentFilter === 'missing_update_tradera') return !st.ud_tradera;
+                if (currentFilter === 'uploaded_tradera') return st.tradera_up;
+                if (currentFilter === 'missing_upload_tradera') return !st.tradera_up;
+                if (currentFilter === 'updated_tradera') return st.tradera_mod;
+                if (currentFilter === 'missing_update_tradera') return !st.tradera_mod;
 
-                if (currentFilter === 'uploaded_tise') return st.up_tise;
-                if (currentFilter === 'missing_upload_tise') return !st.up_tise;
-                if (currentFilter === 'updated_tise') return st.ud_tise;
-                if (currentFilter === 'missing_update_tise') return !st.ud_tise;
+                if (currentFilter === 'uploaded_tise') return st.tise_up;
+                if (currentFilter === 'missing_upload_tise') return !st.tise_up;
+                if (currentFilter === 'updated_tise') return st.tise_mod;
+                if (currentFilter === 'missing_update_tise') return !st.tise_mod;
 
                 if (currentFilter === 'partial_update') {
                     const modFields = [
-                        st.ud_vinted === true || st.ud_vinted === 'TRUE',
-                        st.ud_tradera === true || st.ud_tradera === 'TRUE',
-                        st.ud_tise === true || st.ud_tise === 'TRUE'
+                        st.vinted_mod === true || st.vinted_mod === 'TRUE',
+                        st.tradera_mod === true || st.tradera_mod === 'TRUE',
+                        st.tise_mod === true || st.tise_mod === 'TRUE'
                     ];
                     const trueCount = modFields.filter(Boolean).length;
                     return trueCount >= 1 && trueCount <= 2;
@@ -654,14 +654,14 @@
                     </div>
                     <div class="platforms-grid">
                         <div class="row-label">Uploadet</div>
-                        <div><img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM" class="platform-logo" onclick="copyItemDescription(${item.id}, 'vinted')"><input type="checkbox" class="platform-checkbox cb-vinted" ${st.up_vinted?'checked':''} onchange="updateState(${item.id}, 'up_vinted', this.checked)"></div>
-                        <div><img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn" class="platform-logo" onclick="copyItemDescription(${item.id}, 'tradera')"><input type="checkbox" class="platform-checkbox cb-tradera" ${st.up_tradera?'checked':''} onchange="updateState(${item.id}, 'up_tradera', this.checked)"></div>
-                        <div><img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O" class="platform-logo" onclick="copyItemDescription(${item.id}, 'tise')"><input type="checkbox" class="platform-checkbox cb-tise" ${st.up_tise?'checked':''} onchange="updateState(${item.id}, 'tise', this.checked)"></div>
+                        <div><img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM" class="platform-logo" onclick="copyItemDescription(${item.id}, 'vinted')"><input type="checkbox" class="platform-checkbox cb-vinted" ${st.vinted_up?'checked':''} onchange="updateState(${item.id}, 'vinted_up', this.checked)"></div>
+                        <div><img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn" class="platform-logo" onclick="copyItemDescription(${item.id}, 'tradera')"><input type="checkbox" class="platform-checkbox cb-tradera" ${st.tradera_up?'checked':''} onchange="updateState(${item.id}, 'tradera_up', this.checked)"></div>
+                        <div><img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O" class="platform-logo" onclick="copyItemDescription(${item.id}, 'tise')"><input type="checkbox" class="platform-checkbox cb-tise" ${st.tise_up?'checked':''} onchange="updateState(${item.id}, 'tise_up', this.checked)"></div>
 
                         <div class="row-label">Opdateret</div>
-                        <div><input type="checkbox" class="platform-checkbox cb-vinted" ${st.ud_vinted?'checked':''} onchange="updateState(${item.id}, 'ud_vinted', this.checked)"></div>
-                        <div><input type="checkbox" class="platform-checkbox cb-tradera" ${st.ud_tradera?'checked':''} onchange="updateState(${item.id}, 'ud_tradera', this.checked)"></div>
-                        <div><input type="checkbox" class="platform-checkbox cb-tise" ${st.ud_tise?'checked':''} onchange="updateState(${item.id}, 'ud_tise', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-vinted" ${st.vinted_mod?'checked':''} onchange="updateState(${item.id}, 'vinted_mod', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-tradera" ${st.tradera_mod?'checked':''} onchange="updateState(${item.id}, 'tradera_mod', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-tise" ${st.tise_mod?'checked':''} onchange="updateState(${item.id}, 'tise_mod', this.checked)"></div>
                     </div>
                 </div>`;
         }
@@ -670,12 +670,12 @@
             if (!itemStates[id]) itemStates[id] = {};
             itemStates[id][field] = value;
             // Synkroniser tvillingenheder så koden altid fanger dem ligegyldigt navngivning
-            if(field === 'up_vinted') itemStates[id].vinted_up = value;
-            if(field === 'ud_vinted') itemStates[id].vinted_mod = value;
-            if(field === 'up_tradera') itemStates[id].tradera_up = value;
-            if(field === 'ud_tradera') itemStates[id].tradera_mod = value;
-            if(field === 'up_tise') itemStates[id].tise_up = value;
-            if(field === 'ud_tise') itemStates[id].tise_mod = value;
+            if(field === 'vinted_up') itemStates[id].vinted_up = value;
+            if(field === 'vinted_mod') itemStates[id].vinted_mod = value;
+            if(field === 'tradera_up') itemStates[id].tradera_up = value;
+            if(field === 'tradera_mod') itemStates[id].tradera_mod = value;
+            if(field === 'tise_up') itemStates[id].tise_up = value;
+            if(field === 'tise_mod') itemStates[id].tise_mod = value;
             renderItems();
         }
 
