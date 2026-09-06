@@ -332,20 +332,13 @@
                     Object.keys(rawStates).forEach(id => {
                         const st = rawStates[id];
                         itemStates[id] = {
-                            sold: st.sold,
-                            vinted_up: st.vinted_up !== undefined ? st.vinted_up : (st.vinted_up || false),
-                            vinted_mod: st.vinted_mod !== undefined ? st.vinted_mod : (st.vinted_mod || false),
-                            tradera_up: st.tradera_up !== undefined ? st.tradera_up : (st.tradera_up || false),
-                            tradera_mod: st.tradera_mod !== undefined ? st.tradera_mod : (st.tradera_mod || false),
-                            tise_up: st.tise_up !== undefined ? st.tise_up : (st.tise_up || false),
-                            tise_mod: st.tise_mod !== undefined ? st.tise_mod : (st.tise_mod || false),
-                            
-                            vinted_up: st.vinted_up !== undefined ? st.vinted_up : (st.vinted_up || false),
-                            vinted_mod: st.vinted_mod !== undefined ? st.vinted_mod : (st.vinted_mod || false),
-                            tradera_up: st.tradera_up !== undefined ? st.tradera_up : (st.tradera_up || false),
-                            tradera_mod: st.tradera_mod !== undefined ? st.tradera_mod : (st.tradera_mod || false),
-                            tise_up: st.tise_up !== undefined ? st.tise_up : (st.tise_up || false),
-                            tise_mod: st.tise_mod !== undefined ? st.tise_mod : (st.tise_mod || false)
+                            sold: !!st.sold,
+                            vinted_up: !!st.vinted_up,
+                            vinted_mod: !!st.vinted_mod,
+                            tradera_up: !!st.tradera_up,
+                            tradera_mod: !!st.tradera_mod,
+                            tise_up: !!st.tise_up,
+                            tise_mod: !!st.tise_mod
                         };
                     });
                 }
@@ -460,9 +453,6 @@
                         itemStates[id].vinted_mod = false;
                         itemStates[id].tradera_mod = false;
                         itemStates[id].tise_mod = false;
-                        itemStates[id].vinted_mod = false;
-                        itemStates[id].tradera_mod = false;
-                        itemStates[id].tise_mod = false;
                     }
                 });
                 renderItems();
@@ -550,9 +540,9 @@
 
                 if (currentFilter === 'partial_update') {
                     const modFields = [
-                        st.vinted_mod === true || st.vinted_mod === 'TRUE',
-                        st.tradera_mod === true || st.tradera_mod === 'TRUE',
-                        st.tise_mod === true || st.tise_mod === 'TRUE'
+                        st.vinted_mod === true,
+                        st.tradera_mod === true,
+                        st.tise_mod === true
                     ];
                     const trueCount = modFields.filter(Boolean).length;
                     return trueCount >= 1 && trueCount <= 2;
@@ -669,13 +659,6 @@
         function updateState(id, field, value) {
             if (!itemStates[id]) itemStates[id] = {};
             itemStates[id][field] = value;
-            // Synkroniser tvillingenheder så koden altid fanger dem ligegyldigt navngivning
-            if(field === 'vinted_up') itemStates[id].vinted_up = value;
-            if(field === 'vinted_mod') itemStates[id].vinted_mod = value;
-            if(field === 'tradera_up') itemStates[id].tradera_up = value;
-            if(field === 'tradera_mod') itemStates[id].tradera_mod = value;
-            if(field === 'tise_up') itemStates[id].tise_up = value;
-            if(field === 'tise_mod') itemStates[id].tise_mod = value;
             renderItems();
         }
 
