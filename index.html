@@ -4,16 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sam's Listing Organizer</title>
-	<!-- Dit eget rigtige favicon -->
 	<link rel="icon" href="https://lh3.googleusercontent.com/d/17utevXlqfU3aBBPqflBYUEspJqtevt_4">
 	<style>
         :root {
             --vinted-color: #017782;
             --tradera-color: #fef880;
             --tise-color: #ff8f77;
+            --primary-radius: 16px;
+            --bubble-bg: rgba(255, 255, 255, 0.95);
         }
 
-.toast {
+        .toast {
             position: fixed;
             bottom: 30px;
             left: 50%;
@@ -36,43 +37,141 @@
             opacity: 1;
         }
 
-	* { box-sizing: border-box; } /* Sørger for at padding ikke udvider elementer ud over skærmen */
+        * { box-sizing: border-box; }
         body {
            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #f8f9fa;
             color: #333;
             margin: 0;
-            padding: 8px; /* Mindre kant på mobil */
-            overflow-x: hidden; /* Låser skærmen, så man ikke kan scrolle til siden */
+            padding: 0;
+            overflow-x: hidden;
         }
-        header { text-align: center; margin-bottom: 20px; }
-        header img { max-width: 100%; height: auto; max-height: 120px; }
+
+        /* KLÆBRIG HORISONTAL TOPMENU */
+	.sticky-top-menu {
+            position: sticky;
+            top: 0;
+            background: rgba(248, 249, 250, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow-x: visible; /* ÆNDRET fra auto til visible, så dropdown ikke klippes */
+            white-space: nowrap;
+            flex-wrap: wrap; /* Gør at de kan være der uden at kræve vandret scroll */
+            justify-content: center;
+        }
+        .sticky-top-menu::-webkit-scrollbar { display: none; }
+
+        /* SMÅ KATEGORI-BOBLER KUN MED IKON */
+	.cat-bubble-wrapper {
+            position: relative;
+            display: inline-block;
+            overflow: visible !important;
+        }
+        .cat-bubble {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--bubble-bg);
+            border: 1px solid #e0e0e0;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.2s ease;
+        }
+        .cat-bubble:hover {
+            background: #fff;
+            border-color: #b0b0b0;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .cat-bubble img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        /* LÆKKER SUB-MENU (DROP-DOWN) */
+	.sub-menu-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%); /* Centrerer dropdown under boblen */
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 10px;
+            min-width: 200px;
+            z-index: 99999;
+            border: 1px solid #eee;
+            animation: fadeIn 0.2s ease;
+            white-space: normal;
+        }
+        .sub-menu-dropdown.show {
+            display: block;
+        }
+        .sub-menu-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: #888;
+            padding: 4px 14px 8px 14px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #f1f3f5;
+            margin-bottom: 4px;
+        }
+        .sub-menu-item {
+            padding: 8px 14px;
+            font-size: 13px;
+            color: #444;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .sub-menu-item:hover {
+            background: #f1f3f5;
+            color: #000;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header { text-align: center; margin: 15px 0 10px 0; }
+        header img { max-width: 100%; height: auto; max-height: 100px; }
+
         .controls-container {
             display: flex; flex-direction: column; gap: 12px;
             width: 100%; max-width: 1400px; margin: 0 auto 20px auto;
-            background: #fff; padding: 12px; border-radius: 12px;
+            background: #fff; padding: 12px; border-radius: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         .top-bar { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; position: relative; }
         
-        /* Brugerdefineret visningsmenu med 14 ikoner (Grid) */
         .filter-dropdown-container { position: relative; user-select: none; }
-        .filter-dropdown-btn { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; font-size: 13px; }
-        .filter-dropdown-content { display: none; position: absolute; top: 100%; left: 0; margin-top: 5px; background: #fff; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 2000; padding: 10px; }
+        .filter-dropdown-btn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: #fff; border: 1px solid #ccc; border-radius: 30px; cursor: pointer; font-size: 13px; }
+        .filter-dropdown-content { display: none; position: absolute; top: 100%; left: 0; margin-top: 5px; background: #fff; border: 1px solid #ddd; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 2000; padding: 12px; }
         .filter-dropdown-content.show { display: block; }
         .filter-grid-menu { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .filter-icon-option { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 8px; cursor: pointer; border: 1px solid transparent; transition: all 0.1s; }
+        .filter-icon-option { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 12px; cursor: pointer; border: 1px solid transparent; transition: all 0.1s; }
         .filter-icon-option:hover { background: #e9ecef; border-color: #adb5bd; }
         .filter-icon-option img { width: 28px; height: 28px; object-fit: contain; }
 
-        select, input[type="text"] { padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 13px; outline: none; background: #fff; }
+        select, input[type="text"] { padding: 8px 14px; border-radius: 20px; border: 1px solid #ccc; font-size: 13px; outline: none; background: #fff; }
         select { cursor: pointer; }
         input[type="text"] { flex-grow: 1; max-width: 280px; }
         
         .extra-tools-bar { display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 12px; }
         
-        /* Statistik-boks */
-        .stats-box { background: #fff; padding: 12px 15px; border-radius: 8px; border: 1px solid #e0e0e0; font-size: 13px; color: #333; width: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .stats-box { background: #fff; padding: 12px 15px; border-radius: 16px; border: 1px solid #e0e0e0; font-size: 13px; color: #333; width: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
         .stats-table { border-collapse: collapse; width: 100%; }
         .stats-table th { font-weight: 600; color: #555; text-align: right; padding-bottom: 6px; padding-left: 15px; font-size: 13px; }
         .stats-table th:first-child { text-align: left; padding-left: 0; }
@@ -81,62 +180,66 @@
         .stats-table img { width: 14px; height: 14px; object-fit: contain; }
         .stats-footer { border-top: 1px solid #eaeaea; margin-top: 8px; padding-top: 8px; font-size: 12px; color: #444; }
 
-        .tools-right-group { display: flex; align-items: center; gap: 10px; margin-right: 35px; }
+        .tools-right-group { display: flex; align-items: center; gap: 10px; }
         .template-logos { display: flex; gap: 8px; align-items: center; }
         .template-logo-btn { width: 22px; height: 22px; object-fit: contain; cursor: pointer; opacity: 0.7; }
         .template-logo-btn:hover { opacity: 1; }
-        .reset-updates-btn { background: #f1f3f5; color: #495057; border: 1px solid #ced4da; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+        .reset-updates-btn { background: #f1f3f5; color: #495057; border: 1px solid #ced4da; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 11px; }
         
-        .right-sidebar { position: fixed; right: 15px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 6px; z-index: 1000; background: rgba(255, 255, 255, 0.9); padding: 8px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
-        .right-sidebar.collapsed { transform: translateY(-50%) translateX(calc(100% + 15px)); }
-        .sidebar-toggle-btn { 
-            background: transparent; 
-            border: none; 
-            cursor: pointer; 
-            font-size: 12px; 
-            color: #555; 
-            padding: 4px; 
-            margin: 0 auto; 
-            outline: none; 
-            display: block; 
+        /* FLYDENDE GEM-BOBLE I NEDERSTE HØJRE HJØRNE */
+        .floating-save-bubble {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 56px;
+            height: 56px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            border: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2000;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        
-        .sidebar-open-btn { position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 1000; background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(0,0,0,0.1); border-right: none; border-radius: 12px 0 0 12px; width: 24px; height: 36px; cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 12px; box-shadow: -2px 2px 8px rgba(0,0,0,0.1); }
-        .right-sidebar.collapsed + .sidebar-open-btn { display: flex; }
+        .floating-save-bubble:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        .floating-save-bubble img {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+        }
 
-        .side-bubble { width: 14px; height: 14px; border-radius: 50%; cursor: pointer; position: relative; border: 1px solid rgba(0,0,0,0.1); }
-        .side-bubble::after { content: attr(data-tooltip); position: absolute; right: 22px; top: 50%; transform: translateY(-50%); background: #333; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
-        .side-bubble:hover::after { opacity: 1; }
-        .save-cloud-btn-container { margin-top: 4px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 6px; text-align: center; }
-        .save-cloud-btn { width: 22px; height: 22px; border: none; background: none; cursor: pointer; padding: 0; }
-        .save-cloud-btn img { width: 100%; height: 100%; object-fit: contain; }
-        
         .main-content { 
             width: 100%;
             max-width: 1400px;
             margin: 0 auto;
-            padding-right: 0;
+            padding: 0 10px;
         }
 
         .category-title {
-		font-size: 18px;
-		font-weight: bold;
-		margin-bottom: 12px;
-		border-bottom: 2px solid #eee;
-		padding-bottom: 4px;
-	}
+            font-size: 18px;
+            font-weight: bold;
+            margin: 25px 0 12px 0;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 4px;
+        }
 
         .items-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 4px;
+            gap: 8px;
             width: 100%;
         }
 
         @media (min-width: 768px) {
             .items-grid {
                 grid-template-columns: repeat(5, 1fr);
-                gap: 10px;
+                gap: 12px;
             }
         }
 
@@ -149,9 +252,9 @@
 
         .item-card {
             background: #fff;
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -160,31 +263,31 @@
         }
 
         .item-card.sold {
-		opacity: 0.4;
-		filter: grayscale(100%);
-	}
+            opacity: 0.4;
+            filter: grayscale(100%);
+        }
 
         .item-image-container {
-            	width: 100%; 
-            	aspect-ratio: 4 / 5;
-            	background: #f0f0f0;
-            	border-radius: 6px;
-            	overflow: hidden;
-            	margin-bottom: 6px;
-            	position: relative;
-            	flex-shrink: 0;
+            width: 100%; 
+            aspect-ratio: 4 / 5;
+            background: #f0f0f0;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 6px;
+            position: relative;
+            flex-shrink: 0;
         }
 
         .item-image-container img {
-            	width: 100%;
-            	height: 100%;
-            	object-fit: cover;
-            	display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
         
-        .sold-icon-btn { position: absolute; top: 6px; left: 6px; background: transparent; border: none; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; padding: 0; opacity: 0.4; transition: opacity 0.2s ease; }
+        .sold-icon-btn { position: absolute; top: 6px; left: 6px; background: rgba(255,255,255,0.8); border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; padding: 0; opacity: 0.5; transition: opacity 0.2s ease; }
         .item-image-container:hover .sold-icon-btn { opacity: 1; }
-        .sold-icon-btn img { width: 100%; height: 100%; object-fit: contain; }
+        .sold-icon-btn img { width: 14px; height: 14px; object-fit: contain; }
 
         .item-info { font-size: 11px; margin-bottom: 6px; }
         .item-name { font-weight: 600; height: 26px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 3px; }
@@ -201,30 +304,24 @@
             border: 1px solid #dcdcdc;
             border-radius: 8px;
             padding: 3px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
             transition: all 0.15s ease;
         }
-
-        .platform-logo:hover {
-            background: #e9ecef;
-            transform: translateY(-1px);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
-        }
-
-        .platform-logo:active {
-            transform: translateY(1px);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1), inset 0 1px 2px rgba(0,0,0,0.05);
-        }
         .row-label { grid-column: span 3; font-size: 9px; color: #777; text-transform: uppercase; margin-top: 3px; }
-        .platform-checkbox { appearance: none; -webkit-appearance: none; width: 15px; height: 15px; border: 1px solid #ccc; border-radius: 3px; background: #fff; cursor: pointer; margin: 2px auto 0 auto; display: block; position: relative; }
+        .platform-checkbox { appearance: none; -webkit-appearance: none; width: 15px; height: 15px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; margin: 2px auto 0 auto; display: block; position: relative; }
         .platform-checkbox:checked::after { content: '✕'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; font-weight: bold; color: #000; }
         .cb-vinted:checked { background-color: var(--vinted-color); border-color: var(--vinted-color); }
         .cb-tradera:checked { background-color: var(--tradera-color); border-color: var(--tradera-color); }
         .cb-tise:checked { background-color: var(--tise-color); border-color: var(--tise-color); }
-        .sold-section { margin-top: 40px; border-top: 3px solid #ccc; padding-top: 20px; }
+        .sold-section { margin-bottom: 50px; }
     </style>
 </head>
 <body>
+
+    <!-- KLÆBRIG HORISONTAL TOPMENU MED SMÅ IKON-BOBLER -->
+    <nav class="sticky-top-menu" id="stickyNav">
+        <!-- Genereres dynamisk via JavaScript -->
+    </nav>
 
     <header>
         <img src="https://lh3.googleusercontent.com/d/1s6icU39_jsQk5CIyj87T-HLfssre2y5U" alt="Header Logo">
@@ -232,7 +329,7 @@
 
     <div class="controls-container">
         <div class="top-bar">
-            <!-- Visningsmenu med 14 ikoner -->
+            <!-- Filter menu -->
             <div class="filter-dropdown-container">
                 <button class="filter-dropdown-btn" onclick="toggleFilterDropdown()">
                     <span id="currentFilterIcon"><img src="https://lh3.googleusercontent.com/d/1rkdnxIpJNI5BQ87fED5-NyEPQgcWHaYB" style="width:18px; height:18px; vertical-align:middle; object-fit:contain;" alt=""></span> ▼
@@ -286,8 +383,11 @@
         </div>
     </div>
 
-    <div class="right-sidebar" id="rightSidebar"></div>
-    <button class="sidebar-open-btn" onclick="toggleSidebar()" title="Vis menu">◀</button>
+    <!-- FLYDENDE GEM-BOBLE (NEDERSTE HØJRE HJØRNE) -->
+    <div class="floating-save-bubble" onclick="saveAndSync()" title="Gem til Google Sheets">
+        <img src="https://lh3.googleusercontent.com/d/1ummUBoIj819X4mhvSn_UQkSl0CI-bklh" alt="Gem">
+    </div>
+
     <div class="main-content" id="mainContainer"></div>
 
     <div class="main-content sold-section" id="soldSectionContainer">
@@ -296,21 +396,22 @@
     </div>
 
 <script>
+        // Her indsætter du dine Google Drive billed-ID'er i 'icon'-feltet for hver kategori-boble
         const categoriesData = [
-            { name: "Dresses & skirts", subs: ["Strapless dress", "Mini dress", "Tank dress", "Part sleeve dress", "Full sleeve dress", "Mini skirt", "Maxi skirt"] },
-            { name: "Tops & t-shirts", subs: ["Bandeau top", "Crop strap top", "Strap top", "Crop tanktop", "Tanktops", "Crop tee", "Tee"] },
-            { name: "Long sleeves & blouses", subs: ["Blouse", "Crop long sleeve", "Long sleeve", "Button shirt", "Sweatshirt"] },
-            { name: "Tights, jeans & shorts", subs: ["Short tights", "Tights", "Shorts", "Jeans", "Pants"] },
-            { name: "Jackets, blazers & hoodies", subs: ["Zip hoodie", "Hoodie", "Blazer", "Short jacket", "Long jacket"] },
-            { name: "Playsuits, bodies & sets", subs: ["Sleeveless bodysuit", "Full sleeve bodysuit", "Playsuit", "Jumpsuit", "Sweat set", "Onepiece", "Pajamas set"] },
-            { name: "Underwear & swimwear", subs: ["Bralette", "Sports bra", "Bikini top", "Bikini set", "Shapewear"] },
-            { name: "Mens", subs: ["Mens top", "Mens bottom"] },
-            { name: "Footwear", subs: ["Sandals", "Heels", "Heeled boots", "Sneakers", "Boots", "Slippers"] },
-            { name: "Beauty", subs: ["Makeup", "Skincare", "Hair products", "Nails", "Tools", "Miscellaneous"] },
-            { name: "Accessories", subs: ["Beanies", "Scarves", "Bags", "Accessories"] },
-            { name: "Jewelry", subs: ["Necklaces", "Bracelets", "Rings", "Earrings", "Tunnels", "Plugs"] },
-			{ name: "Home", subs: ["Interior", "Kitchen", "Holidays", "Party", "Pets", "Other"] },
-			{ name: "Entertainment", subs: ["Books", "Crafts", "Other"] }
+            { name: "Dresses & skirts", icon: "", subs: ["Strapless dress", "Mini dress", "Tank dress", "Part sleeve dress", "Full sleeve dress", "Mini skirt", "Maxi skirt"] },
+            { name: "Tops & t-shirts", icon: "", subs: ["Bandeau top", "Crop strap top", "Strap top", "Crop tanktop", "Tanktops", "Crop tee", "Tee"] },
+            { name: "Long sleeves & blouses", icon: "", subs: ["Blouse", "Crop long sleeve", "Long sleeve", "Button shirt", "Sweatshirt"] },
+            { name: "Tights, jeans & shorts", icon: "", subs: ["Short tights", "Tights", "Shorts", "Jeans", "Pants"] },
+            { name: "Jackets, blazers & hoodies", icon: "", subs: ["Zip hoodie", "Hoodie", "Blazer", "Short jacket", "Long jacket"] },
+            { name: "Playsuits, bodies & sets", icon: "", subs: ["Sleeveless bodysuit", "Full sleeve bodysuit", "Playsuit", "Jumpsuit", "Sweat set", "Onepiece", "Pajamas set"] },
+            { name: "Underwear & swimwear", icon: "", subs: ["Bralette", "Sports bra", "Bikini top", "Bikini set", "Shapewear"] },
+            { name: "Mens", icon: "", subs: ["Mens top", "Mens bottom"] },
+            { name: "Footwear", icon: "", subs: ["Sandals", "Heels", "Heeled boots", "Sneakers", "Boots", "Slippers"] },
+            { name: "Beauty", icon: "", subs: ["Makeup", "Skincare", "Hair products", "Nails", "Tools", "Miscellaneous"] },
+            { name: "Accessories", icon: "", subs: ["Beanies", "Scarves", "Bags", "Accessories"] },
+            { name: "Jewelry", icon: "", subs: ["Necklaces", "Bracelets", "Rings", "Earrings", "Tunnels", "Plugs"] },
+			{ name: "Home", icon: "", subs: ["Interior", "Kitchen", "Holidays", "Party", "Pets", "Other"] },
+			{ name: "Entertainment", icon: "", subs: ["Books", "Crafts", "Other"] }
         ];
 
         const sizeOrder = ["XXS", "EU 32", "XS", "EU 34", "XS/S", "S", "EU 36", "S/M", "M", "EU 38", "M/L", "L", "EU 40", "L/XL", "XL", "EU 42", "XL/XXL", "XXL", "EU 44", "XXXL", "EU 46", "EU 48", "EU 50"];
@@ -320,6 +421,7 @@
         let itemStates = {};
         let items = [];
         let currentFilter = 'all';
+        let saveTimeout = null;
 
         async function loadCloudData() {
             try {
@@ -357,6 +459,13 @@
             }).then(() => showToast("Gemt til Google Sheets!")).catch(err => console.error('Synkroniseringsfejl:', err));
         }
 
+        function triggerAutoSave() {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                saveAndSync();
+            }, 600);
+        }
+
         function toggleFilterDropdown() {
             document.getElementById('filterDropdownContent').classList.toggle('show');
         }
@@ -368,54 +477,70 @@
             renderItems();
         }
 
-        function renderRightSidebar() {
-            const sidebar = document.getElementById('rightSidebar');
-            const sortType = document.getElementById('sortSelect') ? document.getElementById('sortSelect').value : 'category_custom';
-            
+        // RENDER KUN SMÅ IKON-BOBLER I TOPMENUEN
+        function renderTopNav() {
+            const nav = document.getElementById('stickyNav');
             let html = '';
 
-            if (sortType === 'size') {
-                const activeItems = items.filter(i => !(itemStates[i.id] && itemStates[i.id].sold));
-                const presentSizes = sizeOrder.filter(size => activeItems.some(i => i.size === size));
-                
-                const count = presentSizes.length;
-                html = presentSizes.map((size, index) => {
-                    const r = Math.round(0 + (204 - 0) * (index / (count - 1 || 1)));
-                    const g = Math.round(51 + (224 - 51) * (index / (count - 1 || 1)));
-                    const b = Math.round(136 + (255 - 136) * (index / (count - 1 || 1)));
-                    return `<div class="side-bubble" style="background-color: rgb(${r}, ${g}, ${b});" data-size="${size}" data-tooltip="${size}" title="${size}" onclick="scrollToFirstItemOfSize('${size}')"></div>`;
-                }).join('');
-            } else {
-                html = categoriesData.map((catObj, index) => {
-                    const cat = catObj.name;
-                    const count = categoriesData.length;
-                    const r = Math.round(0 + (204 - 0) * (index / (count - 1 || 1)));
-                    const g = Math.round(51 + (224 - 51) * (index / (count - 1 || 1)));
-                    const b = Math.round(136 + (255 - 136) * (index / (count - 1 || 1)));
-                    return `<div class="side-bubble" style="background-color: rgb(${r}, ${g}, ${b});" data-category="${cat}" data-tooltip="${cat}" title="${cat}" onclick="scrollToFirstItemOfCategory('${cat}')"></div>`;
-                }).join('');
-            }
+            categoriesData.forEach(catObj => {
+                // Hvis der ikke er indsat et ikon endnu, vises kategoriens første bogstav eller en standard-placeholder som fallback, ellers billedet
+                const iconContent = catObj.icon 
+                    ? `<img src="https://lh3.googleusercontent.com/d/${catObj.icon}" alt="${catObj.name}">` 
+                    : `<span style="font-size:11px; font-weight:bold; color:#555;">${catObj.name.charAt(0)}</span>`;
 
-            html += `<div class="side-bubble" style="background-color: #59595D;" data-category="Solgte" data-tooltip="Solgte" title="Solgte" onclick="scrollToSold()"></div>`;
-            html += `<div class="save-cloud-btn-container"><button class="save-cloud-btn" onclick="saveAndSync()" title="Gem til skyen"><img src="https://lh3.googleusercontent.com/d/1ummUBoIj819X4mhvSn_UQkSl0CI-bklh" alt="Gem"></button></div>`;
-            html += `<div style="margin-top: 4px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 6px; text-align: center;"><button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Skjul menu">▶</button></div>`;
+                html += `
+                    <div class="cat-bubble-wrapper" onmouseleave="closeSubMenu(this)">
+                        <div class="cat-bubble" onclick="handleCategorySingleClick(event, '${catObj.name}')" ondblclick="scrollToCategory('${catObj.name}')" title="${catObj.name}">
+                            ${iconContent}
+                        </div>
+                        <div class="sub-menu-dropdown">
+                            <div class="sub-menu-title">${catObj.name}</div>
+                            <div class="sub-menu-item" onclick="scrollToCategory('${catObj.name}')"><b>Se hele kategorien</b></div>
+                            <div style="border-top: 1px solid #eee; margin: 4px 0;"></div>
+                            ${catObj.subs.map(sub => `<div class="sub-menu-item" onclick="filterBySubCategory('${sub}')">${sub}</div>`).join('')}
+                        </div>
+                    </div>
+                `;
+            });
 
-            sidebar.innerHTML = html;
+            // Solgte varer boble
+            html += `
+                <div class="cat-bubble" onclick="scrollToSold()" title="Solgte varer" style="background: #e9ecef;">
+                    <span style="font-size:10px; font-weight:bold; color:#444;">Solgt</span>
+                </div>
+            `;
+
+            nav.innerHTML = html;
         }
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('rightSidebar');
-            sidebar.classList.toggle('collapsed');
+        // Håndtér enkeltklik (åbner dropdown menu med underkategorier)
+        function handleCategorySingleClick(event, catName) {
+            const wrapper = event.currentTarget.closest('.cat-bubble-wrapper');
+            const dropdown = wrapper.querySelector('.sub-menu-dropdown');
+            
+            // Luk evt. andre åbne drop-downs først
+            document.querySelectorAll('.sub-menu-dropdown').forEach(d => {
+                if (d !== dropdown) d.classList.remove('show');
+            });
+            
+            dropdown.classList.toggle('show');
         }
 
-        function scrollToFirstItemOfCategory(catName) {
+        function closeSubMenu(wrapper) {
+            const dropdown = wrapper.querySelector('.sub-menu-dropdown');
+            if (dropdown) dropdown.classList.remove('show');
+        }
+
+        function scrollToCategory(catName) {
+            document.querySelectorAll('.sub-menu-dropdown').forEach(d => d.classList.remove('show'));
             const el = document.querySelector(`.item-card[data-category-name="${catName}"]`);
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        function scrollToFirstItemOfSize(sizeName) {
-            const el = document.querySelector(`.item-card[data-size="${sizeName}"]`);
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        function filterBySubCategory(subName) {
+            document.querySelectorAll('.sub-menu-dropdown').forEach(d => d.classList.remove('show'));
+            document.getElementById('searchInput').value = subName;
+            renderItems();
         }
 
         function scrollToSold() {
@@ -427,21 +552,11 @@
             const item = items.find(i => i.id == itemId);
             if (!item) return;
 
-            let textToCopy = '';
-            if (platform === 'vinted') {
-                textToCopy = item.descVinted || '';
-            } else if (platform === 'tradera') {
-                textToCopy = item.descTradera || '';
-            } else if (platform === 'tise') {
-                textToCopy = item.descTise || '';
-            }
-
-            textToCopy = textToCopy.replace(/\\n/g, '\n');
+            let textToCopy = platform === 'vinted' ? item.descVinted : platform === 'tradera' ? item.descTradera : item.descTise;
+            textToCopy = (textToCopy || '').replace(/\\n/g, '\n');
 
             navigator.clipboard.writeText(textToCopy).then(() => {
-                showToast(`${platform.toUpperCase()} beskrivelse kopieret til udklipsholder`);
-            }).catch(err => {
-                console.error('Fejl ved kopiering:', err);
+                showToast(`${platform.toUpperCase()} beskrivelse kopieret!`);
             });
         }
 
@@ -457,6 +572,7 @@
                     }
                 });
                 renderItems();
+                triggerAutoSave();
             }
         }
 
@@ -510,8 +626,6 @@
             const searchVal = document.getElementById('searchInput').value.toLowerCase();
             const sortType = document.getElementById('sortSelect').value;
 
-            renderRightSidebar();
-
             let filtered = items.filter(item => {
                 const st = itemStates[item.id] || {};
                 const matchesSearch = !searchVal || 
@@ -528,23 +642,17 @@
                 if (currentFilter === 'missing_upload_vinted') return !st.vinted_up;
                 if (currentFilter === 'updated_vinted') return st.vinted_mod;
                 if (currentFilter === 'missing_update_vinted') return !st.vinted_mod;
-
                 if (currentFilter === 'uploaded_tradera') return st.tradera_up;
                 if (currentFilter === 'missing_upload_tradera') return !st.tradera_up;
                 if (currentFilter === 'updated_tradera') return st.tradera_mod;
                 if (currentFilter === 'missing_update_tradera') return !st.tradera_mod;
-
                 if (currentFilter === 'uploaded_tise') return st.tise_up;
                 if (currentFilter === 'missing_upload_tise') return !st.tise_up;
                 if (currentFilter === 'updated_tise') return st.tise_mod;
                 if (currentFilter === 'missing_update_tise') return !st.tise_mod;
 
                 if (currentFilter === 'partial_update') {
-                    const modFields = [
-                        st.vinted_mod === true,
-                        st.tradera_mod === true,
-                        st.tise_mod === true
-                    ];
+                    const modFields = [st.vinted_mod === true, st.tradera_mod === true, st.tise_mod === true];
                     const trueCount = modFields.filter(Boolean).length;
                     return trueCount >= 1 && trueCount <= 2;
                 }
@@ -562,62 +670,21 @@
                     if (catIdxB === -1) catIdxB = 999;
                     if (catIdxA !== catIdxB) return catIdxA - catIdxB;
 
-                    let catObj = categoriesData[catIdxA];
-                    let subList = catObj ? catObj.subs : [];
+                    let subList = categoriesData[catIdxA] ? categoriesData[catIdxA].subs : [];
                     let subIdxA = subList.indexOf(a.subCategory);
                     let subIdxB = subList.indexOf(b.subCategory);
-                    if (subIdxA === -1) subIdxA = 999;
-                    if (subIdxB === -1) subIdxB = 999;
-                    return subIdxA - subIdxB;
+                    return (subIdxA === -1 ? 999 : subIdxA) - (subIdxB === -1 ? 999 : subIdxB);
                 });
             } else if (sortType === 'size') {
                 activeItems.sort((a, b) => {
                     let sizeIdxA = sizeOrder.indexOf(a.size);
                     let sizeIdxB = sizeOrder.indexOf(b.size);
-                    if (sizeIdxA === -1) sizeIdxA = 999;
-                    if (sizeIdxB === -1) sizeIdxB = 999;
-                    if (sizeIdxA !== sizeIdxB) return sizeIdxA - sizeIdxB;
-
-                    let catIdxA = categoriesData.findIndex(c => c.name === a.category);
-                    let catIdxB = categoriesData.findIndex(c => c.name === b.category);
-                    if (catIdxA === -1) catIdxA = 999;
-                    if (catIdxB === -1) catIdxB = 999;
-                    if (catIdxA !== catIdxB) return catIdxA - catIdxB;
-
-                    let catObj = categoriesData[catIdxA];
-                    let subList = catObj ? catObj.subs : [];
-                    let subIdxA = subList.indexOf(a.subCategory);
-                    let subIdxB = subList.indexOf(b.subCategory);
-                    if (subIdxA === -1) subIdxA = 999;
-                    if (subIdxB === -1) subIdxB = 999;
-                    return subIdxA - subIdxB;
+                    return (sizeIdxA === -1 ? 999 : sizeIdxA) - (sizeIdxB === -1 ? 999 : sizeIdxB);
                 });
             } else if (sortType === 'brand') {
                 activeItems.sort((a, b) => (a.brand || "").localeCompare(b.brand || ""));
             } else if (sortType === 'id') {
                 activeItems.sort((a, b) => a.id - b.id);
-            } else if (sortType === 'vintedOrder') {
-                activeItems.sort((a, b) => {
-                    let hasA = a.vintedOrder !== "" && a.vintedOrder !== undefined && !isNaN(a.vintedOrder);
-                    let hasB = b.vintedOrder !== "" && b.vintedOrder !== undefined && !isNaN(b.vintedOrder);
-                    
-                    if (hasA && !hasB) return -1;
-                    if (!hasA && hasB) return 1;
-                    if (!hasA && !hasB) return 0;
-                    
-                    return Number(b.vintedOrder) - Number(a.vintedOrder);
-                });
-            } else if (sortType === 'tiseOrder') {
-                activeItems.sort((a, b) => {
-                    let hasA = a.tiseOrder !== "" && a.tiseOrder !== undefined && !isNaN(a.tiseOrder);
-                    let hasB = b.tiseOrder !== "" && b.tiseOrder !== undefined && !isNaN(b.tiseOrder);
-                    
-                    if (hasA && !hasB) return -1;
-                    if (!hasA && hasB) return 1;
-                    if (!hasA && !hasB) return 0;
-                    
-                    return Number(b.tiseOrder) - Number(a.tiseOrder);
-                });
             }
 
             const mainContainer = document.getElementById('mainContainer');
@@ -661,29 +728,27 @@
             if (!itemStates[id]) itemStates[id] = {};
             itemStates[id][field] = value;
             renderItems();
+            triggerAutoSave();
         }
 
         function toggleSold(id) {
             if (!itemStates[id]) itemStates[id] = {};
             itemStates[id].sold = !itemStates[id].sold;
             renderItems();
+            triggerAutoSave();
         }
 
         function showToast(message) {
             const toast = document.getElementById('toast');
             if (!toast) return;
-            
             toast.textContent = message;
             toast.classList.add('show');
-            
             if (window.toastTimer) clearTimeout(window.toastTimer);
-            
-            window.toastTimer = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2500);
+            window.toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
         }
 
         window.onload = async function() {
+            renderTopNav();
             await loadCloudData();
             renderItems();
         };
