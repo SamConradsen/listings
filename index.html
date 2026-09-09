@@ -60,9 +60,9 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            overflow-x: visible; /* ÆNDRET fra auto til visible, så dropdown ikke klippes */
+            overflow-x: visible;
             white-space: nowrap;
-            flex-wrap: wrap; /* Gør at de kan være der uden at kræve vandret scroll */
+            flex-wrap: wrap;
             justify-content: center;
         }
         .sticky-top-menu::-webkit-scrollbar { display: none; }
@@ -104,7 +104,7 @@
             position: absolute;
             top: calc(100% + 12px);
             left: 50%;
-            transform: translateX(-50%); /* Centrerer dropdown under boblen */
+            transform: translateX(-50%);
             background: #fff;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
@@ -219,14 +219,6 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 10px;
-        }
-
-        .category-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 25px 0 12px 0;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 4px;
         }
 
         .items-grid {
@@ -396,7 +388,6 @@
     </div>
 
 <script>
-        // Her indsætter du dine Google Drive billed-ID'er i 'icon'-feltet for hver kategori-boble
         const categoriesData = [
             { name: "Dresses & skirts", icon: "", subs: ["Strapless dress", "Mini dress", "Tank dress", "Part sleeve dress", "Full sleeve dress", "Mini skirt", "Maxi skirt"] },
             { name: "Tops & t-shirts", icon: "", subs: ["Bandeau top", "Crop strap top", "Strap top", "Crop tanktop", "Tanktops", "Crop tee", "Tee"] },
@@ -477,19 +468,17 @@
             renderItems();
         }
 
-        // RENDER KUN SMÅ IKON-BOBLER I TOPMENUEN
         function renderTopNav() {
             const nav = document.getElementById('stickyNav');
             let html = '';
 
             categoriesData.forEach(catObj => {
-                // Hvis der ikke er indsat et ikon endnu, vises kategoriens første bogstav eller en standard-placeholder som fallback, ellers billedet
                 const iconContent = catObj.icon 
                     ? `<img src="https://lh3.googleusercontent.com/d/${catObj.icon}" alt="${catObj.name}">` 
                     : `<span style="font-size:11px; font-weight:bold; color:#555;">${catObj.name.charAt(0)}</span>`;
 
                 html += `
-                    <div class="cat-bubble-wrapper" onmouseleave="closeSubMenu(this)">
+                    <div class="cat-bubble-wrapper">
                         <div class="cat-bubble" onclick="handleCategorySingleClick(event, '${catObj.name}')" ondblclick="scrollToCategory('${catObj.name}')" title="${catObj.name}">
                             ${iconContent}
                         </div>
@@ -497,13 +486,12 @@
                             <div class="sub-menu-title">${catObj.name}</div>
                             <div class="sub-menu-item" onclick="scrollToCategory('${catObj.name}')"><b>Se hele kategorien</b></div>
                             <div style="border-top: 1px solid #eee; margin: 4px 0;"></div>
-                            ${catObj.subs.map(sub => `<div class="sub-menu-item" onclick="filterBySubCategory('${sub}')">${sub}</div>`).join('')}
+                            ${catObj.subs.map(sub => `<div class="sub-menu-item" onclick="scrollToSubCategory('${catObj.name}', '${sub}')">${sub}</div>`).join('')}
                         </div>
                     </div>
                 `;
             });
 
-            // Solgte varer boble
             html += `
                 <div class="cat-bubble" onclick="scrollToSold()" title="Solgte varer" style="background: #e9ecef;">
                     <span style="font-size:10px; font-weight:bold; color:#444;">Solgt</span>
@@ -513,22 +501,21 @@
             nav.innerHTML = html;
         }
 
-        // Håndtér enkeltklik (åbner dropdown menu med underkategorier)
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.cat-bubble-wrapper')) {
+                document.querySelectorAll('.sub-menu-dropdown').forEach(d => d.classList.remove('show'));
+            }
+        });
+
         function handleCategorySingleClick(event, catName) {
             const wrapper = event.currentTarget.closest('.cat-bubble-wrapper');
             const dropdown = wrapper.querySelector('.sub-menu-dropdown');
             
-            // Luk evt. andre åbne drop-downs først
             document.querySelectorAll('.sub-menu-dropdown').forEach(d => {
                 if (d !== dropdown) d.classList.remove('show');
             });
             
             dropdown.classList.toggle('show');
-        }
-
-        function closeSubMenu(wrapper) {
-            const dropdown = wrapper.querySelector('.sub-menu-dropdown');
-            if (dropdown) dropdown.classList.remove('show');
         }
 
         function scrollToCategory(catName) {
@@ -537,15 +524,24 @@
             if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        function filterBySubCategory(subName) {
+        function scrollToSubCategory(catName, subName) {
             document.querySelectorAll('.sub-menu-dropdown').forEach(d => d.classList.remove('show'));
             
-            // Nulstil evt. generelt filter og søgefelt, og sæt søgeteksten til underkategorien
+            // Sørg for at sortere efter kategori, så varerne ligger i den rigtige rækkefølge
+            document.getElementById('sortSelect').value = 'category_custom';
+            document.getElementById('searchInput').value = '';
             currentFilter = 'all';
-            document.getElementById('searchInput').value = subName;
-            
-            // Kør renderItems for at opdatere visningen med det samme
             renderItems();
+
+            // Find det første element der matcher denne underkategori og rul dertil
+            setTimeout(() => {
+                const el = document.querySelector(`.item-card[data-sub-category="${subName}"]`);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    scrollToCategory(catName);
+                }
+            }, 50);
         }
 
         function scrollToSold() {
@@ -633,6 +629,8 @@
 
             let filtered = items.filter(item => {
                 const st = itemStates[item.id] || {};
+
+                // Søgefelt tjek
                 const matchesSearch = !searchVal || 
                     (item.name && item.name.toLowerCase().includes(searchVal)) ||
                     (item.brand && item.brand.toLowerCase().includes(searchVal)) ||
@@ -703,7 +701,7 @@
             const imgUrl = item.image ? `https://lh3.googleusercontent.com/d/${item.image}` : '';
 
             return `
-                <div class="item-card ${isSold}" id="card-${item.id}" data-category-name="${item.category || ''}" data-size="${item.size || ''}">
+                <div class="item-card ${isSold}" id="card-${item.id}" data-category-name="${item.category || ''}" data-sub-category="${item.subCategory || ''}" data-size="${item.size || ''}">
                     <div class="item-image-container">
                         <button class="sold-icon-btn" onclick="toggleSold(${item.id})" title="Marker som solgt"><img src="https://lh3.googleusercontent.com/d/19KRRSJU1UkueZhQLvNVuYlai2TyCKjKV" alt="Solgt"></button>
                         <img src="${imgUrl}" alt="${item.name}" loading="lazy">
