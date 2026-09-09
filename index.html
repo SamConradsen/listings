@@ -539,7 +539,12 @@
 
         function filterBySubCategory(subName) {
             document.querySelectorAll('.sub-menu-dropdown').forEach(d => d.classList.remove('show'));
+            
+            // Nulstil evt. generelt filter og søgefelt, og sæt søgeteksten til underkategorien
+            currentFilter = 'all';
             document.getElementById('searchInput').value = subName;
+            
+            // Kør renderItems for at opdatere visningen med det samme
             renderItems();
         }
 
