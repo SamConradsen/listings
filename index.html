@@ -11,7 +11,6 @@
             --tradera-color: #fef880;
             --tise-color: #ff8f77;
             --primary-radius: 16px;
-            --bubble-bg: rgba(255, 255, 255, 0.95);
         }
 
         .toast {
@@ -48,7 +47,7 @@
         }
 
         /* KLÆBRIG HORISONTAL TOPMENU */
-	.sticky-top-menu {
+        .sticky-top-menu {
             position: sticky;
             top: 0;
             background: rgba(248, 249, 250, 0.95);
@@ -67,8 +66,8 @@
         }
         .sticky-top-menu::-webkit-scrollbar { display: none; }
 
-        /* SMÅ KATEGORI-BOBLER KUN MED IKON */
-	.cat-bubble-wrapper {
+        /* RUNDE KOLD-BLÅ GRADERINGSLÆKRE BOBLER */
+        .cat-bubble-wrapper {
             position: relative;
             display: inline-block;
             overflow: visible !important;
@@ -77,29 +76,32 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: var(--bubble-bg);
-            border: 1px solid #e0e0e0;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
             transition: all 0.2s ease;
+            border: 1px solid rgba(255,255,255,0.6);
         }
         .cat-bubble:hover {
-            background: #fff;
-            border-color: #b0b0b0;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-        .cat-bubble img {
-            width: 20px;
-            height: 20px;
-            object-fit: contain;
+        .cat-bubble:active {
+            transform: translateY(0);
+        }
+        .sold-bubble {
+            background: #e9ecef !important;
+            color: #444;
+            font-size: 9px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            border: 1px solid #dcdcdc;
         }
 
         /* LÆKKER SUB-MENU (DROP-DOWN) */
-	.sub-menu-dropdown {
+        .sub-menu-dropdown {
             display: none;
             position: absolute;
             top: calc(100% + 12px);
@@ -178,14 +180,24 @@
         .stats-table td { padding: 4px 0; text-align: right; padding-left: 15px; font-variant-numeric: tabular-nums; }
         .stats-table td:first-child { text-align: left; padding-left: 0; display: flex; align-items: center; gap: 6px; }
         .stats-table img { width: 14px; height: 14px; object-fit: contain; }
-        .stats-footer { border-top: 1px solid #eaeaea; margin-top: 8px; padding-top: 8px; font-size: 12px; color: #444; }
+        .stats-footer { border-top: 1px solid #eaeaea; margin-top: 8px; padding-top: 8px; font-size: 12px; color: #444; display: flex; justify-content: space-between; align-items: center; }
 
-        .tools-right-group { display: flex; align-items: center; gap: 10px; }
+        .tools-right-group { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
         .template-logos { display: flex; gap: 8px; align-items: center; }
         .template-logo-btn { width: 22px; height: 22px; object-fit: contain; cursor: pointer; opacity: 0.7; }
         .template-logo-btn:hover { opacity: 1; }
         .reset-updates-btn { background: #f1f3f5; color: #495057; border: 1px solid #ced4da; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 11px; }
         
+        .total-counter-display {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            background: #f1f3f5;
+            padding: 3px 10px;
+            border-radius: 12px;
+            border: 1px solid #dee2e6;
+        }
+
         /* FLYDENDE GEM-BOBLE I NEDERSTE HØJRE HJØRNE */
         .floating-save-bubble {
             position: fixed;
@@ -284,23 +296,41 @@
         .item-info { font-size: 11px; margin-bottom: 6px; }
         .item-name { font-weight: 600; height: 26px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 3px; }
         .item-meta { display: flex; justify-content: space-between; color: #666; font-size: 10px; }
+        
         .platforms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; text-align: center; font-size: 10px; border-top: 1px solid #eee; padding-top: 5px; }
-        .platform-logo {
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
-            margin: 0 auto;
-            display: block;
-            cursor: pointer;
+        
+        .platform-logo-btn {
+            width: 100%;
+            height: 26px;
             background: #f8f9fa;
             border: 1px solid #dcdcdc;
             border-radius: 8px;
             padding: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-            transition: all 0.15s ease;
+            transition: all 0.1s ease;
         }
+        .platform-logo-btn:hover {
+            background: #f1f3f5;
+            border-color: #bcbcbc;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+        }
+        .platform-logo-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .platform-logo-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
         .row-label { grid-column: span 3; font-size: 9px; color: #777; text-transform: uppercase; margin-top: 3px; }
-        .platform-checkbox { appearance: none; -webkit-appearance: none; width: 15px; height: 15px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; margin: 2px auto 0 auto; display: block; position: relative; }
+        .platform-checkbox { appearance: none; -webkit-appearance: none; width: 15px; height: 15px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; margin: 3px auto 0 auto; display: block; position: relative; }
         .platform-checkbox:checked::after { content: '✕'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; font-weight: bold; color: #000; }
         .cb-vinted:checked { background-color: var(--vinted-color); border-color: var(--vinted-color); }
         .cb-tradera:checked { background-color: var(--tradera-color); border-color: var(--tradera-color); }
@@ -310,7 +340,7 @@
 </head>
 <body>
 
-    <!-- KLÆBRIG HORISONTAL TOPMENU MED SMÅ IKON-BOBLER -->
+    <!-- KLÆBRIG HORISONTAL TOPMENU MED KLAR KOLD BLÅ GRADERING -->
     <nav class="sticky-top-menu" id="stickyNav">
         <!-- Genereres dynamisk via JavaScript -->
     </nav>
@@ -365,6 +395,7 @@
         <div class="extra-tools-bar">
             <div class="stats-box" id="statsContainer">Henter statistik...</div>
             <div class="tools-right-group">
+                <div class="total-counter-display" id="totalCounterDisplay">Total varer: 0</div>
                 <div class="template-logos">
                     <img class="template-logo-btn" src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM" alt="Vinted" onclick="copyTemplate('vinted')">
                     <img class="template-logo-btn" src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn" alt="Tradera" onclick="copyTemplate('tradera')">
@@ -389,20 +420,20 @@
 
 <script>
         const categoriesData = [
-            { name: "Dresses & skirts", icon: "", subs: ["Strapless dress", "Mini dress", "Tank dress", "Part sleeve dress", "Full sleeve dress", "Mini skirt", "Maxi skirt"] },
-            { name: "Tops & t-shirts", icon: "", subs: ["Bandeau top", "Crop strap top", "Strap top", "Crop tanktop", "Tanktops", "Crop tee", "Tee"] },
-            { name: "Long sleeves & blouses", icon: "", subs: ["Blouse", "Crop long sleeve", "Long sleeve", "Button shirt", "Sweatshirt"] },
-            { name: "Tights, jeans & shorts", icon: "", subs: ["Short tights", "Tights", "Shorts", "Jeans", "Pants"] },
-            { name: "Jackets, blazers & hoodies", icon: "", subs: ["Zip hoodie", "Hoodie", "Blazer", "Short jacket", "Long jacket"] },
-            { name: "Playsuits, bodies & sets", icon: "", subs: ["Sleeveless bodysuit", "Full sleeve bodysuit", "Playsuit", "Jumpsuit", "Sweat set", "Onepiece", "Pajamas set"] },
-            { name: "Underwear & swimwear", icon: "", subs: ["Bralette", "Sports bra", "Bikini top", "Bikini set", "Shapewear"] },
-            { name: "Mens", icon: "", subs: ["Mens top", "Mens bottom"] },
-            { name: "Footwear", icon: "", subs: ["Sandals", "Heels", "Heeled boots", "Sneakers", "Boots", "Slippers"] },
-            { name: "Beauty", icon: "", subs: ["Makeup", "Skincare", "Hair products", "Nails", "Tools", "Miscellaneous"] },
-            { name: "Accessories", icon: "", subs: ["Beanies", "Scarves", "Bags", "Accessories"] },
-            { name: "Jewelry", icon: "", subs: ["Necklaces", "Bracelets", "Rings", "Earrings", "Tunnels", "Plugs"] },
-			{ name: "Home", icon: "", subs: ["Interior", "Kitchen", "Holidays", "Party", "Pets", "Other"] },
-			{ name: "Entertainment", icon: "", subs: ["Books", "Crafts", "Other"] }
+            { name: "Dresses & skirts", subs: ["Strapless dress", "Mini dress", "Tank dress", "Part sleeve dress", "Full sleeve dress", "Mini skirt", "Maxi skirt"] },
+            { name: "Tops & t-shirts", subs: ["Bandeau top", "Crop strap top", "Strap top", "Crop tanktop", "Tanktops", "Crop tee", "Tee"] },
+            { name: "Long sleeves & blouses", subs: ["Blouse", "Crop long sleeve", "Long sleeve", "Button shirt", "Sweatshirt"] },
+            { name: "Tights, jeans & shorts", subs: ["Short tights", "Tights", "Shorts", "Jeans", "Pants"] },
+            { name: "Jackets, blazers & hoodies", subs: ["Zip hoodie", "Hoodie", "Blazer", "Short jacket", "Long jacket"] },
+            { name: "Playsuits, bodies & sets", subs: ["Sleeveless bodysuit", "Full sleeve bodysuit", "Playsuit", "Jumpsuit", "Sweat set", "Onepiece", "Pajamas set"] },
+            { name: "Underwear & swimwear", subs: ["Bralette", "Sports bra", "Bikini top", "Bikini set", "Shapewear"] },
+            { name: "Mens", subs: ["Mens top", "Mens bottom"] },
+            { name: "Footwear", subs: ["Sandals", "Heels", "Heeled boots", "Sneakers", "Boots", "Slippers"] },
+            { name: "Beauty", subs: ["Makeup", "Skincare", "Health", "Hair products", "Nails", "Tools", "Miscellaneous"] },
+            { name: "Accessories", subs: ["Beanies", "Scarves", "Bags", "Accessories"] },
+            { name: "Jewelry", subs: ["Necklaces", "Bracelets", "Rings", "Earrings", "Tunnels", "Plugs"] },
+			{ name: "Home", subs: ["Interior", "Kitchen", "Holidays", "Party", "Pets", "Other"] },
+			{ name: "Entertainment", subs: ["Books", "Crafts", "Other"] }
         ];
 
         const sizeOrder = ["XXS", "EU 32", "XS", "EU 34", "XS/S", "S", "EU 36", "S/M", "M", "EU 38", "M/L", "L", "EU 40", "L/XL", "XL", "EU 42", "XL/XXL", "XXL", "EU 44", "XXXL", "EU 46", "EU 48", "EU 50"];
@@ -471,16 +502,19 @@
         function renderTopNav() {
             const nav = document.getElementById('stickyNav');
             let html = '';
+            const totalCategories = categoriesData.length;
 
-            categoriesData.forEach(catObj => {
-                const iconContent = catObj.icon 
-                    ? `<img src="https://lh3.googleusercontent.com/d/${catObj.icon}" alt="${catObj.name}">` 
-                    : `<span style="font-size:11px; font-weight:bold; color:#555;">${catObj.name.charAt(0)}</span>`;
+            categoriesData.forEach((catObj, index) => {
+                // Skifter nu fra en funklende kold lyseblå (rgb 135, 206, 250) til en stærk, ren mørkeblå (rgb 0, 80, 160) helt uden grå/dæmpede toner
+                const ratio = index / Math.max(1, totalCategories - 1);
+                const r = Math.round(135 - ratio * (135 - 0));
+                const g = Math.round(206 - ratio * (206 - 80));
+                const b = Math.round(250 - ratio * (250 - 160));
+                const bgColor = `rgb(${r}, ${g}, ${b})`;
 
                 html += `
                     <div class="cat-bubble-wrapper">
-                        <div class="cat-bubble" onclick="handleCategorySingleClick(event, '${catObj.name}')" ondblclick="scrollToCategory('${catObj.name}')" title="${catObj.name}">
-                            ${iconContent}
+                        <div class="cat-bubble" style="background-color: ${bgColor};" onclick="handleCategorySingleClick(event, '${catObj.name}')" ondblclick="scrollToCategory('${catObj.name}')" title="${catObj.name}">
                         </div>
                         <div class="sub-menu-dropdown">
                             <div class="sub-menu-title">${catObj.name}</div>
@@ -493,8 +527,8 @@
             });
 
             html += `
-                <div class="cat-bubble" onclick="scrollToSold()" title="Solgte varer" style="background: #e9ecef;">
-                    <span style="font-size:10px; font-weight:bold; color:#444;">Solgt</span>
+                <div class="cat-bubble sold-bubble" onclick="scrollToSold()" title="Solgte varer">
+                    SOLD
                 </div>
             `;
 
@@ -527,13 +561,11 @@
         function scrollToSubCategory(catName, subName) {
             document.querySelectorAll('.sub-menu-dropdown').forEach(d => d.classList.remove('show'));
             
-            // Sørg for at sortere efter kategori, så varerne ligger i den rigtige rækkefølge
             document.getElementById('sortSelect').value = 'category_custom';
             document.getElementById('searchInput').value = '';
             currentFilter = 'all';
             renderItems();
 
-            // Find det første element der matcher denne underkategori og rul dertil
             setTimeout(() => {
                 const el = document.querySelector(`.item-card[data-sub-category="${subName}"]`);
                 if (el) {
@@ -596,6 +628,10 @@
                 }
             });
 
+            const totalItemsCount = items.length;
+            const maxId = items.length > 0 ? Math.max(...items.map(i => Number(i.id) || 0)) : 0;
+            document.getElementById('totalCounterDisplay').innerHTML = `Total varer: ${totalItemsCount} (Højeste ID: ${maxId})`;
+
             document.getElementById('statsContainer').innerHTML = `
                 <table class="stats-table">
                     <tr>
@@ -620,7 +656,8 @@
                     </tr>
                 </table>
                 <div class="stats-footer">
-                    Total aktive: ${activeTotal} &nbsp;|&nbsp; Solgt: ${soldTotal}
+                    <span>Total aktive: ${activeTotal}</span>
+                    <span>Solgt: ${soldTotal}</span>
                 </div>
             `;
 
@@ -630,7 +667,6 @@
             let filtered = items.filter(item => {
                 const st = itemStates[item.id] || {};
 
-                // Søgefelt tjek
                 const matchesSearch = !searchVal || 
                     (item.name && item.name.toLowerCase().includes(searchVal)) ||
                     (item.brand && item.brand.toLowerCase().includes(searchVal)) ||
@@ -715,9 +751,24 @@
                     </div>
                     <div class="platforms-grid">
                         <div class="row-label">Uploadet</div>
-                        <div><img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM" class="platform-logo" onclick="copyItemDescription(${item.id}, 'vinted')"><input type="checkbox" class="platform-checkbox cb-vinted" ${st.vinted_up?'checked':''} onchange="updateState(${item.id}, 'vinted_up', this.checked)"></div>
-                        <div><img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn" class="platform-logo" onclick="copyItemDescription(${item.id}, 'tradera')"><input type="checkbox" class="platform-checkbox cb-tradera" ${st.tradera_up?'checked':''} onchange="updateState(${item.id}, 'tradera_up', this.checked)"></div>
-                        <div><img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O" class="platform-logo" onclick="copyItemDescription(${item.id}, 'tise')"><input type="checkbox" class="platform-checkbox cb-tise" ${st.tise_up?'checked':''} onchange="updateState(${item.id}, 'tise_up', this.checked)"></div>
+                        <div>
+                            <div class="platform-logo-btn" onclick="copyItemDescription(${item.id}, 'vinted')" title="Kopier Vinted beskrivelse">
+                                <img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM" alt="Vinted">
+                            </div>
+                            <input type="checkbox" class="platform-checkbox cb-vinted" ${st.vinted_up?'checked':''} onchange="updateState(${item.id}, 'vinted_up', this.checked)">
+                        </div>
+                        <div>
+                            <div class="platform-logo-btn" onclick="copyItemDescription(${item.id}, 'tradera')" title="Kopier Tradera beskrivelse">
+                                <img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn" alt="Tradera">
+                            </div>
+                            <input type="checkbox" class="platform-checkbox cb-tradera" ${st.tradera_up?'checked':''} onchange="updateState(${item.id}, 'tradera_up', this.checked)">
+                        </div>
+                        <div>
+                            <div class="platform-logo-btn" onclick="copyItemDescription(${item.id}, 'tise')" title="Kopier Tise beskrivelse">
+                                <img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O" alt="Tise">
+                            </div>
+                            <input type="checkbox" class="platform-checkbox cb-tise" ${st.tise_up?'checked':''} onchange="updateState(${item.id}, 'tise_up', this.checked)">
+                        </div>
 
                         <div class="row-label">Opdateret</div>
                         <div><input type="checkbox" class="platform-checkbox cb-vinted" ${st.vinted_mod?'checked':''} onchange="updateState(${item.id}, 'vinted_mod', this.checked)"></div>
