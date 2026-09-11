@@ -10,6 +10,7 @@
             --vinted-color: #017782;
             --tradera-color: #fef880;
             --tise-color: #ff8f77;
+            --dba-color: #003366;
             --primary-radius: 16px;
         }
 
@@ -297,50 +298,69 @@
         .item-name { font-weight: 600; height: 26px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 3px; }
         .item-meta { display: flex; justify-content: space-between; color: #666; font-size: 10px; }
         
-        .platforms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; text-align: center; font-size: 10px; border-top: 1px solid #eee; padding-top: 5px; }
-        
+        .platforms-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 5px; 
+            text-align: center; 
+            font-size: 10px; 
+            border-top: 1px solid #eee; 
+            padding-top: 6px; 
+        }
+
         .platform-logo-btn {
-            width: 100%;
-            height: 26px;
-            background: #f8f9fa;
-            border: 1px solid #dcdcdc;
-            border-radius: 8px;
-            padding: 3px;
+            width: 82%;
+            margin: 0 auto;
+            aspect-ratio: 1 / 1;
+            background: #ffffff;
+            border: none;
+            border-radius: 9px;
+            padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-            transition: all 0.1s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.8), inset 0 -2px 2px rgba(0,0,0,0.1);
+            transition: all 0.15s ease;
+            overflow: hidden;
+            position: relative;
         }
         .platform-logo-btn:hover {
-            background: #f1f3f5;
-            border-color: #bcbcbc;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.9), inset 0 -2px 2px rgba(0,0,0,0.1);
         }
         .platform-logo-btn:active {
-            transform: translateY(1px);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            transform: translateY(0);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1), inset 0 2px 3px rgba(0,0,0,0.15);
         }
         .platform-logo-btn img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
             display: block;
         }
 
-        .row-label { grid-column: span 3; font-size: 9px; color: #777; text-transform: uppercase; margin-top: 3px; }
+        .row-label { 
+            grid-column: span 4; 
+            font-size: 9px; 
+            font-weight: 700;
+            color: #666; 
+            letter-spacing: 0.5px;
+            margin-top: 6px; 
+            margin-bottom: 2px;
+        }
+
         .platform-checkbox { appearance: none; -webkit-appearance: none; width: 15px; height: 15px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; margin: 3px auto 0 auto; display: block; position: relative; }
         .platform-checkbox:checked::after { content: '✕'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; font-weight: bold; color: #000; }
         .cb-vinted:checked { background-color: var(--vinted-color); border-color: var(--vinted-color); }
         .cb-tradera:checked { background-color: var(--tradera-color); border-color: var(--tradera-color); }
         .cb-tise:checked { background-color: var(--tise-color); border-color: var(--tise-color); }
+        .cb-dba:checked { background-color: var(--dba-color); border-color: var(--dba-color); }
         .sold-section { margin-bottom: 50px; }
     </style>
 </head>
 <body>
 
-    <!-- KLÆBRIG HORISONTAL TOPMENU MED KLAR KOLD BLÅ GRADERING -->
     <nav class="sticky-top-menu" id="stickyNav">
         <!-- Genereres dynamisk via JavaScript -->
     </nav>
@@ -373,6 +393,11 @@
                         <div class="filter-icon-option" onclick="selectFilter('updated_tise', '1NYYSNj9vRvG7sZYuXAlVuYYZOLR_2ENK')" title="Tise_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1NYYSNj9vRvG7sZYuXAlVuYYZOLR_2ENK" alt=""></div>
                         <div class="filter-icon-option" onclick="selectFilter('missing_update_tise', '14LKJi2o-KACCOygWhPnc1ZqvGVLzC5I1')" title="Tise_mod FALSE"><img src="https://lh3.googleusercontent.com/d/14LKJi2o-KACCOygWhPnc1ZqvGVLzC5I1" alt=""></div>
 
+                        <div class="filter-icon-option" onclick="selectFilter('uploaded_dba', '1N9bJHufOJ9z24nJccNa3xnQsmGdP7SwV')" title="DBA_up TRUE"><img src="https://lh3.googleusercontent.com/d/1N9bJHufOJ9z24nJccNa3xnQsmGdP7SwV" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_dba', '1Hg0Mvk8rr-RRHcXCl42R2im2YMraWv64')" title="DBA_up FALSE"><img src="https://lh3.googleusercontent.com/d/1Hg0Mvk8rr-RRHcXCl42R2im2YMraWv64" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('updated_dba', '12kWf2yJMKlUeI2ix67rTJSfdLQjaKtvD')" title="DBA_mod TRUE"><img src="https://lh3.googleusercontent.com/d/12kWf2yJMKlUeI2ix67rTJSfdLQjaKtvD" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_update_dba', '196zjppNvavSlJnyJVWN5xATZiLPRzMOf')" title="DBA_mod FALSE"><img src="https://lh3.googleusercontent.com/d/196zjppNvavSlJnyJVWN5xATZiLPRzMOf" alt=""></div>
+
                         <div class="filter-icon-option" onclick="selectFilter('all', '1rkdnxIpJNI5BQ87fED5-NyEPQgcWHaYB')" title="Show all"><img src="https://lh3.googleusercontent.com/d/1rkdnxIpJNI5BQ87fED5-NyEPQgcWHaYB" alt=""></div>
                         <div class="filter-icon-option" onclick="selectFilter('partial_update', '1zbbbe0nNbm7ptDQbDuB7dy3xL2FvPHbJ')" title="Work in Progress"><img src="https://lh3.googleusercontent.com/d/1zbbbe0nNbm7ptDQbDuB7dy3xL2FvPHbJ" alt=""></div>
                     </div>
@@ -385,8 +410,6 @@
                 <option value="size">Sorter efter størrelse</option>
                 <option value="brand">Sorter efter mærke</option>
                 <option value="id">Sorter efter ID</option>
-				<option value="vintedOrder">Vinted rækkefølge</option>
-    			<option value="tiseOrder">Tise rækkefølge</option>
             </select>
 
             <input type="text" id="searchInput" placeholder="Søg..." oninput="renderItems()">
@@ -400,13 +423,14 @@
                     <img class="template-logo-btn" src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM" alt="Vinted" onclick="copyTemplate('vinted')">
                     <img class="template-logo-btn" src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn" alt="Tradera" onclick="copyTemplate('tradera')">
                     <img class="template-logo-btn" src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O" alt="Tise" onclick="copyTemplate('tise')">
+                    <img class="template-logo-btn" src="https://lh3.googleusercontent.com/d/16YkaDgy07xs9DFyG0pyjiI1cnEFUCBJe" alt="DBA" onclick="copyTemplate('dba')">
                 </div>
                 <button class="reset-updates-btn" onclick="confirmResetUpdates()">Nulstil opdateringer</button>
             </div>
         </div>
     </div>
 
-    <!-- FLYDENDE GEM-BOBLE (NEDERSTE HØJRE HJØRNE) -->
+    <!-- FLYDENDE GEM-BOBLE -->
     <div class="floating-save-bubble" onclick="saveAndSync()" title="Gem til Google Sheets">
         <img src="https://lh3.googleusercontent.com/d/1ummUBoIj819X4mhvSn_UQkSl0CI-bklh" alt="Gem">
     </div>
@@ -432,7 +456,7 @@
             { name: "Beauty", subs: ["Makeup", "Skincare", "Health", "Hair products", "Nails", "Tools", "Miscellaneous"] },
             { name: "Accessories", subs: ["Beanies", "Scarves", "Bags", "Accessories"] },
             { name: "Jewelry", subs: ["Necklaces", "Bracelets", "Rings", "Earrings", "Tunnels", "Plugs"] },
-			{ name: "Home", subs: ["Interior", "Kitchen", "Holidays", "Party", "Pets", "Other"] },
+			{ name: "Home", subs: ["Furniture", "Interior", "Kitchen", "Holidays", "Party", "Pets", "Other"] },
 			{ name: "Entertainment", subs: ["Books", "Crafts", "Other"] }
         ];
 
@@ -463,7 +487,9 @@
                             tradera_up: Boolean(st.tradera_up),
                             tradera_mod: Boolean(st.tradera_mod),
                             tise_up: Boolean(st.tise_up),
-                            tise_mod: Boolean(st.tise_mod)
+                            tise_mod: Boolean(st.tise_mod),
+                            dba_up: Boolean(st.dba_up),
+                            dba_mod: Boolean(st.dba_mod)
                         };
                     });
                 }
@@ -505,7 +531,6 @@
             const totalCategories = categoriesData.length;
 
             categoriesData.forEach((catObj, index) => {
-                // Skifter nu fra en funklende kold lyseblå (rgb 135, 206, 250) til en stærk, ren mørkeblå (rgb 0, 80, 160) helt uden grå/dæmpede toner
                 const ratio = index / Math.max(1, totalCategories - 1);
                 const r = Math.round(135 - ratio * (135 - 0));
                 const g = Math.round(206 - ratio * (206 - 80));
@@ -581,16 +606,21 @@
             if (el) el.scrollIntoView({ behavior: 'smooth' });
         }
 
-        function copyItemDescription(itemId, platform) {
+        function openPlatformLink(itemId, platform) {
             const item = items.find(i => i.id == itemId);
             if (!item) return;
 
-            let textToCopy = platform === 'vinted' ? item.descVinted : platform === 'tradera' ? item.descTradera : item.descTise;
-            textToCopy = (textToCopy || '').replace(/\\n/g, '\n');
+            let link = '';
+            if (platform === 'vinted') link = item.vintedLink;
+            else if (platform === 'tradera') link = item.traderaLink;
+            else if (platform === 'tise') link = item.tiseLink;
+            else if (platform === 'dba') link = item.dbaLink;
 
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                showToast(`${platform.toUpperCase()} beskrivelse kopieret!`);
-            });
+            if (link) {
+                window.open(link, '_blank');
+            } else {
+                showToast(`Intet link fundet for ${platform.toUpperCase()}`);
+            }
         }
 
         function copyTemplate(platform) {}
@@ -602,6 +632,7 @@
                         itemStates[id].vinted_mod = false;
                         itemStates[id].tradera_mod = false;
                         itemStates[id].tise_mod = false;
+                        itemStates[id].dba_mod = false;
                     }
                 });
                 renderItems();
@@ -611,7 +642,7 @@
 
         function renderItems() {
             let activeTotal = 0, soldTotal = 0;
-            let upV = 0, udV = 0, upT = 0, udT = 0, upTi = 0, udTi = 0;
+            let upV = 0, udV = 0, upT = 0, udT = 0, upTi = 0, udTi = 0, upD = 0, udD = 0;
 
             items.forEach(item => {
                 const st = itemStates[item.id] || {};
@@ -625,6 +656,8 @@
                     if (st.tradera_mod) udT++;
                     if (st.tise_up) upTi++;
                     if (st.tise_mod) udTi++;
+                    if (st.dba_up) upD++;
+                    if (st.dba_mod) udD++;
                 }
             });
 
@@ -654,6 +687,11 @@
                         <td>${upTi}</td>
                         <td>${udTi}</td>
                     </tr>
+                    <tr>
+                        <td><img src="https://lh3.googleusercontent.com/d/16YkaDgy07xs9DFyG0pyjiI1cnEFUCBJe" alt=""> DBA:</td>
+                        <td>${upD}</td>
+                        <td>${udD}</td>
+                    </tr>
                 </table>
                 <div class="stats-footer">
                     <span>Total aktive: ${activeTotal}</span>
@@ -681,19 +719,26 @@
                 if (currentFilter === 'missing_upload_vinted') return !st.vinted_up;
                 if (currentFilter === 'updated_vinted') return st.vinted_mod;
                 if (currentFilter === 'missing_update_vinted') return !st.vinted_mod;
+                
                 if (currentFilter === 'uploaded_tradera') return st.tradera_up;
                 if (currentFilter === 'missing_upload_tradera') return !st.tradera_up;
                 if (currentFilter === 'updated_tradera') return st.tradera_mod;
                 if (currentFilter === 'missing_update_tradera') return !st.tradera_mod;
+                
                 if (currentFilter === 'uploaded_tise') return st.tise_up;
                 if (currentFilter === 'missing_upload_tise') return !st.tise_up;
                 if (currentFilter === 'updated_tise') return st.tise_mod;
                 if (currentFilter === 'missing_update_tise') return !st.tise_mod;
 
+                if (currentFilter === 'uploaded_dba') return st.dba_up;
+                if (currentFilter === 'missing_upload_dba') return !st.dba_up;
+                if (currentFilter === 'updated_dba') return st.dba_mod;
+                if (currentFilter === 'missing_update_dba') return !st.dba_mod;
+
                 if (currentFilter === 'partial_update') {
-                    const modFields = [st.vinted_mod === true, st.tradera_mod === true, st.tise_mod === true];
+                    const modFields = [st.vinted_mod === true, st.tradera_mod === true, st.tise_mod === true, st.dba_mod === true];
                     const trueCount = modFields.filter(Boolean).length;
-                    return trueCount >= 1 && trueCount <= 2;
+                    return trueCount >= 1 && trueCount <= 3;
                 }
                 return true;
             });
@@ -750,30 +795,41 @@
                         </div>
                     </div>
                     <div class="platforms-grid">
-                        <div class="row-label">Uploadet</div>
+                        <!-- 1. Platform Logoer -->
                         <div>
-                            <div class="platform-logo-btn" onclick="copyItemDescription(${item.id}, 'vinted')" title="Kopier Vinted beskrivelse">
+                            <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'vinted')" title="Åbn Vinted annonce">
                                 <img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM" alt="Vinted">
                             </div>
-                            <input type="checkbox" class="platform-checkbox cb-vinted" ${st.vinted_up?'checked':''} onchange="updateState(${item.id}, 'vinted_up', this.checked)">
                         </div>
                         <div>
-                            <div class="platform-logo-btn" onclick="copyItemDescription(${item.id}, 'tradera')" title="Kopier Tradera beskrivelse">
+                            <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'tradera')" title="Åbn Tradera annonce">
                                 <img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn" alt="Tradera">
                             </div>
-                            <input type="checkbox" class="platform-checkbox cb-tradera" ${st.tradera_up?'checked':''} onchange="updateState(${item.id}, 'tradera_up', this.checked)">
                         </div>
                         <div>
-                            <div class="platform-logo-btn" onclick="copyItemDescription(${item.id}, 'tise')" title="Kopier Tise beskrivelse">
+                            <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'tise')" title="Åbn Tise annonce">
                                 <img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O" alt="Tise">
                             </div>
-                            <input type="checkbox" class="platform-checkbox cb-tise" ${st.tise_up?'checked':''} onchange="updateState(${item.id}, 'tise_up', this.checked)">
+                        </div>
+                        <div>
+                            <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'dba')" title="Åbn DBA annonce">
+                                <img src="https://lh3.googleusercontent.com/d/16YkaDgy07xs9DFyG0pyjiI1cnEFUCBJe" alt="DBA">
+                            </div>
                         </div>
 
-                        <div class="row-label">Opdateret</div>
+                        <!-- 2. UPLOADET Tekst + Checkboxes -->
+                        <div class="row-label">UPLOADET</div>
+                        <div><input type="checkbox" class="platform-checkbox cb-vinted" ${st.vinted_up?'checked':''} onchange="updateState(${item.id}, 'vinted_up', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-tradera" ${st.tradera_up?'checked':''} onchange="updateState(${item.id}, 'tradera_up', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-tise" ${st.tise_up?'checked':''} onchange="updateState(${item.id}, 'tise_up', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-dba" ${st.dba_up?'checked':''} onchange="updateState(${item.id}, 'dba_up', this.checked)"></div>
+
+                        <!-- 3. OPDATERET Tekst + Checkboxes -->
+                        <div class="row-label">OPDATERET</div>
                         <div><input type="checkbox" class="platform-checkbox cb-vinted" ${st.vinted_mod?'checked':''} onchange="updateState(${item.id}, 'vinted_mod', this.checked)"></div>
                         <div><input type="checkbox" class="platform-checkbox cb-tradera" ${st.tradera_mod?'checked':''} onchange="updateState(${item.id}, 'tradera_mod', this.checked)"></div>
                         <div><input type="checkbox" class="platform-checkbox cb-tise" ${st.tise_mod?'checked':''} onchange="updateState(${item.id}, 'tise_mod', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-dba" ${st.dba_mod?'checked':''} onchange="updateState(${item.id}, 'dba_mod', this.checked)"></div>
                     </div>
                 </div>`;
         }
