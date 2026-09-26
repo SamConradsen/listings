@@ -11,8 +11,6 @@
             --tradera-color: #fef880;
             --tise-color: #ff8f77;
             --dba-color: #003366;
-            --marketplace-color: #1877f2;
-            --bought-color: #6c757d;
             --primary-radius: 16px;
         }
 
@@ -69,6 +67,7 @@
         }
         .sticky-top-menu::-webkit-scrollbar { display: none; }
 
+        /* RUNDE KOLD-BLÅ GRADERINGSLÆKRE BOBLER */
         .cat-bubble-wrapper {
             position: relative;
             display: inline-block;
@@ -90,6 +89,9 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
+        .cat-bubble:active {
+            transform: translateY(0);
+        }
         .sold-bubble {
             background: #e9ecef !important;
             color: #444;
@@ -99,6 +101,7 @@
             border: 1px solid #dcdcdc;
         }
 
+        /* LÆKKER SUB-MENU (DROP-DOWN) */
         .sub-menu-dropdown {
             display: none;
             position: absolute;
@@ -115,7 +118,9 @@
             animation: fadeIn 0.2s ease;
             white-space: normal;
         }
-        .sub-menu-dropdown.show { display: block; }
+        .sub-menu-dropdown.show {
+            display: block;
+        }
         .sub-menu-title {
             font-size: 11px;
             font-weight: bold;
@@ -133,7 +138,10 @@
             cursor: pointer;
             transition: background 0.15s;
         }
-        .sub-menu-item:hover { background: #f1f3f5; color: #000; }
+        .sub-menu-item:hover {
+            background: #f1f3f5;
+            color: #000;
+        }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(6px); }
@@ -160,7 +168,7 @@
         .filter-icon-option:hover { background: #e9ecef; border-color: #adb5bd; }
         .filter-icon-option img { width: 28px; height: 28px; object-fit: contain; }
 
-        select, input[type="text"], input[type="date"], input[type="number"] { padding: 8px 14px; border-radius: 20px; border: 1px solid #ccc; font-size: 13px; outline: none; background: #fff; }
+        select, input[type="text"] { padding: 8px 14px; border-radius: 20px; border: 1px solid #ccc; font-size: 13px; outline: none; background: #fff; }
         select { cursor: pointer; }
         input[type="text"] { flex-grow: 1; max-width: 280px; }
         
@@ -176,6 +184,9 @@
         .stats-footer { border-top: 1px solid #eaeaea; margin-top: 8px; padding-top: 8px; font-size: 12px; color: #444; display: flex; justify-content: space-between; align-items: center; }
 
         .tools-right-group { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+        .template-logos { display: flex; gap: 8px; align-items: center; }
+        .template-logo-btn { width: 22px; height: 22px; object-fit: contain; cursor: pointer; opacity: 0.7; }
+        .template-logo-btn:hover { opacity: 1; }
         .reset-updates-btn { background: #f1f3f5; color: #495057; border: 1px solid #ced4da; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 11px; }
         
         .total-counter-display {
@@ -188,6 +199,7 @@
             border: 1px solid #dee2e6;
         }
 
+        /* FLYDENDE GEM-BOBLE I NEDERSTE HØJRE HJØRNE */
         .floating-save-bubble {
             position: fixed;
             bottom: 25px;
@@ -205,11 +217,22 @@
             z-index: 2000;
             transition: transform 0.2s, box-shadow 0.2s;
         }
-        .floating-save-bubble:hover { transform: scale(1.08); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
-        .floating-save-bubble img { width: 26px; height: 26px; object-fit: contain; }
+        .floating-save-bubble:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        .floating-save-bubble img {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+        }
 
-        .main-content { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 10px; }
-        .category-title { font-size: 15px; font-weight: 700; color: #444; margin: 20px 0 10px 0; }
+        .main-content { 
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
 
         .items-grid {
             display: grid;
@@ -217,8 +240,20 @@
             gap: 8px;
             width: 100%;
         }
-        @media (min-width: 768px) { .items-grid { grid-template-columns: repeat(5, 1fr); gap: 12px; } }
-        @media (min-width: 1200px) { .items-grid { grid-template-columns: repeat(6, 1fr); gap: 15px; } }
+
+        @media (min-width: 768px) {
+            .items-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 12px;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .items-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 15px;
+            }
+        }
 
         .item-card {
             background: #fff;
@@ -232,6 +267,12 @@
             min-width: 0;
         }
 
+        /* 50% Gray out effekt på solgte varer */
+        .item-card.sold .item-image-container img {
+            opacity: 0.65;
+            filter: grayscale(50%);
+        }
+
         .item-image-container {
             width: 100%; 
             aspect-ratio: 4 / 5;
@@ -242,9 +283,16 @@
             position: relative;
             flex-shrink: 0;
         }
-        .item-image-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .item-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: filter 0.2s ease, opacity 0.2s ease;
+        }
         
-        .sold-icon-btn { position: absolute; top: 6px; left: 6px; background: rgba(255,255,255,0.9); border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; padding: 0; opacity: 0.6; transition: opacity 0.2s ease; }
+        .sold-icon-btn { position: absolute; top: 6px; left: 6px; background: rgba(255,255,255,0.8); border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; padding: 0; opacity: 0.5; transition: opacity 0.2s ease; }
         .item-image-container:hover .sold-icon-btn { opacity: 1; }
         .sold-icon-btn img { width: 14px; height: 14px; object-fit: contain; }
 
@@ -254,8 +302,8 @@
         
         .platforms-grid { 
             display: grid; 
-            grid-template-columns: repeat(6, 1fr); 
-            gap: 4px; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 5px; 
             text-align: center; 
             font-size: 10px; 
             border-top: 1px solid #eee; 
@@ -263,26 +311,39 @@
         }
 
         .platform-logo-btn {
-            width: 90%;
+            width: 82%;
             margin: 0 auto;
             aspect-ratio: 1 / 1;
             background: #ffffff;
             border: none;
-            border-radius: 7px;
+            border-radius: 9px;
             padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.8), inset 0 -2px 2px rgba(0,0,0,0.1);
             transition: all 0.15s ease;
             overflow: hidden;
+            position: relative;
         }
-        .platform-logo-btn:hover { transform: translateY(-2px); }
-        .platform-logo-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .platform-logo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.9), inset 0 -2px 2px rgba(0,0,0,0.1);
+        }
+        .platform-logo-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1), inset 0 2px 3px rgba(0,0,0,0.15);
+        }
+        .platform-logo-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
 
         .row-label { 
-            grid-column: span 6; 
+            grid-column: span 4; 
             font-size: 9px; 
             font-weight: 700;
             color: #666; 
@@ -291,73 +352,100 @@
             margin-bottom: 2px;
         }
 
-        .platform-checkbox { appearance: none; -webkit-appearance: none; width: 14px; height: 14px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; margin: 3px auto 0 auto; display: block; position: relative; }
-        .platform-checkbox:checked::after { content: '✕'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 9px; font-weight: bold; color: #000; }
+        .platform-checkbox { appearance: none; -webkit-appearance: none; width: 15px; height: 15px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; margin: 3px auto 0 auto; display: block; position: relative; }
+        .platform-checkbox:checked::after { content: '✕'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; font-weight: bold; color: #000; }
         .cb-vinted:checked { background-color: var(--vinted-color); border-color: var(--vinted-color); }
         .cb-tradera:checked { background-color: var(--tradera-color); border-color: var(--tradera-color); }
         .cb-tise:checked { background-color: var(--tise-color); border-color: var(--tise-color); }
         .cb-dba:checked { background-color: var(--dba-color); border-color: var(--dba-color); }
-        .cb-marketplace:checked { background-color: var(--marketplace-color); border-color: var(--marketplace-color); }
-        .cb-bought:checked { background-color: var(--bought-color); border-color: var(--bought-color); }
+        .sold-section { margin-bottom: 50px; }
 
-        /* Solgt info & banner i kortet */
-        .sold-banner {
+        /* Solgt banner styling - Fuld bredde */
+        .sold-banner-box {
             width: 100%;
-            height: 24px;
-            margin-top: 6px;
+            background: #017782; /* Standard eller tilpasset farve */
             border-radius: 6px;
-            overflow: hidden;
+            padding: 6px 10px;
+            text-align: center;
+            margin-bottom: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #eee;
         }
-        .sold-banner img { width: 100%; height: 100%; object-fit: contain; }
-        .sold-details { font-size: 10px; color: #555; text-align: center; margin-top: 4px; font-weight: 600; }
+        .sold-banner-box img {
+            max-width: 100%;
+            max-height: 22px;
+            object-fit: contain;
+        }
+        .sold-details-info {
+            font-size: 10px;
+            color: #555;
+            text-align: center;
+            font-weight: 600;
+        }
 
-        /* Modal / Pop-up til salg */
+        /* MODAL / POP-UP STYLING */
         .modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            z-index: 100000;
-            align-items: center;
+            z-index: 99999;
             justify-content: center;
+            align-items: center;
         }
-        .modal-overlay.show { display: flex; }
-        .modal-card {
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal-box {
             background: #fff;
             padding: 20px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 400px;
+            border-radius: 16px;
+            width: 300px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-        .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
-        .modal-platforms { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
-        .modal-platform-option {
-            border: 2px solid #eee; border-radius: 12px; padding: 10px; cursor: pointer; background: #f8f9fa; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1;
+        .modal-title {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 4px;
         }
-        .modal-platform-option:hover, .modal-platform-option.selected { border-color: #000; background: #e9ecef; }
-        .modal-platform-option img { width: 100%; height: 100%; object-fit: contain; }
-        .modal-inputs { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; text-align: left; }
-        .modal-inputs label { font-size: 11px; font-weight: 600; color: #555; }
-        .modal-inputs input { width: 100%; }
-        .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; }
-        .modal-btn { padding: 8px 16px; border-radius: 20px; border: none; font-size: 13px; cursor: pointer; font-weight: 600; }
+        .modal-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 12px;
+            color: #555;
+        }
+        .modal-field select, .modal-field input {
+            width: 100%;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .modal-btn-save { background: #017782; color: #fff; }
+        .modal-btn-unsold { background: #ff8f77; color: #fff; }
         .modal-btn-cancel { background: #e9ecef; color: #333; }
-        .modal-btn-save { background: #000; color: #fff; }
-
-        .sold-section { margin-bottom: 50px; }
     </style>
 </head>
 <body>
 
-    <nav class="sticky-top-menu" id="stickyNav"></nav>
+    <nav class="sticky-top-menu" id="stickyNav">
+        <!-- Genereres dynamisk via JavaScript -->
+    </nav>
 
     <header>
         <img src="https://lh3.googleusercontent.com/d/1s6icU39_jsQk5CIyj87T-HLfssre2y5U" alt="Header Logo">
@@ -365,48 +453,40 @@
 
     <div class="controls-container">
         <div class="top-bar">
+            <!-- Filter menu -->
             <div class="filter-dropdown-container">
                 <button class="filter-dropdown-btn" onclick="toggleFilterDropdown()">
-                    <span id="currentFilterIcon"><img src="https://lh3.googleusercontent.com/d/1cGZUk6k4pxoVXSPS4aOmMaN_iJ4dPyQU" style="width:18px; height:18px; vertical-align:middle; object-fit:contain;" alt=""></span> ▼
+                    <span id="currentFilterIcon"><img src="https://lh3.googleusercontent.com/d/1rkdnxIpJNI5BQ87fED5-NyEPQgcWHaYB" style="width:18px; height:18px; vertical-align:middle; object-fit:contain;" alt=""></span> ▼
                 </button>
                 <div class="filter-dropdown-content" id="filterDropdownContent">
                     <div class="filter-grid-menu">
-                        <div class="filter-icon-option" onclick="selectFilter('uploaded_vinted', '1VdXuN0PudeFxIJ590l6bhPtchavyCTCi')" title="Vinted_up TRUE"><img src="https://lh3.googleusercontent.com/d/1VdXuN0PudeFxIJ590l6bhPtchavyCTCi" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_vinted', '16u5fxUnP281EavM-VHRHkb-7H8z19u8o')" title="Vinted_up FALSE"><img src="https://lh3.googleusercontent.com/d/16u5fxUnP281EavM-VHRHkb-7H8z19u8o" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('updated_vinted', '1mu_FPjt5TBJFfXyEd8NKy0voitdcQZv-')" title="Vinted_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1mu_FPjt5TBJFfXyEd8NKy0voitdcQZv-" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_update_vinted', '1Wdo-lpD2u7GgJA-MCSzSurnwG54yFhSV')" title="Vinted_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1Wdo-lpD2u7GgJA-MCSzSurnwG54yFhSV" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('uploaded_vinted', '143v0rhjjApi-eu53trd9mFqvB8VjNi9I')" title="Vinted_up TRUE"><img src="https://lh3.googleusercontent.com/d/143v0rhjjApi-eu53trd9mFqvB8VjNi9I" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_vinted', '1XstIhwfmuuBndFT-DkzTEqFAqeRw3qjE')" title="Vinted_up FALSE"><img src="https://lh3.googleusercontent.com/d/1XstIhwfmuuBndFT-DkzTEqFAqeRw3qjE" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('updated_vinted', '1Udano_HwIVpHc-g5ddkxQqmM67EDQcv1')" title="Vinted_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1Udano_HwIVpHc-g5ddkxQqmM67EDQcv1" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_update_vinted', '1HCQGV7YanFgvLwnuJKMREVDm425GuBiD')" title="Vinted_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1HCQGV7YanFgvLwnuJKMREVDm425GuBiD" alt=""></div>
 
-                        <div class="filter-icon-option" onclick="selectFilter('uploaded_tradera', '1IW8lCw7_6z9tsnhQOeLgoukBQDIL3BpY')" title="Tradera_up TRUE"><img src="https://lh3.googleusercontent.com/d/1IW8lCw7_6z9tsnhQOeLgoukBQDIL3BpY" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_tradera', '1kWW_YorB9XkthkmsobVLnRT4XuDcBV79')" title="Tradera_up FALSE"><img src="https://lh3.googleusercontent.com/d/1kWW_YorB9XkthkmsobVLnRT4XuDcBV79" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('updated_tradera', '1NhQ_lrxoVFWpflitUBKqzKjeFjfF-af_')" title="Tradera_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1NhQ_lrxoVFWpflitUBKqzKjeFjfF-af_" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_update_tradera', '1PmZJY8lEqJRaeRjsh1_FMTWE795hITpt')" title="Tradera_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1PmZJY8lEqJRaeRjsh1_FMTWE795hITpt" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('uploaded_tradera', '1h8rAQl_I_FtGyIj-QKObvzUtHocSoTxq')" title="Tradera_up TRUE"><img src="https://lh3.googleusercontent.com/d/1h8rAQl_I_FtGyIj-QKObvzUtHocSoTxq" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_tradera', '1Eq7Vp8vLI-xGIGGX2zplco6DwEhFD4bt')" title="Tradera_up FALSE"><img src="https://lh3.googleusercontent.com/d/1Eq7Vp8vLI-xGIGGX2zplco6DwEhFD4bt" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('updated_tradera', '145AWQaCLYIbLV-8BxwvsuafQH3Mjo9iO')" title="Tradera_mod TRUE"><img src="https://lh3.googleusercontent.com/d/145AWQaCLYIbLV-8BxwvsuafQH3Mjo9iO" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_update_tradera', '1SMx9smFLVASD3ijy1DHd9YtcfvACo3kA')" title="Tradera_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1SMx9smFLVASD3ijy1DHd9YtcfvACo3kA" alt=""></div>
 
-                        <div class="filter-icon-option" onclick="selectFilter('uploaded_tise', '1fefGg1dChY02fifWuQaMZ7dQLJ-0vGk-')" title="Tise_up TRUE"><img src="https://lh3.googleusercontent.com/d/1fefGg1dChY02fifWuQaMZ7dQLJ-0vGk-" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_tise', '1YlsBHulq-uX18FLQErAVPcmhFGDd38Vq')" title="Tise_up FALSE"><img src="https://lh3.googleusercontent.com/d/1YlsBHulq-uX18FLQErAVPcmhFGDd38Vq" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('updated_tise', '1PaZoFz2T1lKlFjCowiAI89zqDvlQzUUx')" title="Tise_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1PaZoFz2T1lKlFjCowiAI89zqDvlQzUUx" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_update_tise', '1M6MVtuysr4pOsDjdgklgKY2tOxJaV6AR')" title="Tise_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1M6MVtuysr4pOsDjdgklgKY2tOxJaV6AR" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('uploaded_tise', '1dvwKcyt1GUaXWC8otkyFJT91DEDnSTDq')" title="Tise_up TRUE"><img src="https://lh3.googleusercontent.com/d/1dvwKcyt1GUaXWC8otkyFJT91DEDnSTDq" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_tise', '1PKgGVKgDsV5wUVXRH5WF5CcPH8RFO27v')" title="Tise_up FALSE"><img src="https://lh3.googleusercontent.com/d/1PKgGVKgDsV5wUVXRH5WF5CcPH8RFO27v" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('updated_tise', '1NYYSNj9vRvG7sZYuXAlVuYYZOLR_2ENK')" title="Tise_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1NYYSNj9vRvG7sZYuXAlVuYYZOLR_2ENK" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_update_tise', '14LKJi2o-KACCOygWhPnc1ZqvGVLzC5I1')" title="Tise_mod FALSE"><img src="https://lh3.googleusercontent.com/d/14LKJi2o-KACCOygWhPnc1ZqvGVLzC5I1" alt=""></div>
 
-                        <div class="filter-icon-option" onclick="selectFilter('uploaded_dba', '1O0f2Yl1oyQnt5pAlyZ-mSSm89Q67bSFT')" title="DBA_up TRUE"><img src="https://lh3.googleusercontent.com/d/1O0f2Yl1oyQnt5pAlyZ-mSSm89Q67bSFT" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_dba', '1qaVaiDvNJLiuqc0Z89qXUZ5xSPmsD0uK')" title="DBA_up FALSE"><img src="https://lh3.googleusercontent.com/d/1qaVaiDvNJLiuqc0Z89qXUZ5xSPmsD0uK" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('updated_dba', '1v-SN2HwIJgmQpK-rq7AU550UaExjth56')" title="DBA_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1v-SN2HwIJgmQpK-rq7AU550UaExjth56" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_update_dba', '1PmfhNlIH6JCSHRwi88jpp1OH27ofKzsj')" title="DBA_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1PmfhNlIH6JCSHRwi88jpp1OH27ofKzsj" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('uploaded_dba', '1N9bJHufOJ9z24nJccNa3xnQsmGdP7SwV')" title="DBA_up TRUE"><img src="https://lh3.googleusercontent.com/d/1N9bJHufOJ9z24nJccNa3xnQsmGdP7SwV" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_dba', '1Hg0Mvk8rr-RRHcXCl42R2im2YMraWv64')" title="DBA_up FALSE"><img src="https://lh3.googleusercontent.com/d/1Hg0Mvk8rr-RRHcXCl42R2im2YMraWv64" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('updated_dba', '12kWf2yJMKlUeI2ix67rTJSfdLQjaKtvD')" title="DBA_mod TRUE"><img src="https://lh3.googleusercontent.com/d/12kWf2yJMKlUeI2ix67rTJSfdLQjaKtvD" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_update_dba', '196zjppNvavSlJnyJVWN5xATZiLPRzMOf')" title="DBA_mod FALSE"><img src="https://lh3.googleusercontent.com/d/196zjppNvavSlJnyJVWN5xATZiLPRzMOf" alt=""></div>
 
-                        <div class="filter-icon-option" onclick="selectFilter('uploaded_marketplace', '13mjiXSf4i7Br36LblnCbGIH5qtZ-88dR')" title="Marketplace_up TRUE"><img src="https://lh3.googleusercontent.com/d/13mjiXSf4i7Br36LblnCbGIH5qtZ-88dR" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_marketplace', '125JG0PQs1qGLJAod7ew0jbkm1RszVkkJ')" title="Marketplace_up FALSE"><img src="https://lh3.googleusercontent.com/d/125JG0PQs1qGLJAod7ew0jbkm1RszVkkJ" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('updated_marketplace', '1Nm4oopogDH71oEzky0jVwLrSM8LMfdPb')" title="Marketplace_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1Nm4oopogDH71oEzky0jVwLrSM8LMfdPb" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_update_marketplace', '1eGdSC2q5_wG3ShnarRYEO6hKoLzP2IIL')" title="Marketplace_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1eGdSC2q5_wG3ShnarRYEO6hKoLzP2IIL" alt=""></div>
-
-                        <div class="filter-icon-option" onclick="selectFilter('uploaded_bought', '1OZDyqpmhh1O1oxGUhl2HNcIBpN_kYUA-')" title="Bought_up TRUE"><img src="https://lh3.googleusercontent.com/d/1OZDyqpmhh1O1oxGUhl2HNcIBpN_kYUA-" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_bought', '1zwMC4Dme4K8nOQseE5sXkCWB0p8addsq')" title="Bought_up FALSE"><img src="https://lh3.googleusercontent.com/d/1zwMC4Dme4K8nOQseE5sXkCWB0p8addsq" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('updated_bought', '1nHO1GCcFRZyETtdpBtRN9vNZJGy0XJGH')" title="Bought_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1nHO1GCcFRZyETtdpBtRN9vNZJGy0XJGH" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_update_bought', '1izpCumFPltbP8cEg00wzMWA6nxTr2yYU')" title="Bought_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1izpCumFPltbP8cEg00wzMWA6nxTr2yYU" alt=""></div>
-
-                        <div class="filter-icon-option" onclick="selectFilter('all', '1cGZUk6k4pxoVXSPS4aOmMaN_iJ4dPyQU')" title="Show all"><img src="https://lh3.googleusercontent.com/d/1cGZUk6k4pxoVXSPS4aOmMaN_iJ4dPyQU" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('partial_update', '1pIzJRBdTdWIra_vlKNhKrGT2ZS3wUE_k')" title="Work in Progress"><img src="https://lh3.googleusercontent.com/d/1pIzJRBdTdWIra_vlKNhKrGT2ZS3wUE_k" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('all', '1rkdnxIpJNI5BQ87fED5-NyEPQgcWHaYB')" title="Show all"><img src="https://lh3.googleusercontent.com/d/1rkdnxIpJNI5BQ87fED5-NyEPQgcWHaYB" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('partial_update', '1zbbbe0nNbm7ptDQbDuB7dy3xL2FvPHbJ')" title="Work in Progress"><img src="https://lh3.googleusercontent.com/d/1zbbbe0nNbm7ptDQbDuB7dy3xL2FvPHbJ" alt=""></div>
                     </div>
                 </div>
             </div>
 
+            <!-- Sorteringsmenu -->
             <select id="sortSelect" onchange="renderItems()">
                 <option value="category_custom">Sorter efter kategori</option>
                 <option value="size">Sorter efter størrelse</option>
@@ -421,11 +501,18 @@
             <div class="stats-box" id="statsContainer">Henter statistik...</div>
             <div class="tools-right-group">
                 <div class="total-counter-display" id="totalCounterDisplay">Total varer: 0</div>
+                <div class="template-logos">
+                    <img class="template-logo-btn" src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM" alt="Vinted" onclick="copyTemplate('vinted')">
+                    <img class="template-logo-btn" src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn" alt="Tradera" onclick="copyTemplate('tradera')">
+                    <img class="template-logo-btn" src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O" alt="Tise" onclick="copyTemplate('tise')">
+                    <img class="template-logo-btn" src="https://lh3.googleusercontent.com/d/16YkaDgy07xs9DFyG0pyjiI1cnEFUCBJe" alt="DBA" onclick="copyTemplate('dba')">
+                </div>
                 <button class="reset-updates-btn" onclick="confirmResetUpdates()">Nulstil opdateringer</button>
             </div>
         </div>
     </div>
 
+    <!-- FLYDENDE GEM-BOBLE -->
     <div class="floating-save-bubble" onclick="saveAndSync()" title="Gem til Google Sheets">
         <img src="https://lh3.googleusercontent.com/d/1ummUBoIj819X4mhvSn_UQkSl0CI-bklh" alt="Gem">
     </div>
@@ -433,35 +520,33 @@
     <div class="main-content" id="mainContainer"></div>
 
     <div class="main-content sold-section" id="soldSectionContainer">
-        <div class="category-title">Solgte varer</div>
+        <div class="category-title" style="font-weight: bold; margin-bottom: 8px; font-size: 14px;">Solgte varer</div>
         <div class="items-grid" id="soldContainer"></div>
     </div>
 
-    <!-- Salgs Modal / Pop-up -->
-    <div class="modal-overlay" id="saleModal">
-        <div class="modal-card">
-            <div class="modal-title">Marker vare som solgt</div>
-            <div class="modal-platforms">
-                <div class="modal-platform-option" data-platform="vinted" onclick="selectModalPlatform('vinted')"><img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM" alt="Vinted"></div>
-                <div class="modal-platform-option" data-platform="tradera" onclick="selectModalPlatform('tradera')"><img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn" alt="Tradera"></div>
-                <div class="modal-platform-option" data-platform="tise" onclick="selectModalPlatform('tise')"><img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O" alt="Tise"></div>
-                <div class="modal-platform-option" data-platform="dba" onclick="selectModalPlatform('dba')"><img src="https://lh3.googleusercontent.com/d/1r1Tp6i4cZcLN44YoWOcH52g5EmXNS8Ty" alt="DBA"></div>
-                <div class="modal-platform-option" data-platform="marketplace" onclick="selectModalPlatform('marketplace')"><img src="https://lh3.googleusercontent.com/d/1aZ0cmmO6d5tAlEq_mb8kh4gY46P6EgZg" alt="Marketplace"></div>
-                <div class="modal-platform-option" data-platform="bought" onclick="selectModalPlatform('bought')"><img src="https://lh3.googleusercontent.com/d/1y5Qz_HfyQFyYd5g8dJoztdh3-KhgBQoB" alt="Bought"></div>
+    <!-- MODAL / POP-UP TIL SOLGT INFO -->
+    <div class="modal-overlay" id="soldModalOverlay">
+        <div class="modal-box">
+            <div class="modal-title" id="modalItemTitle">Rediger salg</div>
+            <div class="modal-field">
+                <label>Platform</label>
+                <select id="modalPlatformSelect">
+                    <option value="vinted">Vinted</option>
+                    <option value="tradera">Tradera</option>
+                    <option value="tise">Tise</option>
+                    <option value="dba">DBA</option>
+                </select>
             </div>
-            <div class="modal-inputs">
-                <div>
-                    <label>Salgsdato:</label>
-                    <input type="date" id="modalSaleDate">
-                </div>
-                <div>
-                    <label>Salgspris:</label>
-                    <input type="number" id="modalSalePrice" placeholder="F.eks. 150">
-                </div>
+            <div class="modal-field">
+                <label>Salgsdato</label>
+                <input type="date" id="modalDateInput">
             </div>
-            <div class="modal-buttons">
-                <button class="modal-btn modal-btn-cancel" onclick="closeSaleModal()">Annuller</button>
-                <button class="modal-btn modal-btn-save" onclick="saveSaleModal()">Gem</button>
+            <div class="modal-field">
+                <label>Salgspris (kr.)</label>
+                <input type="number" id="modalPriceInput" placeholder="F.eks. 45">
+            </div>
+            <div class="modal-buttons" id="modalButtonsContainer">
+                <!-- Indsættes dynamisk afhængigt af om varen er solgt eller ej -->
             </div>
         </div>
     </div>
@@ -493,15 +578,12 @@
         let currentFilter = 'all';
         let saveTimeout = null;
         let activeModalItemId = null;
-        let selectedModalPlatformName = '';
 
-        const bannerImageIds = {
-            vinted: "1RQnjA5kqV4_QtAh6PLshhiox1TZKZtyb",
-            tradera: "1TiA7NniIpgNR_TeRK4KFkGgTKWA4xzvf",
-            tise: "1iBMenFqcOouv_bh0s7J2ifkR53KFQBNx",
-            dba: "18pdHBIVxWvQKdn3XCtezYNioj2cB1E9w",
-            marketplace: "14Lm0UBT2770o-TWXOrOzM_qYrgcgjdk0",
-            bought: "1491dztR4QJ4hmoKI93Ec_Y5-jdlGJTpb"
+        const platformBanners = {
+            vinted: { banner: "https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM", color: "#017782" },
+            tradera: { banner: "https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn", color: "#fef880" },
+            tise: { banner: "https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O", color: "#ff8f77" },
+            dba: { banner: "https://lh3.googleusercontent.com/d/16YkaDgy07xs9DFyG0pyjiI1cnEFUCBJe", color: "#003366" }
         };
 
         async function loadCloudData() {
@@ -517,9 +599,9 @@
                         const st = rawStates[id] || {};
                         itemStates[id] = {
                             sold: Boolean(st.sold),
-                            platform: st.platform || '',
-                            saleDate: st.saleDate || '',
-                            salePrice: st.salePrice || '',
+                            soldPlatform: st.soldPlatform || 'vinted',
+                            soldDate: st.soldDate || new Date().toISOString().split('T')[0],
+                            soldPrice: st.soldPrice || '',
                             vinted_up: Boolean(st.vinted_up),
                             vinted_mod: Boolean(st.vinted_mod),
                             tradera_up: Boolean(st.tradera_up),
@@ -527,11 +609,7 @@
                             tise_up: Boolean(st.tise_up),
                             tise_mod: Boolean(st.tise_mod),
                             dba_up: Boolean(st.dba_up),
-                            dba_mod: Boolean(st.dba_mod),
-                            marketplace_up: Boolean(st.marketplace_up),
-                            marketplace_mod: Boolean(st.marketplace_mod),
-                            bought_up: Boolean(st.bought_up),
-                            bought_mod: Boolean(st.bought_mod)
+                            dba_mod: Boolean(st.dba_mod)
                         };
                     });
                 }
@@ -551,7 +629,9 @@
 
         function triggerAutoSave() {
             if (saveTimeout) clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => { saveAndSync(); }, 600);
+            saveTimeout = setTimeout(() => {
+                saveAndSync();
+            }, 600);
         }
 
         function toggleFilterDropdown() {
@@ -579,7 +659,8 @@
 
                 html += `
                     <div class="cat-bubble-wrapper">
-                        <div class="cat-bubble" style="background-color: ${bgColor};" onclick="handleCategorySingleClick(event, '${catObj.name}')" ondblclick="scrollToCategory('${catObj.name}')" title="${catObj.name}"></div>
+                        <div class="cat-bubble" style="background-color: ${bgColor};" onclick="handleCategorySingleClick(event, '${catObj.name}')" ondblclick="scrollToCategory('${catObj.name}')" title="${catObj.name}">
+                        </div>
                         <div class="sub-menu-dropdown">
                             <div class="sub-menu-title">${catObj.name}</div>
                             <div class="sub-menu-item" onclick="scrollToCategory('${catObj.name}')"><b>Se hele kategorien</b></div>
@@ -590,7 +671,12 @@
                 `;
             });
 
-            html += `<div class="cat-bubble sold-bubble" onclick="scrollToSold()" title="Solgte varer">SOLD</div>`;
+            html += `
+                <div class="cat-bubble sold-bubble" onclick="scrollToSold()" title="Solgte varer">
+                    SOLD
+                </div>
+            `;
+
             nav.innerHTML = html;
         }
 
@@ -603,7 +689,11 @@
         function handleCategorySingleClick(event, catName) {
             const wrapper = event.currentTarget.closest('.cat-bubble-wrapper');
             const dropdown = wrapper.querySelector('.sub-menu-dropdown');
-            document.querySelectorAll('.sub-menu-dropdown').forEach(d => { if (d !== dropdown) d.classList.remove('show'); });
+            
+            document.querySelectorAll('.sub-menu-dropdown').forEach(d => {
+                if (d !== dropdown) d.classList.remove('show');
+            });
+            
             dropdown.classList.toggle('show');
         }
 
@@ -615,6 +705,7 @@
 
         function scrollToSubCategory(catName, subName) {
             document.querySelectorAll('.sub-menu-dropdown').forEach(d => d.classList.remove('show'));
+            
             document.getElementById('sortSelect').value = 'category_custom';
             document.getElementById('searchInput').value = '';
             currentFilter = 'all';
@@ -622,8 +713,11 @@
 
             setTimeout(() => {
                 const el = document.querySelector(`.item-card[data-sub-category="${subName}"]`);
-                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                else scrollToCategory(catName);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    scrollToCategory(catName);
+                }
             }, 50);
         }
 
@@ -632,13 +726,33 @@
             if (el) el.scrollIntoView({ behavior: 'smooth' });
         }
 
+        function openPlatformLink(itemId, platform) {
+            const item = items.find(i => i.id == itemId);
+            if (!item) return;
+
+            let link = '';
+            if (platform === 'vinted') link = item.vintedLink;
+            else if (platform === 'tradera') link = item.traderaLink;
+            else if (platform === 'tise') link = item.tiseLink;
+            else if (platform === 'dba') link = item.dbaLink;
+
+            if (link) {
+                window.open(link, '_blank');
+            } else {
+                showToast(`Intet link fundet for ${platform.toUpperCase()}`);
+            }
+        }
+
+        function copyTemplate(platform) {}
+
         function confirmResetUpdates() {
             if (confirm("Vil du nulstille alle opdateringer?")) {
                 Object.keys(itemStates).forEach(id => {
                     if (itemStates[id]) {
-                        ['vinted', 'tradera', 'tise', 'dba', 'marketplace', 'bought'].forEach(p => {
-                            itemStates[id][p + '_mod'] = false;
-                        });
+                        itemStates[id].vinted_mod = false;
+                        itemStates[id].tradera_mod = false;
+                        itemStates[id].tise_mod = false;
+                        itemStates[id].dba_mod = false;
                     }
                 });
                 renderItems();
@@ -648,7 +762,7 @@
 
         function renderItems() {
             let activeTotal = 0, soldTotal = 0;
-            let counts = { vinted: [0,0], tradera: [0,0], tise: [0,0], dba: [0,0], marketplace: [0,0], bought: [0,0] };
+            let upV = 0, udV = 0, upT = 0, udT = 0, upTi = 0, udTi = 0, upD = 0, udD = 0;
 
             items.forEach(item => {
                 const st = itemStates[item.id] || {};
@@ -656,18 +770,14 @@
                     soldTotal++;
                 } else {
                     activeTotal++;
-                    if (st.vinted_up) counts.vinted[0]++;
-                    if (st.vinted_mod) counts.vinted[1]++;
-                    if (st.tradera_up) counts.tradera[0]++;
-                    if (st.tradera_mod) counts.tradera[1]++;
-                    if (st.tise_up) counts.tise[0]++;
-                    if (st.tise_mod) counts.tise[1]++;
-                    if (st.dba_up) counts.dba[0]++;
-                    if (st.dba_mod) counts.dba[1]++;
-                    if (st.marketplace_up) counts.marketplace[0]++;
-                    if (st.marketplace_mod) counts.marketplace[1]++;
-                    if (st.bought_up) counts.bought[0]++;
-                    if (st.bought_mod) counts.bought[1]++;
+                    if (st.vinted_up) upV++;
+                    if (st.vinted_mod) udV++;
+                    if (st.tradera_up) upT++;
+                    if (st.tradera_mod) udT++;
+                    if (st.tise_up) upTi++;
+                    if (st.tise_mod) udTi++;
+                    if (st.dba_up) upD++;
+                    if (st.dba_mod) udD++;
                 }
             });
 
@@ -677,13 +787,31 @@
 
             document.getElementById('statsContainer').innerHTML = `
                 <table class="stats-table">
-                    <tr><th></th><th>Uploaded</th><th>Opdateret</th></tr>
-                    <tr><td><img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM"> Vinted:</td><td>${counts.vinted[0]}</td><td>${counts.vinted[1]}</td></tr>
-                    <tr><td><img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn"> Tradera:</td><td>${counts.tradera[0]}</td><td>${counts.tradera[1]}</td></tr>
-                    <tr><td><img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O"> Tise:</td><td>${counts.tise[0]}</td><td>${counts.tise[1]}</td></tr>
-                    <tr><td><img src="https://lh3.googleusercontent.com/d/1r1Tp6i4cZcLN44YoWOcH52g5EmXNS8Ty"> DBA:</td><td>${counts.dba[0]}</td><td>${counts.dba[1]}</td></tr>
-                    <tr><td><img src="https://lh3.googleusercontent.com/d/1aZ0cmmO6d5tAlEq_mb8kh4gY46P6EgZg"> Marketplace:</td><td>${counts.marketplace[0]}</td><td>${counts.marketplace[1]}</td></tr>
-                    <tr><td><img src="https://lh3.googleusercontent.com/d/1y5Qz_HfyQFyYd5g8dJoztdh3-KhgBQoB"> Bought:</td><td>${counts.bought[0]}</td><td>${counts.bought[1]}</td></tr>
+                    <tr>
+                        <th></th>
+                        <th>Uploaded</th>
+                        <th>Opdateret</th>
+                    </tr>
+                    <tr>
+                        <td><img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM" alt=""> Vinted:</td>
+                        <td>${upV}</td>
+                        <td>${udV}</td>
+                    </tr>
+                    <tr>
+                        <td><img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn" alt=""> Tradera:</td>
+                        <td>${upT}</td>
+                        <td>${udT}</td>
+                    </tr>
+                    <tr>
+                        <td><img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O" alt=""> Tise:</td>
+                        <td>${upTi}</td>
+                        <td>${udTi}</td>
+                    </tr>
+                    <tr>
+                        <td><img src="https://lh3.googleusercontent.com/d/16YkaDgy07xs9DFyG0pyjiI1cnEFUCBJe" alt=""> DBA:</td>
+                        <td>${upD}</td>
+                        <td>${udD}</td>
+                    </tr>
                 </table>
                 <div class="stats-footer">
                     <span>Total aktive: ${activeTotal}</span>
@@ -696,8 +824,9 @@
 
             let filtered = items.filter(item => {
                 const st = itemStates[item.id] || {};
+
                 const matchesSearch = !searchVal || 
-                    (item.title && item.title.toLowerCase().includes(searchVal)) ||
+                    (item.name && item.name.toLowerCase().includes(searchVal)) ||
                     (item.brand && item.brand.toLowerCase().includes(searchVal)) ||
                     (item.size && item.size.toLowerCase().includes(searchVal)) ||
                     (item.subCategory && item.subCategory.toLowerCase().includes(searchVal)) ||
@@ -706,28 +835,36 @@
 
                 if (!matchesSearch) return false;
 
-                if (currentFilter.startsWith('uploaded_')) return st[currentFilter.replace('uploaded_', '') + '_up'];
-                if (currentFilter.startsWith('missing_upload_')) return !st[currentFilter.replace('missing_upload_', '') + '_up'];
-                if (currentFilter.startsWith('updated_')) return st[currentFilter.replace('updated_', '') + '_mod'];
-                if (currentFilter.startsWith('missing_update_')) return !st[currentFilter.replace('missing_update_', '') + '_mod'];
+                if (currentFilter === 'uploaded_vinted') return st.vinted_up;
+                if (currentFilter === 'missing_upload_vinted') return !st.vinted_up;
+                if (currentFilter === 'updated_vinted') return st.vinted_mod;
+                if (currentFilter === 'missing_update_vinted') return !st.vinted_mod;
+                
+                if (currentFilter === 'uploaded_tradera') return st.tradera_up;
+                if (currentFilter === 'missing_upload_tradera') return !st.tradera_up;
+                if (currentFilter === 'updated_tradera') return st.tradera_mod;
+                if (currentFilter === 'missing_update_tradera') return !st.tradera_mod;
+                
+                if (currentFilter === 'uploaded_tise') return st.tise_up;
+                if (currentFilter === 'missing_upload_tise') return !st.tise_up;
+                if (currentFilter === 'updated_tise') return st.tise_mod;
+                if (currentFilter === 'missing_update_tise') return !st.tise_mod;
+
+                if (currentFilter === 'uploaded_dba') return st.dba_up;
+                if (currentFilter === 'missing_upload_dba') return !st.dba_up;
+                if (currentFilter === 'updated_dba') return st.dba_mod;
+                if (currentFilter === 'missing_update_dba') return !st.dba_mod;
 
                 if (currentFilter === 'partial_update') {
-                    const mods = ['vinted', 'tradera', 'tise', 'dba', 'marketplace', 'bought'].map(p => st[p + '_mod'] === true);
-                    const trueCount = mods.filter(Boolean).length;
-                    return trueCount >= 1 && trueCount < 6;
+                    const modFields = [st.vinted_mod === true, st.tradera_mod === true, st.tise_mod === true, st.dba_mod === true];
+                    const trueCount = modFields.filter(Boolean).length;
+                    return trueCount >= 1 && trueCount <= 3;
                 }
                 return true;
             });
 
             let activeItems = filtered.filter(i => !(itemStates[i.id] && itemStates[i.id].sold));
             let soldItems = filtered.filter(i => (itemStates[i.id] && itemStates[i.id].sold));
-
-            // Sortering af solgte varer efter dato (seneste først)
-            soldItems.sort((a, b) => {
-                const dateA = (itemStates[a.id] && itemStates[a.id].saleDate) ? new Date(itemStates[a.id].saleDate) : new Date(0);
-                const dateB = (itemStates[b.id] && itemStates[b.id].saleDate) ? new Date(itemStates[b.id].saleDate) : new Date(0);
-                return dateB - dateA;
-            });
 
             if (sortType === 'category_custom') {
                 activeItems.sort((a, b) => {
@@ -738,18 +875,24 @@
                     if (catIdxA !== catIdxB) return catIdxA - catIdxB;
 
                     let subList = categoriesData[catIdxA] ? categoriesData[catIdxA].subs : [];
-                    return (subList.indexOf(a.subCategory) === -1 ? 999 : subList.indexOf(a.subCategory)) - 
-                           (subList.indexOf(b.subCategory) === -1 ? 999 : subList.indexOf(b.subCategory));
+                    let subIdxA = subList.indexOf(a.subCategory);
+                    let subIdxB = subList.indexOf(b.subCategory);
+                    return (subIdxA === -1 ? 999 : subIdxA) - (subIdxB === -1 ? 999 : subIdxB);
                 });
             } else if (sortType === 'size') {
-                activeItems.sort((a, b) => (sizeOrder.indexOf(a.size) === -1 ? 999 : sizeOrder.indexOf(a.size)) - (sizeOrder.indexOf(b.size) === -1 ? 999 : sizeOrder.indexOf(b.size)));
+                activeItems.sort((a, b) => {
+                    let sizeIdxA = sizeOrder.indexOf(a.size);
+                    let sizeIdxB = sizeOrder.indexOf(b.size);
+                    return (sizeIdxA === -1 ? 999 : sizeIdxA) - (sizeIdxB === -1 ? 999 : sizeIdxB);
+                });
             } else if (sortType === 'brand') {
                 activeItems.sort((a, b) => (a.brand || "").localeCompare(b.brand || ""));
             } else if (sortType === 'id') {
                 activeItems.sort((a, b) => a.id - b.id);
             }
 
-            document.getElementById('mainContainer').innerHTML = `<div class="items-grid">${activeItems.map(i => createCardHTML(i)).join('')}</div>`;
+            const mainContainer = document.getElementById('mainContainer');
+            mainContainer.innerHTML = `<div class="items-grid">${activeItems.map(i => createCardHTML(i)).join('')}</div>`;
             document.getElementById('soldContainer').innerHTML = soldItems.map(i => createCardHTML(i)).join('');
         }
 
@@ -758,113 +901,78 @@
             const isSold = st.sold ? 'sold' : '';
             const imgUrl = item.image ? `https://lh3.googleusercontent.com/d/${item.image}` : '';
 
-            let bottomSection = '';
             if (st.sold) {
-                const bannerId = bannerImageIds[st.platform];
-                const bannerHtml = bannerId ? `<div class="sold-banner"><img src="https://lh3.googleusercontent.com/d/${bannerId}" alt="${st.platform}"></div>` : '';
-                bottomSection = `
-                    ${bannerHtml}
-                    <div class="sold-details">
-                        ${st.platform ? st.platform.toUpperCase() : ''} ${st.saleDate ? '• ' + st.saleDate : ''} ${st.salePrice ? '• ' + st.salePrice + ' kr.' : ''}
-                    </div>
-                `;
-            } else {
-                bottomSection = `
-                    <div class="platforms-grid">
-                        <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'vinted')"><img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM"></div>
-                        <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'tradera')"><img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn"></div>
-                        <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'tise')"><img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O"></div>
-                        <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'dba')"><img src="https://lh3.googleusercontent.com/d/1r1Tp6i4cZcLN44YoWOcH52g5EmXNS8Ty"></div>
-                        <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'marketplace')"><img src="https://lh3.googleusercontent.com/d/1aZ0cmmO6d5tAlEq_mb8kh4gY46P6EgZg"></div>
-                        <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'bought')"><img src="https://lh3.googleusercontent.com/d/1y5Qz_HfyQFyYd5g8dJoztdh3-KhgBQoB"></div>
-
-                        <div class="row-label">UPLOADET</div>
-                        <div><input type="checkbox" class="platform-checkbox cb-vinted" ${st.vinted_up?'checked':''} onchange="updateState(${item.id}, 'vinted_up', this.checked)"></div>
-                        <div><input type="checkbox" class="platform-checkbox cb-tradera" ${st.tradera_up?'checked':''} onchange="updateState(${item.id}, 'tradera_up', this.checked)"></div>
-                        <div><input type="checkbox" class="platform-checkbox cb-tise" ${st.tise_up?'checked':''} onchange="updateState(${item.id}, 'tise_up', this.checked)"></div>
-                        <div><input type="checkbox" class="platform-checkbox cb-dba" ${st.dba_up?'checked':''} onchange="updateState(${item.id}, 'dba_up', this.checked)"></div>
-                        <div><input type="checkbox" class="platform-checkbox cb-marketplace" ${st.marketplace_up?'checked':''} onchange="updateState(${item.id}, 'marketplace_up', this.checked)"></div>
-                        <div><input type="checkbox" class="platform-checkbox cb-bought" ${st.bought_up?'checked':''} onchange="updateState(${item.id}, 'bought_up', this.checked)"></div>
-
-                        <div class="row-label">OPDATERET</div>
-                        <div><input type="checkbox" class="platform-checkbox cb-vinted" ${st.vinted_mod?'checked':''} onchange="updateState(${item.id}, 'vinted_mod', this.checked)"></div>
-                        <div><input type="checkbox" class="platform-checkbox cb-tradera" ${st.tradera_mod?'checked':''} onchange="updateState(${item.id}, 'tradera_mod', this.checked)"></div>
-                        <div><input type="checkbox" class="platform-checkbox cb-tise" ${st.tise_mod?'checked':''} onchange="updateState(${item.id}, 'tise_mod', this.checked)"></div>
-                        <div><input type="checkbox" class="platform-checkbox cb-dba" ${st.dba_mod?'checked':''} onchange="updateState(${item.id}, 'dba_mod', this.checked)"></div>
-                        <div><input type="checkbox" class="platform-checkbox cb-marketplace" ${st.marketplace_mod?'checked':''} onchange="updateState(${item.id}, 'marketplace_mod', this.checked)"></div>
-                        <div><input type="checkbox" class="platform-checkbox cb-bought" ${st.bought_mod?'checked':''} onchange="updateState(${item.id}, 'bought_mod', this.checked)"></div>
+                const pInfo = platformBanners[st.soldPlatform] || platformBanners['vinted'];
+                return `
+                    <div class="item-card sold" id="card-${item.id}" data-category-name="${item.category || ''}" data-sub-category="${item.subCategory || ''}" data-size="${item.size || ''}">
+                        <div class="item-image-container">
+                            <button class="sold-icon-btn" onclick="openSoldModal(${item.id})" title="Rediger salgsoplysninger"><img src="https://lh3.googleusercontent.com/d/19KRRSJU1UkueZhQLvNVuYlai2TyCKjKV" alt="Solgt"></button>
+                            <img src="${imgUrl}" alt="${item.name}" loading="lazy">
+                        </div>
+                        <div class="item-info">
+                            <div class="item-name">${item.name || ''}</div>
+                            <div class="sold-banner-box" style="background: ${pInfo.color};">
+                                <img src="${pInfo.banner}" alt="${st.soldPlatform}">
+                            </div>
+                            <div class="sold-details-info">
+                                ${st.soldDate || ''} • ${st.soldPrice ? st.soldPrice + ' kr.' : ''}
+                            </div>
+                        </div>
                     </div>
                 `;
             }
 
             return `
-                <div class="item-card ${isSold}" id="card-${item.id}" data-category-name="${item.category || ''}" data-sub-category="${item.subCategory || ''}" data-size="${item.size || ''}">
+                <div class="item-card" id="card-${item.id}" data-category-name="${item.category || ''}" data-sub-category="${item.subCategory || ''}" data-size="${item.size || ''}">
                     <div class="item-image-container">
-                        <button class="sold-icon-btn" onclick="openSaleModal(${item.id})" title="Marker som solgt"><img src="https://lh3.googleusercontent.com/d/19KRRSJU1UkueZhQLvNVuYlai2TyCKjKV" alt="Solgt"></button>
-                        <img src="${imgUrl}" alt="${item.title}" loading="lazy">
+                        <button class="sold-icon-btn" onclick="openSoldModal(${item.id})" title="Marker som solgt"><img src="https://lh3.googleusercontent.com/d/19KRRSJU1UkueZhQLvNVuYlai2TyCKjKV" alt="Solgt"></button>
+                        <img src="${imgUrl}" alt="${item.name}" loading="lazy">
                     </div>
                     <div class="item-info">
-                        <div class="item-name">${item.title || ''}</div>
+                        <div class="item-name">${item.name || ''}</div>
                         <div class="item-meta">
                             <span>${item.brand || ''} • <b>${item.size || ''}</b></span>
                             <span>#${item.id}</span>
                         </div>
                     </div>
-                    ${bottomSection}
+                    <div class="platforms-grid">
+                        <!-- 1. Platform Logoer -->
+                        <div>
+                            <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'vinted')" title="Åbn Vinted annonce">
+                                <img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM" alt="Vinted">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'tradera')" title="Åbn Tradera annonce">
+                                <img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn" alt="Tradera">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'tise')" title="Åbn Tise annonce">
+                                <img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O" alt="Tise">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'dba')" title="Åbn DBA annonce">
+                                <img src="https://lh3.googleusercontent.com/d/16YkaDgy07xs9DFyG0pyjiI1cnEFUCBJe" alt="DBA">
+                            </div>
+                        </div>
+
+                        <!-- 2. UPLOADET Tekst + Checkboxes -->
+                        <div class="row-label">UPLOADET</div>
+                        <div><input type="checkbox" class="platform-checkbox cb-vinted" ${st.vinted_up?'checked':''} onchange="updateState(${item.id}, 'vinted_up', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-tradera" ${st.tradera_up?'checked':''} onchange="updateState(${item.id}, 'tradera_up', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-tise" ${st.tise_up?'checked':''} onchange="updateState(${item.id}, 'tise_up', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-dba" ${st.dba_up?'checked':''} onchange="updateState(${item.id}, 'dba_up', this.checked)"></div>
+
+                        <!-- 3. OPDATERET Tekst + Checkboxes -->
+                        <div class="row-label">OPDATERET</div>
+                        <div><input type="checkbox" class="platform-checkbox cb-vinted" ${st.vinted_mod?'checked':''} onchange="updateState(${item.id}, 'vinted_mod', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-tradera" ${st.tradera_mod?'checked':''} onchange="updateState(${item.id}, 'tradera_mod', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-tise" ${st.tise_mod?'checked':''} onchange="updateState(${item.id}, 'tise_mod', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-dba" ${st.dba_mod?'checked':''} onchange="updateState(${item.id}, 'dba_mod', this.checked)"></div>
+                    </div>
                 </div>`;
-        }
-
-        function openSaleModal(id) {
-            activeModalItemId = id;
-            const st = itemStates[id] || {};
-            if (st.sold) {
-                if (confirm("Vil du markere denne vare som Usolgt igen?")) {
-                    st.sold = false;
-                    st.platform = '';
-                    st.saleDate = '';
-                    st.salePrice = '';
-                    renderItems();
-                    triggerAutoSave();
-                }
-                return;
-            }
-            selectedModalPlatformName = st.platform || '';
-            document.getElementById('modalSaleDate').value = st.saleDate || new Date().toISOString().split('T')[0];
-            document.getElementById('modalSalePrice').value = st.salePrice || '';
-            
-            document.querySelectorAll('.modal-platform-option').forEach(el => {
-                if (el.dataset.platform === selectedModalPlatformName) el.classList.add('selected');
-                else el.classList.remove('selected');
-            });
-
-            document.getElementById('saleModal').classList.add('show');
-        }
-
-        function selectModalPlatform(platform) {
-            selectedModalPlatformName = platform;
-            document.querySelectorAll('.modal-platform-option').forEach(el => {
-                if (el.dataset.platform === platform) el.classList.add('selected');
-                else el.classList.remove('selected');
-            });
-        }
-
-        function closeSaleModal() {
-            document.getElementById('saleModal').classList.remove('show');
-            activeModalItemId = null;
-        }
-
-        function saveSaleModal() {
-            if (!activeModalItemId) return;
-            if (!itemStates[activeModalItemId]) itemStates[activeModalItemId] = {};
-            
-            itemStates[activeModalItemId].sold = true;
-            itemStates[activeModalItemId].platform = selectedModalPlatformName;
-            itemStates[activeModalItemId].saleDate = document.getElementById('modalSaleDate').value;
-            itemStates[activeModalItemId].salePrice = document.getElementById('modalSalePrice').value;
-
-            closeSaleModal();
-            renderItems();
-            triggerAutoSave();
         }
 
         function updateState(id, field, value) {
@@ -874,12 +982,56 @@
             triggerAutoSave();
         }
 
-        function openPlatformLink(itemId, platform) {
-            const item = items.find(i => i.id == itemId);
-            if (!item) return;
-            let link = item[platform + 'Link'] || '';
-            if (link) window.open(link, '_blank');
-            else showToast(`Intet link fundet for ${platform.toUpperCase()}`);
+        function openSoldModal(id) {
+            activeModalItemId = id;
+            const st = itemStates[id] || {};
+            const item = items.find(i => i.id == id);
+
+            document.getElementById('modalItemTitle').textContent = item ? `Salg for: ${item.name}` : `Rediger salg`;
+            document.getElementById('modalPlatformSelect').value = st.soldPlatform || 'vinted';
+            document.getElementById('modalDateInput').value = st.soldDate || new Date().toISOString().split('T')[0];
+            document.getElementById('modalPriceInput').value = st.soldPrice || '';
+
+            const btnContainer = document.getElementById('modalButtonsContainer');
+            if (st.sold) {
+                btnContainer.innerHTML = `
+                    <button class="modal-btn modal-btn-unsold" onclick="markAsUnsold(${id})">Ikke solgt</button>
+                    <button class="modal-btn modal-btn-save" onclick="saveModalSold(${id})">Gem</button>
+                `;
+            } else {
+                btnContainer.innerHTML = `
+                    <button class="modal-btn modal-btn-cancel" onclick="closeSoldModal()">Annuller</button>
+                    <button class="modal-btn modal-btn-save" onclick="saveModalSold(${id})">Marker som solgt</button>
+                `;
+            }
+
+            document.getElementById('soldModalOverlay').classList.add('show');
+        }
+
+        function closeSoldModal() {
+            document.getElementById('soldModalOverlay').classList.remove('show');
+            activeModalItemId = null;
+        }
+
+        function saveModalSold(id) {
+            if (!itemStates[id]) itemStates[id] = {};
+            itemStates[id].sold = true;
+            itemStates[id].soldPlatform = document.getElementById('modalPlatformSelect').value;
+            itemStates[id].soldDate = document.getElementById('modalDateInput').value;
+            itemStates[id].soldPrice = document.getElementById('modalPriceInput').value;
+
+            closeSoldModal();
+            renderItems();
+            triggerAutoSave();
+        }
+
+        function markAsUnsold(id) {
+            if (!itemStates[id]) itemStates[id] = {};
+            itemStates[id].sold = false;
+
+            closeSoldModal();
+            renderItems();
+            triggerAutoSave();
         }
 
         function showToast(message) {
