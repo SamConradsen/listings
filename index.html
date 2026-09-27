@@ -599,7 +599,7 @@
                     const rawItems = data.items || [];
                     items = rawItems.map(item => ({
                         ...item,
-                        title: item.title || ''
+                        title: item.name || ''
                     }));
                     
                     itemStates = {};
@@ -791,7 +791,7 @@
             let filtered = items.filter(item => {
                 const st = itemStates[item.id] || {};
                 const matchesSearch = !searchVal || 
-                    (item.title && item.title.toLowerCase().includes(searchVal)) ||
+                    (item.name && item.name.toLowerCase().includes(searchVal)) ||
                     (item.brand && item.brand.toLowerCase().includes(searchVal)) ||
                     (item.size && item.size.toLowerCase().includes(searchVal)) ||
                     (item.subCategory && item.subCategory.toLowerCase().includes(searchVal)) ||
@@ -943,10 +943,10 @@
                 <div class="item-card ${isSold}" id="card-${item.id}" data-category-name="${item.category || ''}" data-sub-category="${item.subCategory || ''}" data-size="${item.size || ''}">
                     <div class="item-image-container">
                         <button class="sold-icon-btn" onclick="openSaleModal(${item.id})" title="Marker som solgt"><img src="https://lh3.googleusercontent.com/d/19KRRSJU1UkueZhQLvNVuYlai2TyCKjKV" alt="Solgt"></button>
-                        <img src="${imgUrl}" alt="${item.title || ''}" loading="lazy">
+                        <img src="${imgUrl}" alt="${item.name || ''}" loading="lazy">
                     </div>
                     <div class="item-info">
-                        <div class="item-name">${item.title || 'Uden navn'}</div>
+                        <div class="item-name">${item.name || ''}</div>
                         <div class="item-meta">
                             <span>${item.brand || ''} • <b>${item.size || ''}</b></span>
                             <span>#${item.id}</span>
