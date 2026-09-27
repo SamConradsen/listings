@@ -595,10 +595,11 @@
                 const response = await fetch(scriptURL);
                 const data = await response.json();
                 if (data) {
-                    items = (data.items || []).map(item => ({
+                    // Mapper elementerne og sikrer at titlen læses fra samtlige mulige variationer (title, Title, navn)
+                    const rawItems = data.items || [];
+                    items = rawItems.map(item => ({
                         ...item,
-                        // TVING den til at hente titlen direkte fra JSON-feltet 'title' (kolonne S)
-                        title: item.title || ''
+                        title: item.title || item.Title || item.navn || ''
                     }));
                     
                     itemStates = {};
@@ -945,7 +946,7 @@
                         <img src="${imgUrl}" alt="${item.title || ''}" loading="lazy">
                     </div>
                     <div class="item-info">
-                        <div class="item-name">${item.title || ''}</div>
+                        <div class="item-name">${item.title || 'Uden navn'}</div>
                         <div class="item-meta">
                             <span>${item.brand || ''} • <b>${item.size || ''}</b></span>
                             <span>#${item.id}</span>
