@@ -2,134 +2,1222 @@
 <html lang="da">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sam's Listing Organizer</title>
-    <style>
-        /* Eksempel på stilopsætning til de stramme rammer og pop-up */
+	<link rel="icon" href="https://lh3.googleusercontent.com/d/17utevXlqfU3aBBPqflBYUEspJqtevt_4">
+	<style>
+        :root {
+            --vinted-color: #017782;
+            --tradera-color: #fef880;
+            --tise-color: #ff8f77;
+            --dba-color: #003366;
+            --marketplace-color: #1877f2;
+            --bought-color: #6c757d;
+            --primary-radius: 16px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(35, 35, 35, 0.92);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 13px;
+            z-index: 10000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+            text-align: center;
+            max-width: 90%;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        * { box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f6f8;
+           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            overflow-x: hidden;
         }
 
-        .sold-section {
-            max-width: 1400px;
-            margin: 0 auto;
+        .sticky-top-menu {
+            position: sticky;
+            top: 0;
+            background: rgba(248, 249, 250, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow-x: visible;
+            white-space: nowrap;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .sticky-top-menu::-webkit-scrollbar { display: none; }
+
+        .cat-bubble-wrapper {
+            position: relative;
+            display: inline-block;
+            overflow: visible !important;
+        }
+        .cat-bubble {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+        .cat-bubble:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .sold-bubble {
+            background: #e9ecef !important;
+            color: #444;
+            font-size: 9px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            border: 1px solid #dcdcdc;
         }
 
-        /* Grid / Række opsætning med max 6 varer pr. række */
-        .grid-row {
+        .sub-menu-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 10px;
+            min-width: 200px;
+            z-index: 99999;
+            border: 1px solid #eee;
+            animation: fadeIn 0.2s ease;
+            white-space: normal;
+        }
+        .sub-menu-dropdown.show { display: block; }
+        .sub-menu-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: #888;
+            padding: 4px 14px 8px 14px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #f1f3f5;
+            margin-bottom: 4px;
+        }
+        .sub-menu-item {
+            padding: 8px 14px;
+            font-size: 13px;
+            color: #444;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .sub-menu-item:hover { background: #f1f3f5; color: #000; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header { text-align: center; margin: 15px 0 10px 0; }
+        header img { max-width: 100%; height: auto; max-height: 100px; }
+
+        .controls-container {
+            display: flex; flex-direction: column; gap: 12px;
+            width: 100%; max-width: 1400px; margin: 0 auto 20px auto;
+            background: #fff; padding: 12px; border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .top-bar { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; position: relative; }
+        
+        .filter-dropdown-container { position: relative; user-select: none; }
+        .filter-dropdown-btn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: #fff; border: 1px solid #ccc; border-radius: 30px; cursor: pointer; font-size: 13px; }
+        .filter-dropdown-content { display: none; position: absolute; top: 100%; left: 0; margin-top: 5px; background: #fff; border: 1px solid #ddd; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 2000; padding: 12px; }
+        .filter-dropdown-content.show { display: block; }
+        .filter-grid-menu { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .filter-icon-option { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 12px; cursor: pointer; border: 1px solid transparent; transition: all 0.1s; }
+        .filter-icon-option:hover { background: #e9ecef; border-color: #adb5bd; }
+        .filter-icon-option img { width: 28px; height: 28px; object-fit: contain; }
+
+        select, input[type="text"], input[type="date"], input[type="number"] { padding: 8px 14px; border-radius: 20px; border: 1px solid #ccc; font-size: 13px; outline: none; background: #fff; }
+        select { cursor: pointer; }
+        input[type="text"] { flex-grow: 1; max-width: 280px; }
+        
+        .extra-tools-bar { display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 12px; }
+        
+        .stats-box { background: #fff; padding: 12px 15px; border-radius: 16px; border: 1px solid #e0e0e0; font-size: 13px; color: #333; width: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .stats-table { border-collapse: collapse; width: 100%; }
+        .stats-table th { font-weight: 600; color: #555; text-align: right; padding-bottom: 6px; padding-left: 15px; font-size: 13px; }
+        .stats-table th:first-child { text-align: left; padding-left: 0; }
+        .stats-table td { padding: 4px 0; text-align: right; padding-left: 15px; font-variant-numeric: tabular-nums; }
+        .stats-table td:first-child { text-align: left; padding-left: 0; display: flex; align-items: center; gap: 6px; }
+        .stats-table img { width: 18px; height: 18px; object-fit: cover; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .stats-footer { border-top: 1px solid #eaeaea; margin-top: 8px; padding-top: 8px; font-size: 12px; color: #444; display: flex; justify-content: space-between; align-items: center; }
+
+        .tools-right-group { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+        .reset-updates-btn { background: #f1f3f5; color: #495057; border: 1px solid #ced4da; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 11px; }
+        
+        .total-counter-display {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            background: #f1f3f5;
+            padding: 3px 10px;
+            border-radius: 12px;
+            border: 1px solid #dee2e6;
+        }
+
+        .floating-save-bubble {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 56px;
+            height: 56px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            border: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2000;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .floating-save-bubble:hover { transform: scale(1.08); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+        .floating-save-bubble img { width: 26px; height: 26px; object-fit: contain; }
+
+        .main-content { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 10px; }
+        .category-title { font-size: 15px; font-weight: 700; color: #444; margin: 20px 0 10px 0; }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            width: 100%;
+        }
+        @media (min-width: 768px) { .items-grid { grid-template-columns: repeat(5, 1fr); gap: 12px; } }
+        @media (min-width: 1200px) { .items-grid { grid-template-columns: repeat(6, 1fr); gap: 15px; } }
+
+        .sold-orders-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        /* NY LOGIK FOR KORREKTE BUNDLE-RAMMER OG RÆKKER (Max 6 varer pr række) */
+        .sold-row-wrapper {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
             gap: 15px;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        /* Bundle rammer der omslutter specifikke varer tæt */
-        .bundle-box {
-            border: 2px solid #333;
-            border-radius: 8px;
-            padding: 10px;
-            display: contents; /* Gør at de indlejrede elementer følger gridden direkte, men rammen omslutter dem visuelt */
-        }
-
-        /* Alternativ container-løsning for præcise rammer der bryder ud til højre/venstre */
-        .bundle-wrapper {
-            border: 2px solid #333;
-            border-radius: 8px;
-            padding: 10px;
-            background: #fff;
+            width: 100%;
             margin-bottom: 15px;
         }
 
-        /* Pop-up styling */
-        .modal {
-            display: none; /* Sættes til block ved åbning */
+        .bundle-box {
+            border: 2px solid #000;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            padding: 10px;
+            display: contents; /* Gør at kortene i gridden respekterer 6-kolonners layoutet, men omsluttes visuelt af boksen via grid-column */
+        }
+
+        /* Specifikke klasser til de tætsiddende rammer afhængigt af hvor mange varer bundlet fylder */
+        .bundle-span-1 { grid-column: span 1; border-radius: 16px; }
+        .bundle-span-2 { grid-column: span 2; border-radius: 16px; }
+        .bundle-span-3 { grid-column: span 3; border-radius: 16px; }
+        .bundle-span-4 { grid-column: span 4; border-radius: 16px; }
+        .bundle-span-5 { grid-column: span 5; border-radius: 16px; }
+        .bundle-span-6 { grid-column: span 6; border-radius: 16px; }
+
+        /* Ramme der starter på rækken og går ud af billedet til højre (ingen højre kant / afrunding) */
+        .bundle-break-right {
+            grid-column: span 6; /* Fylder resten af rækken ud til højre kant */
+            border-top-left-radius: 16px;
+            border-bottom-left-radius: 16px;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-right: none;
+        }
+
+        /* Ramme der kommer ind fra venstre på næste række (ingen venstre kant / afrunding) */
+        .bundle-break-left {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            border-top-right-radius: 16px;
+            border-bottom-right-radius: 16px;
+            border-left: none;
+        }
+
+        .sold-order-group {
+            display: contents;
+        }
+
+        .item-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .item-image-container {
+            width: 100%; 
+            aspect-ratio: 4 / 5;
+            background: #f0f0f0;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 6px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .item-image-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        
+        .item-card.sold .item-image-container img {
+            filter: grayscale(50%);
+            opacity: 0.75;
+        }
+        
+        .sold-icon-btn { position: absolute; top: 6px; left: 6px; background: rgba(255,255,255,0.9); border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; padding: 0; opacity: 0.6; transition: opacity 0.2s ease; }
+        .item-image-container:hover .sold-icon-btn { opacity: 1; }
+        .sold-icon-btn img { width: 14px; height: 14px; object-fit: contain; }
+
+        .item-info { font-size: 11px; margin-bottom: 6px; }
+        .item-name { font-weight: 600; height: 26px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 3px; }
+        .item-meta { display: flex; justify-content: space-between; color: #666; font-size: 10px; }
+        
+        .platforms-grid { 
+            display: grid; 
+            grid-template-columns: repeat(6, 1fr); 
+            gap: 4px; 
+            text-align: center; 
+            font-size: 10px; 
+            border-top: 1px solid #eee; 
+            padding-top: 6px; 
+        }
+
+        .platform-logo-btn {
+            width: 90%;
+            margin: 0 auto;
+            aspect-ratio: 1 / 1;
+            background: #ffffff;
+            border: none;
+            border-radius: 7px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.15s ease;
+            overflow: hidden;
+        }
+        .platform-logo-btn:hover { transform: translateY(-2px); }
+        .platform-logo-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .row-label { 
+            grid-column: span 6; 
+            font-size: 9px; 
+            font-weight: 700;
+            color: #666; 
+            letter-spacing: 0.5px;
+            margin-top: 6px; 
+            margin-bottom: 2px;
+        }
+
+        .platform-checkbox { appearance: none; -webkit-appearance: none; width: 14px; height: 14px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; margin: 3px auto 0 auto; display: block; position: relative; }
+        .platform-checkbox:checked::after { content: '✕'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 9px; font-weight: bold; color: #000; }
+        .cb-vinted:checked { background-color: var(--vinted-color); border-color: var(--vinted-color); }
+        .cb-tradera:checked { background-color: var(--tradera-color); border-color: var(--tradera-color); }
+        .cb-tise:checked { background-color: var(--tise-color); border-color: var(--tise-color); }
+        .cb-dba:checked { background-color: var(--dba-color); border-color: var(--dba-color); }
+        .cb-marketplace:checked { background-color: var(--marketplace-color); border-color: var(--marketplace-color); }
+        .cb-bought:checked { background-color: var(--bought-color); border-color: var(--bought-color); }
+
+        .sold-banner {
+            width: 100%;
+            height: 24px;
+            margin-top: 6px;
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eee;
+        }
+        .sold-banner img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .sold-meta-info {
+            margin-top: 6px;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border-top: 1px solid #eee;
+            padding-top: 6px;
+        }
+        .sold-row-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #444;
+            font-weight: 600;
+        }
+        .sold-row-item img {
+            width: 18px;
+            height: 18px;
+            object-fit: cover;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        .sold-shipping-link {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity 0.15s;
+        }
+        .sold-shipping-link:hover { opacity: 0.7; }
+
+        /* OPDRATERET POP-UP DESIGN: Mindre platform-logoer på én samlet række & korrekt rækkefølge */
+        .modal-overlay {
+            display: none;
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 100000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-card {
             background: #fff;
             padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            z-index: 1000;
-            width: 450px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: left;
+            max-height: 90vh;
+            overflow-y: auto;
         }
-
-        .platform-row {
+        .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; text-align: center; }
+        
+        /* Platforme samlet på ÉN række med mindre logoer */
+        .modal-platforms-row {
             display: flex;
-            gap: 10px;
-            align-items: center;
+            gap: 6px;
+            justify-content: space-between;
             margin-bottom: 15px;
         }
-
-        .platform-logo, .shipping-logo {
-            width: 32px;
-            height: 32px;
-            object-fit: contain;
-            cursor: pointer;
-            border: 2px solid transparent;
-            border-radius: 4px;
+        .modal-platform-option {
+            border: 2px solid #eee; 
+            border-radius: 8px; 
+            padding: 4px; 
+            cursor: pointer; 
+            background: #f8f9fa; 
+            transition: all 0.2s;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            width: 36px;
+            height: 36px;
         }
+        .modal-platform-option img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
+        .modal-platform-option:hover, .modal-platform-option.selected { border-color: #000; background: #e9ecef; }
 
-        .platform-logo.selected, .shipping-logo.selected {
-            border-color: #000;
-        }
+        /* Fragtfirmaer */
+        .modal-shipping-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 15px; }
+        .modal-shipping-option { border: 2px solid #eee; border-radius: 8px; padding: 6px; cursor: pointer; background: #f8f9fa; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; }
+        .modal-shipping-option img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+        .modal-shipping-option:hover, .modal-shipping-option.selected { border-color: #000; background: #e9ecef; }
+        
+        .modal-inputs { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .modal-inputs label { font-size: 11px; font-weight: 600; color: #555; }
+        .modal-inputs input { width: 100%; }
+        .modal-buttons { display: flex; gap: 10px; justify-content: space-between; align-items: center; }
+        .modal-btn { padding: 8px 16px; border-radius: 20px; border: none; font-size: 13px; cursor: pointer; font-weight: 600; }
+        .modal-btn-cancel { background: #e9ecef; color: #333; }
+        .modal-btn-unsolsold { background: #ff4d4d; color: #fff; display: none; }
+        .modal-btn-save { background: #000; color: #fff; }
+
+        .sold-section { margin-bottom: 50px; }
     </style>
 </head>
 <body>
 
-    <div class="sold-section">
-        <h2>Solgte varer</h2>
-        <!-- Her indsættes dynamisk rækker og tætsiddende bundle-rammer -->
+    <nav class="sticky-top-menu" id="stickyNav"></nav>
+
+    <header>
+        <img src="https://lh3.googleusercontent.com/d/1s6icU39_jsQk5CIyj87T-HLfssre2y5U" alt="Header Logo">
+    </header>
+
+    <div class="controls-container">
+        <div class="top-bar">
+            <div class="filter-dropdown-container">
+                <button class="filter-dropdown-btn" onclick="toggleFilterDropdown()">
+                    <span id="currentFilterIcon"><img src="https://lh3.googleusercontent.com/d/1cGZUk6k4pxoVXSPS4aOmMaN_iJ4dPyQU" style="width:18px; height:18px; vertical-align:middle; object-fit:contain;" alt=""></span> ▼
+                </button>
+                <div class="filter-dropdown-content" id="filterDropdownContent">
+                    <div class="filter-grid-menu">
+                        <div class="filter-icon-option" onclick="selectFilter('uploaded_vinted', '1VdXuN0PudeFxIJ590l6bhPtchavyCTCi')" title="Vinted_up TRUE"><img src="https://lh3.googleusercontent.com/d/1VdXuN0PudeFxIJ590l6bhPtchavyCTCi" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_vinted', '16u5fxUnP281EavM-VHRHkb-7H8z19u8o')" title="Vinted_up FALSE"><img src="https://lh3.googleusercontent.com/d/16u5fxUnP281EavM-VHRHkb-7H8z19u8o" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('updated_vinted', '1mu_FPjt5TBJFfXyEd8NKy0voitdcQZv-')" title="Vinted_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1mu_FPjt5TBJFfXyEd8NKy0voitdcQZv-" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_update_vinted', '1Wdo-lpD2u7GgJA-MCSzSurnwG54yFhSV')" title="Vinted_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1Wdo-lpD2u7GgJA-MCSzSurnwG54yFhSV" alt=""></div>
+
+                        <div class="filter-icon-option" onclick="selectFilter('uploaded_tradera', '1IW8lCw7_6z9tsnhQOeLgoukBQDIL3BpY')" title="Tradera_up TRUE"><img src="https://lh3.googleusercontent.com/d/1IW8lCw7_6z9tsnhQOeLgoukBQDIL3BpY" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_tradera', '1kWW_YorB9XkthkmsobVLnRT4XuDcBV79')" title="Tradera_up FALSE"><img src="https://lh3.googleusercontent.com/d/1kWW_YorB9XkthkmsobVLnRT4XuDcBV79" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('updated_tradera', '1NhQ_lrxoVFWpflitUBKqzKjeFjfF-af_')" title="Tradera_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1NhQ_lrxoVFWpflitUBKqzKjeFjfF-af_" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_update_tradera', '1PmZJY8lEqJRaeRjsh1_FMTWE795hITpt')" title="Tradera_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1PmZJY8lEqJRaeRjsh1_FMTWE795hITpt" alt=""></div>
+
+                        <div class="filter-icon-option" onclick="selectFilter('uploaded_tise', '1fefGg1dChY02fifWuQaMZ7dQLJ-0vGk-')" title="Tise_up TRUE"><img src="https://lh3.googleusercontent.com/d/1fefGg1dChY02fifWuQaMZ7dQLJ-0vGk-" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_tise', '1YlsBHulq-uX18FLQErAVPcmhFGDd38Vq')" title="Tise_up FALSE"><img src="https://lh3.googleusercontent.com/d/1YlsBHulq-uX18FLQErAVPcmhFGDd38Vq" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('updated_tise', '1PaZoFz2T1lKlFjCowiAI89zqDvlQzUUx')" title="Tise_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1PaZoFz2T1lKlFjCowiAI89zqDvlQzUUx" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_update_tise', '1M6MVtuysr4pOsDjdgklgKY2tOxJaV6AR')" title="Tise_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1M6MVtuysr4pOsDjdgklgKY2tOxJaV6AR" alt=""></div>
+
+                        <div class="filter-icon-option" onclick="selectFilter('uploaded_dba', '1O0f2Yl1oyQnt5pAlyZ-mSSm89Q67bSFT')" title="DBA_up TRUE"><img src="https://lh3.googleusercontent.com/d/1O0f2Yl1oyQnt5pAlyZ-mSSm89Q67bSFT" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_dba', '1qaVaiDvNJLiuqc0Z89qXUZ5xSPmsD0uK')" title="DBA_up FALSE"><img src="https://lh3.googleusercontent.com/d/1qaVaiDvNJLiuqc0Z89qXUZ5xSPmsD0uK" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('updated_dba', '1v-SN2HwIJgmQpK-rq7AU550UaExjth56')" title="DBA_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1v-SN2HwIJgmQpK-rq7AU550UaExjth56" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_update_dba', '1PmfhNlIH6JCSHRwi88jpp1OH27ofKzsj')" title="DBA_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1PmfhNlIH6JCSHRwi88jpp1OH27ofKzsj" alt=""></div>
+
+                        <div class="filter-icon-option" onclick="selectFilter('uploaded_marketplace', '13mjiXSf4i7Br36LblnCbGIH5qtZ-88dR')" title="Marketplace_up TRUE"><img src="https://lh3.googleusercontent.com/d/13mjiXSf4i7Br36LblnCbGIH5qtZ-88dR" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_marketplace', '125JG0PQs1qGLJAod7ew0jbkm1RszVkkJ')" title="Marketplace_up FALSE"><img src="https://lh3.googleusercontent.com/d/125JG0PQs1qGLJAod7ew0jbkm1RszVkkJ" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('updated_marketplace', '1Nm4oopogDH71oEzky0jVwLrSM8LMfdPb')" title="Marketplace_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1Nm4oopogDH71oEzky0jVwLrSM8LMfdPb" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_update_marketplace', '1eGdSC2q5_wG3ShnarRYEO6hKoLzP2IIL')" title="Marketplace_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1eGdSC2q5_wG3ShnarRYEO6hKoLzP2IIL" alt=""></div>
+
+                        <div class="filter-icon-option" onclick="selectFilter('uploaded_bought', '1OZDyqpmhh1O1oxGUhl2HNcIBpN_kYUA-')" title="Bought_up TRUE"><img src="https://lh3.googleusercontent.com/d/1OZDyqpmhh1O1oxGUhl2HNcIBpN_kYUA-" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_bought', '1zwMC4Dme4K8nOQseE5sXkCWB0p8addsq')" title="Bought_up FALSE"><img src="https://lh3.googleusercontent.com/d/1zwMC4Dme4K8nOQseE5sXkCWB0p8addsq" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('updated_bought', '1nHO1GCcFRZyETtdpBtRN9vNZJGy0XJGH')" title="Bought_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1nHO1GCcFRZyETtdpBtRN9vNZJGy0XJGH" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('missing_update_bought', '1izpCumFPltbP8cEg00wzMWA6nxTr2yYU')" title="Bought_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1izpCumFPltbP8cEg00wzMWA6nxTr2yYU" alt=""></div>
+
+                        <div class="filter-icon-option" onclick="selectFilter('all', '1cGZUk6k4pxoVXSPS4aOmMaN_iJ4dPyQU')" title="Show all"><img src="https://lh3.googleusercontent.com/d/1cGZUk6k4pxoVXSPS4aOmMaN_iJ4dPyQU" alt=""></div>
+                        <div class="filter-icon-option" onclick="selectFilter('partial_update', '1pIzJRBdTdWIra_vlKNhKrGT2ZS3wUE_k')" title="Work in Progress"><img src="https://lh3.googleusercontent.com/d/1pIzJRBdTdWIra_vlKNhKrGT2ZS3wUE_k" alt=""></div>
+                    </div>
+                </div>
+            </div>
+
+            <select id="sortSelect" onchange="renderItems()">
+                <option value="category_custom">Sorter efter kategori</option>
+                <option value="size">Sorter efter størrelse</option>
+                <option value="brand">Sorter efter mærke</option>
+                <option value="id">Sorter efter ID</option>
+            </select>
+
+            <input type="text" id="searchInput" placeholder="Søg..." oninput="renderItems()">
+        </div>
+
+        <div class="extra-tools-bar">
+            <div class="stats-box" id="statsContainer">Henter statistik...</div>
+            <div class="tools-right-group">
+                <div class="total-counter-display" id="totalCounterDisplay">Total varer: 0</div>
+                <button class="reset-updates-btn" onclick="confirmResetUpdates()">Nulstil opdateringer</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Pop-up vindue med rettet rækkefølge og små platform-logoer på én række -->
-    <div id="soldModal" class="modal">
-        <h3>Rediger salg</h3>
-        
-        <label>Platform:</label>
-        <div class="platform-row" id="platformRow">
-            <!-- Platform logoer i lille størrelse på én række -->
-            <img src="vinted-logo.png" class="platform-logo" alt="Vinted">
-            <img src="dba-logo.png" class="platform-logo" alt="DBA">
-            <img src="tradera-logo.png" class="platform-logo" alt="Tradera">
-        </div>
+    <div class="floating-save-bubble" onclick="saveAndSync()" title="Gem til Google Sheets">
+        <img src="https://lh3.googleusercontent.com/d/1ummUBoIj819X4mhvSn_UQkSl0CI-bklh" alt="Gem">
+    </div>
 
-        <label>Salgsdato:</label>
-        <input type="text" id="saleDate">
+    <div class="main-content" id="mainContainer"></div>
 
-        <label>Salgspris:</label>
-        <input type="text" id="salePrice">
+    <div class="main-content sold-section" id="soldSectionContainer">
+        <div class="category-title">Solgte varer</div>
+        <div class="sold-orders-container" id="soldContainer"></div>
+    </div>
 
-        <label>Købers brugernavn:</label>
-        <input type="text" id="buyerUsername">
+    <!-- OPDATERET POP-UP VINDUE (Rækkefølge og platform-logoer) -->
+    <div class="modal-overlay" id="saleModal">
+        <div class="modal-card">
+            <div class="modal-title" id="modalTitleText">Marker vare som solgt</div>
+            
+            <div class="modal-inputs">
+                <!-- 1. Platform -->
+                <div>
+                    <label>Platform:</label>
+                    <div class="modal-platforms-row">
+                        <div class="modal-platform-option" data-platform="vinted" onclick="selectModalPlatform('vinted')" title="Vinted"><img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM" alt="Vinted"></div>
+                        <div class="modal-platform-option" data-platform="tradera" onclick="selectModalPlatform('tradera')" title="Tradera"><img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn" alt="Tradera"></div>
+                        <div class="modal-platform-option" data-platform="tise" onclick="selectModalPlatform('tise')" title="Tise"><img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O" alt="Tise"></div>
+                        <div class="modal-platform-option" data-platform="dba" onclick="selectModalPlatform('dba')" title="DBA"><img src="https://lh3.googleusercontent.com/d/1r1Tp6i4cZcLN44YoWOcH52g5EmXNS8Ty" alt="DBA"></div>
+                        <div class="modal-platform-option" data-platform="marketplace" onclick="selectModalPlatform('marketplace')" title="Marketplace"><img src="https://lh3.googleusercontent.com/d/1aZ0cmmO6d5tAlEq_mb8kh4gY46P6EgZg" alt="Marketplace"></div>
+                        <div class="modal-platform-option" data-platform="bought" onclick="selectModalPlatform('bought')" title="Bought"><img src="https://lh3.googleusercontent.com/d/1y5Qz_HfyQFyYd5g8dJoztdh3-KhgBQoB" alt="Bought"></div>
+                    </div>
+                </div>
 
-        <label>Fragtfirma:</label>
-        <div class="platform-row" id="shippingRow">
-            <img src="dao-logo.png" class="shipping-logo" alt="DAO">
-            <img src="gls-logo.png" class="shipping-logo" alt="GLS">
-        </div>
+                <!-- 2. Salgsdato -->
+                <div>
+                    <label>Salgsdato:</label>
+                    <input type="date" id="modalSaleDate">
+                </div>
 
-        <label>Destination:</label>
-        <!-- Destination / flag -->
+                <!-- 3. Salgspris -->
+                <div>
+                    <label>Salgspris:</label>
+                    <input type="number" id="modalSalePrice" placeholder="F.eks. 150">
+                </div>
 
-        <label>Sporingsnummer:</label>
-        <input type="text" id="trackingNumber">
+                <!-- 4. Købers brugernavn -->
+                <div>
+                    <label>Købers brugernavn:</label>
+                    <input type="text" id="modalBuyer" placeholder="F.eks. brugernavn123" style="max-width:100%;">
+                </div>
 
-        <div class="modal-buttons" style="margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
-            <button id="cancelBtn">Annuller</button>
-            <button id="notSoldBtn">Ikke solgt</button>
-            <button id="saveBtn" style="background: #000; color: #fff;">Gem</button>
+                <!-- 5. Fragtfirma -->
+                <div>
+                    <label>Fragtfirma:</label>
+                    <div class="modal-shipping-grid">
+                        <div class="modal-shipping-option" data-shipping="PostNord" onclick="selectModalShipping('PostNord')" title="PostNord"><img src="https://lh3.googleusercontent.com/d/1S-kOgbjDGZ_oZHDTr4q3f9yu4pHwJjHd" alt="PostNord"></div>
+                        <div class="modal-shipping-option" data-shipping="DAO" onclick="selectModalShipping('DAO')" title="DAO"><img src="https://lh3.googleusercontent.com/d/1FlWhNM9wOQAG5Zv14nwoQazQemiDr4-N" alt="DAO"></div>
+                        <div class="modal-shipping-option" data-shipping="GLS" onclick="selectModalShipping('GLS')" title="GLS"><img src="https://lh3.googleusercontent.com/d/1re8v1E5OUdFW9IH30xleTYhju3Z-YSTx" alt="GLS"></div>
+                        <div class="modal-shipping-option" data-shipping="Instabox" onclick="selectModalShipping('Instabox')" title="Instabox"><img src="https://lh3.googleusercontent.com/d/1wA2dxUH0ohjnp-hPPUpsWnDquiaDyTl9" alt="Instabox"></div>
+                        <div class="modal-shipping-option" data-shipping="Bring" onclick="selectModalShipping('Bring')" title="Bring"><img src="https://lh3.googleusercontent.com/d/1EZ8n_L73USyKXR977WvpJJrnwEm7OmYF" alt="Bring"></div>
+                        <div class="modal-shipping-option" data-shipping="Pick up" onclick="selectModalShipping('Pick up')" title="Pick up"><img src="https://lh3.googleusercontent.com/d/1xSmh1G9Iv4AVEzz9hZTn47RascL1Zuhe" alt="Pick up"></div>
+                    </div>
+                </div>
+
+                <!-- 6. Sporingsnummer -->
+                <div>
+                    <label>Sporingsnummer:</label>
+                    <input type="text" id="modalTracking" placeholder="Indtast sporingsnummer" style="max-width:100%;">
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeSaleModal()">Annuller</button>
+                <button class="modal-btn modal-btn-unsolsold" id="modalUnsoldBtn" onclick="markAsUnsoldFromModal()">Ikke solgt</button>
+                <button class="modal-btn modal-btn-save" onclick="saveSaleModal()">Gem</button>
+            </div>
         </div>
     </div>
 
-    <script>
-        // Logik til at gruppere varer efter salgsdato og køber, 
-        // samt styre at rammerne klipper korrekt ved ryk til næste række.
-        console.log("Klar til integration i din eksisterende løsning.");
+<script>
+        const categoriesData = [
+            { name: "Dresses & skirts", subs: ["Strapless dress", "Mini dress", "Tank dress", "Part sleeve dress", "Full sleeve dress", "Mini skirt", "Maxi skirt"] },
+            { name: "Tops & t-shirts", subs: ["Bandeau top", "Crop strap top", "Strap top", "Crop tanktop", "Tanktops", "Crop tee", "Tee"] },
+            { name: "Long sleeves & blouses", subs: ["Blouse", "Crop long sleeve", "Long sleeve", "Button shirt", "Sweatshirt"] },
+            { name: "Tights, jeans & shorts", subs: ["Short tights", "Tights", "Shorts", "Jeans", "Pants"] },
+            { name: "Jackets, blazers & hoodies", subs: ["Zip hoodie", "Hoodie", "Blazer", "Short jacket", "Long jacket"] },
+            { name: "Playsuits, bodies & sets", subs: ["Sleeveless bodysuit", "Full sleeve bodysuit", "Playsuit", "Jumpsuit", "Sweat set", "Onepiece", "Pajamas set"] },
+            { name: "Underwear & swimwear", subs: ["Bralette", "Sports bra", "Bikini top", "Bikini set", "Shapewear"] },
+            { name: "Mens", subs: ["Mens top", "Mens bottom"] },
+            { name: "Footwear", subs: ["Sandals", "Heels", "Heeled boots", "Sneakers", "Boots", "Slippers"] },
+            { name: "Beauty", subs: ["Makeup", "Skincare", "Health", "Hair products", "Nails", "Tools", "Miscellaneous"] },
+            { name: "Accessories", subs: ["Beanies", "Scarves", "Bags", "Accessories"] },
+            { name: "Jewelry", subs: ["Necklaces", "Bracelets", "Rings", "Earrings", "Tunnels", "Plugs"] },
+			{ name: "Home", subs: ["Furniture", "Interior", "Kitchen", "Holidays", "Party", "Pets", "Other"] },
+			{ name: "Entertainment", subs: ["Books", "Crafts", "Other"] }
+        ];
+
+        const sizeOrder = ["XXS", "EU 32", "XS", "EU 34", "XS/S", "S", "EU 36", "S/M", "M", "EU 38", "M/L", "L", "EU 40", "L/XL", "XL", "EU 42", "XL/XXL", "XXL", "EU 44", "XXXL", "EU 46", "EU 48", "EU 50"];
+
+        const scriptURL = "https://script.google.com/macros/s/AKfycbxeo26AS1wMO2itVnyiSXRlvrfUo2ei0UASOa88xiCOwT2QGJTmJ___WqTC6IxILIkk/exec";
+
+        let itemStates = {};
+        let items = [];
+        let currentFilter = 'all';
+        let saveTimeout = null;
+        let activeModalItemId = null;
+        let selectedModalPlatformName = '';
+        let selectedModalShippingName = '';
+
+        const bannerImageIds = {
+            vinted: "1RQnjA5kqV4_QtAh6PLshhiox1TZKZtyb",
+            tradera: "1TiA7NniIpgNR_TeRK4KFkGgTKWA4xzvf",
+            tise: "1iBMenFqcOouv_bh0s7J2ifkR53KFQBNx",
+            dba: "18pdHBIVxWvQKdn3XCtezYNioj2cB1E9w",
+            marketplace: "14Lm0UBT2770o-TWXOrOzM_qYrgcgjdk0",
+            bought: "1491dztR4QJ4hmoKI93Ec_Y5-jdlGJTpb"
+        };
+
+        const shippingLogoIds = {
+            "PostNord": "1S-kOgbjDGZ_oZHDTr4q3f9yu4pHwJjHd",
+            "DAO": "1FlWhNM9wOQAG5Zv14nwoQazQemiDr4-N",
+            "GLS": "1re8v1E5OUdFW9IH30xleTYhju3Z-YSTx",
+            "Instabox": "1wA2dxUH0ohjnp-hPPUpsWnDquiaDyTl9",
+            "Bring": "1EZ8n_L73USyKXR977WvpJJrnwEm7OmYF",
+            "Pick up": "1xSmh1G9Iv4AVEzz9hZTn47RascL1Zuhe"
+        };
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+            return dateStr;
+        }
+
+        function formatCurrency(priceVal) {
+            if (priceVal === '' || priceVal === null || priceVal === undefined) return '';
+            const num = parseFloat(priceVal);
+            if (isNaN(num)) return priceVal + ' kr.';
+            return num.toLocaleString('da-DK', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kr.';
+        }
+
+        async function loadCloudData() {
+            try {
+                const response = await fetch(scriptURL + "?action=data");
+                const data = await response.json();
+                if (data) {
+                    const rawItems = data.items || [];
+                    items = rawItems.map(item => ({
+                        ...item,
+                        title: item.name || '',
+                        subCategory: item.subCategory || item.subcategory || ''
+                    }));
+                    
+                    itemStates = {};
+                    const rawStates = data.states || {};
+                    Object.keys(rawStates).forEach(id => {
+                        const st = rawStates[id] || {};
+                        itemStates[id] = {
+                            sold: Boolean(st.sold),
+                            platform: st.platform || '',
+                            saleDate: st.saleDate || '',
+                            salePrice: st.salePrice || '',
+                            shipping: st.shipping || '',
+                            tracking: st.tracking || '',
+                            buyerUsername: st.buyerUsername || '',
+                            vinted_up: Boolean(st.vinted_up),
+                            vinted_mod: Boolean(st.vinted_mod),
+                            tradera_up: Boolean(st.tradera_up),
+                            tradera_mod: Boolean(st.tradera_mod),
+                            tise_up: Boolean(st.tise_up),
+                            tise_mod: Boolean(st.tise_mod),
+                            dba_up: Boolean(st.dba_up),
+                            dba_mod: Boolean(st.dba_mod),
+                            marketplace_up: Boolean(st.marketplace_up),
+                            marketplace_mod: Boolean(st.marketplace_mod),
+                            bought_up: Boolean(st.bought_up),
+                            bought_mod: Boolean(st.bought_mod)
+                        };
+                    });
+                }
+            } catch (error) {
+                console.error("Fejl ved indlæsning af data:", error);
+            }
+        }
+
+        function saveAndSync() {
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({ states: itemStates })
+            }).then(() => showToast("Gemt til Google Sheets!")).catch(err => console.error('Synkroniseringsfejl:', err));
+        }
+
+        function triggerAutoSave() {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => { saveAndSync(); }, 600);
+        }
+
+        function toggleFilterDropdown() {
+            document.getElementById('filterDropdownContent').classList.toggle('show');
+        }
+
+        function selectFilter(filterVal, iconId) {
+            currentFilter = filterVal;
+            document.getElementById('currentFilterIcon').innerHTML = `<img src="https://lh3.googleusercontent.com/d/${iconId}" style="width:18px; height:18px; vertical-align:middle; object-fit:contain;" alt="">`;
+            document.getElementById('filterDropdownContent').classList.remove('show');
+            renderItems();
+        }
+
+        function renderTopNav() {
+            const nav = document.getElementById('stickyNav');
+            let html = '';
+            const totalCategories = categoriesData.length;
+
+            categoriesData.forEach((catObj, index) => {
+                const ratio = index / Math.max(1, totalCategories - 1);
+                const r = Math.round(135 - ratio * (135 - 0));
+                const g = Math.round(206 - ratio * (206 - 80));
+                const b = Math.round(250 - ratio * (250 - 160));
+                const bgColor = `rgb(${r}, ${g}, ${b})`;
+
+                html += `
+                    <div class="cat-bubble-wrapper">
+                        <div class="cat-bubble" style="background-color: ${bgColor};" onclick="handleCategorySingleClick(event, '${catObj.name}')" ondblclick="scrollToCategory('${catObj.name}')" title="${catObj.name}"></div>
+                        <div class="sub-menu-dropdown">
+                            <div class="sub-menu-title">${catObj.name}</div>
+                            <div class="sub-menu-item" onclick="scrollToCategory('${catObj.name}')"><b>Se hele kategorien</b></div>
+                            <div style="border-top: 1px solid #eee; margin: 4px 0;"></div>
+                            ${catObj.subs.map(sub => `<div class="sub-menu-item" onclick="scrollToSubCategory('${catObj.name}', '${sub}')">${sub}</div>`).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `<div class="cat-bubble sold-bubble" onclick="scrollToSold()" title="Solgte varer">SOLD</div>`;
+            nav.innerHTML = html;
+        }
+
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.cat-bubble-wrapper')) {
+                document.querySelectorAll('.sub-menu-dropdown').forEach(d => d.classList.remove('show'));
+            }
+        });
+
+        function handleCategorySingleClick(event, catName) {
+            const wrapper = event.currentTarget.closest('.cat-bubble-wrapper');
+            const dropdown = wrapper.querySelector('.sub-menu-dropdown');
+            document.querySelectorAll('.sub-menu-dropdown').forEach(d => { if (d !== dropdown) d.classList.remove('show'); });
+            dropdown.classList.toggle('show');
+        }
+
+        function scrollToCategory(catName) {
+            document.querySelectorAll('.sub-menu-dropdown').forEach(d => d.classList.remove('show'));
+            const el = document.querySelector(`.item-card[data-category-name="${catName}"]`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function scrollToSubCategory(catName, subName) {
+            document.querySelectorAll('.sub-menu-dropdown').forEach(d => d.classList.remove('show'));
+            document.getElementById('sortSelect').value = 'category_custom';
+            document.getElementById('searchInput').value = '';
+            currentFilter = 'all';
+            renderItems();
+
+            setTimeout(() => {
+                const el = document.querySelector(`.item-card[data-sub-category="${subName}"]`);
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                else scrollToCategory(catName);
+            }, 50);
+        }
+
+        function scrollToSold() {
+            const el = document.getElementById('soldSectionContainer');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function confirmResetUpdates() {
+            if (confirm("Vil du nulstille alle opdateringer?")) {
+                Object.keys(itemStates).forEach(id => {
+                    if (itemStates[id]) {
+                        ['vinted', 'tradera', 'tise', 'dba', 'marketplace', 'bought'].forEach(p => {
+                            itemStates[id][p + '_mod'] = false;
+                        });
+                    }
+                });
+                renderItems();
+                triggerAutoSave();
+            }
+        }
+
+        function renderItems() {
+            let activeTotal = 0, soldTotal = 0;
+            let counts = { vinted: [0,0], tradera: [0,0], tise: [0,0], dba: [0,0], marketplace: [0,0], bought: [0,0] };
+
+            items.forEach(item => {
+                const st = itemStates[item.id] || {};
+                if (st.sold) {
+                    soldTotal++;
+                } else {
+                    activeTotal++;
+                    if (st.vinted_up) counts.vinted[0]++;
+                    if (st.vinted_mod) counts.vinted[1]++;
+                    if (st.tradera_up) counts.tradera[0]++;
+                    if (st.tradera_mod) counts.tradera[1]++;
+                    if (st.tise_up) counts.tise[0]++;
+                    if (st.tise_mod) counts.tise[1]++;
+                    if (st.dba_up) counts.dba[0]++;
+                    if (st.dba_mod) counts.dba[1]++;
+                    if (st.marketplace_up) counts.marketplace[0]++;
+                    if (st.marketplace_mod) counts.marketplace[1]++;
+                    if (st.bought_up) counts.bought[0]++;
+                    if (st.bought_mod) counts.bought[1]++;
+                }
+            });
+
+            const totalItemsCount = items.length;
+            const maxId = items.length > 0 ? Math.max(...items.map(i => Number(i.id) || 0)) : 0;
+            document.getElementById('totalCounterDisplay').innerHTML = `Total varer: ${totalItemsCount} (Højeste ID: ${maxId})`;
+
+            document.getElementById('statsContainer').innerHTML = `
+                <table class="stats-table">
+                    <tr><th></th><th>Uploaded</th><th>Opdateret</th></tr>
+                    <tr><td><img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM"> Vinted:</td><td>${counts.vinted[0]}</td><td>${counts.vinted[1]}</td></tr>
+                    <tr><td><img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn"> Tradera:</td><td>${counts.tradera[0]}</td><td>${counts.tradera[1]}</td></tr>
+                    <tr><td><img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O"> Tise:</td><td>${counts.tise[0]}</td><td>${counts.tise[1]}</td></tr>
+                    <tr><td><img src="https://lh3.googleusercontent.com/d/1r1Tp6i4cZcLN44YoWOcH52g5EmXNS8Ty"> DBA:</td><td>${counts.dba[0]}</td><td>${counts.dba[1]}</td></tr>
+                    <tr><td><img src="https://lh3.googleusercontent.com/d/1aZ0cmmO6d5tAlEq_mb8kh4gY46P6EgZg"> Marketplace:</td><td>${counts.marketplace[0]}</td><td>${counts.marketplace[1]}</td></tr>
+                    <tr><td><img src="https://lh3.googleusercontent.com/d/1y5Qz_HfyQFyYd5g8dJoztdh3-KhgBQoB"> Bought:</td><td>${counts.bought[0]}</td><td>${counts.bought[1]}</td></tr>
+                </table>
+                <div class="stats-footer">
+                    <span>Total aktive: ${activeTotal}</span>
+                    <span>Solgt: ${soldTotal}</span>
+                </div>
+            `;
+
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            const sortType = document.getElementById('sortSelect').value;
+
+            let filtered = items.filter(item => {
+                const st = itemStates[item.id] || {};
+                const matchesSearch = !searchVal || 
+                    (item.name && item.name.toLowerCase().includes(searchVal)) ||
+                    (item.brand && item.brand.toLowerCase().includes(searchVal)) ||
+                    (item.size && item.size.toLowerCase().includes(searchVal)) ||
+                    (item.subCategory && item.subCategory.toLowerCase().includes(searchVal)) ||
+                    (item.category && item.category.toLowerCase().includes(searchVal)) ||
+                    (item.id && item.id.toString().toLowerCase().includes(searchVal));
+
+                if (!matchesSearch) return false;
+
+                if (currentFilter.startsWith('uploaded_')) return st[currentFilter.replace('uploaded_', '') + '_up'];
+                if (currentFilter.startsWith('missing_upload_')) return !st[currentFilter.replace('missing_upload_', '') + '_up'];
+                if (currentFilter.startsWith('updated_')) return st[currentFilter.replace('updated_', '') + '_mod'];
+                if (currentFilter.startsWith('missing_update_')) return !st[currentFilter.replace('missing_update_', '') + '_mod'];
+
+                if (currentFilter === 'partial_update') {
+                    const mods = ['vinted', 'tradera', 'tise', 'dba', 'marketplace', 'bought'].map(p => st[p + '_mod'] === true);
+                    const trueCount = mods.filter(Boolean).length;
+                    return trueCount >= 1 && trueCount < 6;
+                }
+                return true;
+            });
+
+            let activeItems = filtered.filter(i => !(itemStates[i.id] && itemStates[i.id].sold));
+            let soldItems = filtered.filter(i => (itemStates[i.id] && itemStates[i.id].sold));
+
+            soldItems.sort((a, b) => {
+                const dateA = (itemStates[a.id] && itemStates[a.id].saleDate) ? new Date(itemStates[a.id].saleDate) : new Date(0);
+                const dateB = (itemStates[b.id] && itemStates[b.id].saleDate) ? new Date(itemStates[b.id].saleDate) : new Date(0);
+                return dateB - dateA;
+            });
+
+            if (sortType === 'category_custom') {
+                activeItems.sort((a, b) => {
+                    let catIdxA = categoriesData.findIndex(c => c.name === a.category);
+                    let catIdxB = categoriesData.findIndex(c => c.name === b.category);
+                    if (catIdxA === -1) catIdxA = 999;
+                    if (catIdxB === -1) catIdxB = 999;
+                    if (catIdxA !== catIdxB) return catIdxA - catIdxB;
+
+                    let subList = categoriesData[catIdxA] ? categoriesData[catIdxA].subs : [];
+                    return (subList.indexOf(a.subCategory) === -1 ? 999 : subList.indexOf(a.subCategory)) - 
+                           (subList.indexOf(b.subCategory) === -1 ? 999 : subList.indexOf(b.subCategory));
+                });
+            } else if (sortType === 'size') {
+                activeItems.sort((a, b) => (sizeOrder.indexOf(a.size) === -1 ? 999 : sizeOrder.indexOf(a.size)) - (sizeOrder.indexOf(b.size) === -1 ? 999 : sizeOrder.indexOf(b.size)));
+            } else if (sortType === 'brand') {
+                activeItems.sort((a, b) => (a.brand || "").localeCompare(b.brand || ""));
+            } else if (sortType === 'id') {
+                activeItems.sort((a, b) => a.id - b.id);
+            }
+
+            document.getElementById('mainContainer').innerHTML = `<div class="items-grid">${activeItems.map(i => createCardHTML(i)).join('')}</div>`;
+            
+            // Gruppér solgte varer efter salgsdato og køber
+            let soldGroupsMap = {};
+            soldItems.forEach(item => {
+                const st = itemStates[item.id] || {};
+                const sDate = st.saleDate || 'ingen-dato';
+                const bUser = (st.buyerUsername || 'ingen-køber').trim().toLowerCase();
+                const groupKey = `${sDate}_${bUser}`;
+
+                if (!soldGroupsMap[groupKey]) {
+                    soldGroupsMap[groupKey] = [];
+                }
+                soldGroupsMap[groupKey].push(item);
+            });
+
+            // Byg rækker og tætsiddende rammer for solgte bundles, fordelt over maks 6 varer pr. række
+            let soldHtml = '';
+            Object.keys(soldGroupsMap).forEach(key => {
+                const groupItems = soldGroupsMap[key];
+                let remainingItems = [...groupItems];
+
+                while (remainingItems.length > 0) {
+                    // Beregn hvor mange pladser der er tilbage på den aktuelle række (totalt 6 varer pr række)
+                    // For enkelhedens skyld spænder vi et bundle ud på rækken:
+                    const itemsInThisRow = remainingItems.slice(0, 6);
+                    const count = itemsInThisRow.length;
+
+                    // Tjek om et enkelt bundle strækker sig over flere rækker (mere end 6 varer totalt i bundlet)
+                    const isMultiRow = groupItems.length > 6;
+                    const isFirstRowOfMulti = isMultiRow && remainingItems.length === groupItems.length;
+                    const isSubsequentRow = isMultiRow && remainingItems.length < groupItems.length;
+
+                    let boxClass = `bundle-span-${count}`;
+                    if (isFirstRowOfMulti && count === 6) {
+                        boxClass = 'bundle-break-right';
+                    } else if (isSubsequentRow) {
+                        boxClass = `bundle-span-${count} bundle-break-left`;
+                    }
+
+                    soldHtml += `
+                        <div class="sold-row-wrapper">
+                            <div class="bundle-box ${boxClass}">
+                                ${itemsInThisRow.map(i => createCardHTML(i)).join('')}
+                            </div>
+                        </div>
+                    `;
+
+                    remainingItems = remainingItems.slice(6);
+                }
+            });
+
+            document.getElementById('soldContainer').innerHTML = soldHtml;
+        }
+
+        function createCardHTML(item) {
+            const st = itemStates[item.id] || {};
+            const isSold = st.sold ? 'sold' : '';
+            const imgUrl = item.image ? `https://lh3.googleusercontent.com/d/${item.image}` : '';
+
+            let bottomSection = '';
+            if (st.sold) {
+                const bannerId = bannerImageIds[st.platform];
+                const bannerHtml = bannerId ? `<div class="sold-banner"><img src="https://lh3.googleusercontent.com/d/${bannerId}" alt="${st.platform}"></div>` : '';
+                
+                let buyerHtml = '';
+                if (st.buyerUsername) {
+                    buyerHtml = `
+                        <div class="sold-row-item">
+                            <img src="https://lh3.googleusercontent.com/d/1gk0EVPng0AbQjaoU5TZQItTC795zanvF" alt="Bruger">
+                            <span>${st.buyerUsername}</span>
+                        </div>
+                    `;
+                }
+
+                let shippingHtml = '';
+                if (st.shipping && shippingLogoIds[st.shipping]) {
+                    const shipLogoId = shippingLogoIds[st.shipping];
+                    const trackingNo = st.tracking || '';
+                    let trackUrl = '#';
+                    
+                    if (trackingNo) {
+                        if (st.shipping === 'PostNord') trackUrl = `https://www.postnord.dk/varktojer/track-trace/?shipmentId=${trackingNo}`;
+                        else if (st.shipping === 'DAO') trackUrl = `https://dao.as/find-din-pakke/#q=${trackingNo}`;
+                        else if (st.shipping === 'GLS') trackUrl = `https://gls-group.eu/DK/da/find-pakke/?match=${trackingNo}`;
+                        else if (st.shipping === 'Instabox') trackUrl = `https://track.instabox.com/da/${trackingNo}/verify`;
+                        else if (st.shipping === 'Bring') trackUrl = `https://tracking.bring.com/tracking/${trackingNo}`;
+                    }
+
+                    shippingHtml = `
+                        <div class="sold-row-item">
+                            <a href="${trackUrl}" target="_blank" class="sold-shipping-link" title="Spor pakke">
+                                <img src="https://lh3.googleusercontent.com/d/${shipLogoId}" alt="${st.shipping}">
+                                <span>${trackingNo}</span>
+                            </a>
+                        </div>
+                    `;
+                }
+
+                let saleDetailsHtml = '';
+                if (st.saleDate || st.salePrice) {
+                    const formattedDate = formatDate(st.saleDate);
+                    const formattedPrice = formatCurrency(st.salePrice);
+                    saleDetailsHtml = `
+                        <div class="sold-row-item" style="justify-content: space-between; font-size: 10px; color: #666; margin-top: 2px;">
+                            <span>${formattedDate}</span>
+                            <span><b>${formattedPrice}</b></span>
+                        </div>
+                    `;
+                }
+
+                bottomSection = `
+                    ${bannerHtml}
+                    <div class="sold-meta-info">
+                        ${buyerHtml}
+                        ${shippingHtml}
+                        ${saleDetailsHtml}
+                    </div>
+                `;
+            } else {
+                bottomSection = `
+                    <div class="platforms-grid">
+                        <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'vinted')"><img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM"></div>
+                        <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'tradera')"><img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn"></div>
+                        <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'tise')"><img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O"></div>
+                        <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'dba')"><img src="https://lh3.googleusercontent.com/d/1r1Tp6i4cZcLN44YoWOcH52g5EmXNS8Ty"></div>
+                        <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'marketplace')"><img src="https://lh3.googleusercontent.com/d/1aZ0cmmO6d5tAlEq_mb8kh4gY46P6EgZg"></div>
+                        <div class="platform-logo-btn" onclick="openPlatformLink(${item.id}, 'bought')"><img src="https://lh3.googleusercontent.com/d/1y5Qz_HfyQFyYd5g8dJoztdh3-KhgBQoB"></div>
+
+                        <div class="row-label">UPLOADET</div>
+                        <div><input type="checkbox" class="platform-checkbox cb-vinted" ${st.vinted_up?'checked':''} onchange="updateState(${item.id}, 'vinted_up', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-tradera" ${st.tradera_up?'checked':''} onchange="updateState(${item.id}, 'tradera_up', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-tise" ${st.tise_up?'checked':''} onchange="updateState(${item.id}, 'tise_up', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-dba" ${st.dba_up?'checked':''} onchange="updateState(${item.id}, 'dba_up', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-marketplace" ${st.marketplace_up?'checked':''} onchange="updateState(${item.id}, 'marketplace_up', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-bought" ${st.bought_up?'checked':''} onchange="updateState(${item.id}, 'bought_up', this.checked)"></div>
+
+                        <div class="row-label">OPDATERET</div>
+                        <div><input type="checkbox" class="platform-checkbox cb-vinted" ${st.vinted_mod?'checked':''} onchange="updateState(${item.id}, 'vinted_mod', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-tradera" ${st.tradera_mod?'checked':''} onchange="updateState(${item.id}, 'tradera_mod', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-tise" ${st.tise_mod?'checked':''} onchange="updateState(${item.id}, 'tise_mod', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-dba" ${st.dba_mod?'checked':''} onchange="updateState(${item.id}, 'dba_mod', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-marketplace" ${st.marketplace_mod?'checked':''} onchange="updateState(${item.id}, 'marketplace_mod', this.checked)"></div>
+                        <div><input type="checkbox" class="platform-checkbox cb-bought" ${st.bought_mod?'checked':''} onchange="updateState(${item.id}, 'bought_mod', this.checked)"></div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="item-card ${isSold}" id="card-${item.id}" data-category-name="${item.category || ''}" data-sub-category="${item.subCategory || ''}" data-size="${item.size || ''}">
+                    <div class="item-image-container">
+                        <button class="sold-icon-btn" onclick="openSaleModal(${item.id})" title="Marker som solgt"><img src="https://lh3.googleusercontent.com/d/19KRRSJU1UkueZhQLvNVuYlai2TyCKjKV" alt="Solgt"></button>
+                        <img src="${imgUrl}" alt="${item.name || ''}" loading="lazy">
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">${item.name || 'INDHOLD IKKE HENTET KORREKT'}</div>
+                        <div class="item-meta">
+                            <span>${item.brand || ''} • <b>${item.size || ''}</b></span>
+                            <span>#${item.id}</span>
+                        </div>
+                    </div>
+                    ${bottomSection}
+                </div>`;
+        }
+
+        function openSaleModal(id) {
+            activeModalItemId = id;
+            const st = itemStates[id] || {};
+            selectedModalPlatformName = st.platform || '';
+            selectedModalShippingName = st.shipping || '';
+            
+            const unsoldBtn = document.getElementById('modalUnsoldBtn');
+            const titleText = document.getElementById('modalTitleText');
+
+            if (st.sold) {
+                titleText.textContent = "Rediger salgsdetaljer";
+                unsoldBtn.style.display = "block";
+            } else {
+                titleText.textContent = "Marker vare som solgt";
+                unsoldBtn.style.display = "none";
+            }
+
+            document.getElementById('modalSaleDate').value = st.saleDate || new Date().toISOString().split('T')[0];
+            document.getElementById('modalSalePrice').value = st.salePrice || '';
+            document.getElementById('modalTracking').value = st.tracking || '';
+            document.getElementById('modalBuyer').value = st.buyerUsername || '';
+            
+            document.querySelectorAll('.modal-platform-option').forEach(el => {
+                if (el.dataset.platform === selectedModalPlatformName) el.classList.add('selected');
+                else el.classList.remove('selected');
+            });
+
+            document.querySelectorAll('.modal-shipping-option').forEach(el => {
+                if (el.dataset.shipping === selectedModalShippingName) el.classList.add('selected');
+                else el.classList.remove('selected');
+            });
+
+            document.getElementById('saleModal').classList.add('show');
+        }
+
+        function selectModalPlatform(platform) {
+            selectedModalPlatformName = platform;
+            document.querySelectorAll('.modal-platform-option').forEach(el => {
+                if (el.dataset.platform === platform) el.classList.add('selected');
+                else el.classList.remove('selected');
+            });
+        }
+
+        function selectModalShipping(shipping) {
+            selectedModalShippingName = shipping;
+            document.querySelectorAll('.modal-shipping-option').forEach(el => {
+                if (el.dataset.shipping === shipping) el.classList.add('selected');
+                else el.classList.remove('selected');
+            });
+        }
+
+        function closeSaleModal() {
+            document.getElementById('saleModal').classList.remove('show');
+            activeModalItemId = null;
+        }
+
+        function saveSaleModal() {
+            if (!activeModalItemId) return;
+            if (!itemStates[activeModalItemId]) itemStates[activeModalItemId] = {};
+            
+            itemStates[activeModalItemId].sold = true;
+            itemStates[activeModalItemId].platform = selectedModalPlatformName;
+            itemStates[activeModalItemId].shipping = selectedModalShippingName;
+            itemStates[activeModalItemId].saleDate = document.getElementById('modalSaleDate').value;
+            itemStates[activeModalItemId].salePrice = document.getElementById('modalSalePrice').value;
+            itemStates[activeModalItemId].tracking = document.getElementById('modalTracking').value;
+            itemStates[activeModalItemId].buyerUsername = document.getElementById('modalBuyer').value;
+
+            closeSaleModal();
+            renderItems();
+            triggerAutoSave();
+        }
+
+        function markAsUnsoldFromModal() {
+            if (!activeModalItemId) return;
+            if (!itemStates[activeModalItemId]) itemStates[activeModalItemId] = {};
+
+            itemStates[activeModalItemId].sold = false;
+            itemStates[activeModalItemId].platform = '';
+            itemStates[activeModalItemId].shipping = '';
+            itemStates[activeModalItemId].saleDate = '';
+            itemStates[activeModalItemId].salePrice = '';
+            itemStates[activeModalItemId].tracking = '';
+            itemStates[activeModalItemId].buyerUsername = '';
+
+            closeSaleModal();
+            renderItems();
+            triggerAutoSave();
+        }
+
+        function updateState(id, field, value) {
+            if (!itemStates[id]) itemStates[id] = {};
+            itemStates[id][field] = value;
+            renderItems();
+            triggerAutoSave();
+        }
+
+        function openPlatformLink(itemId, platform) {
+            const item = items.find(i => i.id == itemId);
+            if (!item) return;
+            let link = item[platform + 'Link'] || '';
+            if (link) window.open(link, '_blank');
+            else showToast(`Intet link fundet for ${platform.toUpperCase()}`);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = message;
+            toast.classList.add('show');
+            if (window.toastTimer) clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        window.onload = async function() {
+            renderTopNav();
+            await loadCloudData();
+            renderItems();
+        };
     </script>
+<div id="toast" class="toast"></div>
 </body>
 </html>
