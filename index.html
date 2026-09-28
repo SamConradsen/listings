@@ -226,7 +226,7 @@
             width: 100%;
         }
 
-        /* NY LOGIK FOR KORREKTE BUNDLE-RAMMER OG RÆKKER (Max 6 varer pr række) */
+        /* 6-kolonners række til solgte varer */
         .sold-row-wrapper {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
@@ -240,10 +240,9 @@
             background: #fff;
             box-shadow: 0 2px 10px rgba(0,0,0,0.06);
             padding: 10px;
-            display: contents; /* Gør at kortene i gridden respekterer 6-kolonners layoutet, men omsluttes visuelt af boksen via grid-column */
+            display: contents;
         }
 
-        /* Specifikke klasser til de tætsiddende rammer afhængigt af hvor mange varer bundlet fylder */
         .bundle-span-1 { grid-column: span 1; border-radius: 16px; }
         .bundle-span-2 { grid-column: span 2; border-radius: 16px; }
         .bundle-span-3 { grid-column: span 3; border-radius: 16px; }
@@ -251,27 +250,27 @@
         .bundle-span-5 { grid-column: span 5; border-radius: 16px; }
         .bundle-span-6 { grid-column: span 6; border-radius: 16px; }
 
-        /* Ramme der starter på rækken og går ud af billedet til højre (ingen højre kant / afrunding) */
+        /* Ramme der strækker sig helt ud over højre skærmkant ved linjeskift */
         .bundle-break-right {
-            grid-column: span 6; /* Fylder resten af rækken ud til højre kant */
+            grid-column: span 6;
             border-top-left-radius: 16px;
             border-bottom-left-radius: 16px;
             border-top-right-radius: 0;
             border-bottom-right-radius: 0;
             border-right: none;
+            margin-right: -9999px;
+            padding-right: 9999px;
         }
 
-        /* Ramme der kommer ind fra venstre på næste række (ingen venstre kant / afrunding) */
+        /* Ramme der kommer ind fra venstre skærmkant på næste linje */
         .bundle-break-left {
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
             border-top-right-radius: 16px;
             border-bottom-right-radius: 16px;
             border-left: none;
-        }
-
-        .sold-order-group {
-            display: contents;
+            margin-left: -9999px;
+            padding-left: 9999px;
         }
 
         .item-card {
@@ -405,7 +404,7 @@
         }
         .sold-shipping-link:hover { opacity: 0.7; }
 
-        /* OPDRATERET POP-UP DESIGN: Mindre platform-logoer på én samlet række & korrekt rækkefølge */
+        /* POP-UP STYLING: Platformer og Destinationer i store firkantede bokse */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -422,7 +421,7 @@
             padding: 20px;
             border-radius: 20px;
             width: 90%;
-            max-width: 420px;
+            max-width: 440px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             text-align: left;
             max-height: 90vh;
@@ -430,32 +429,53 @@
         }
         .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; text-align: center; }
         
-        /* Platforme samlet på ÉN række med mindre logoer */
-        .modal-platforms-row {
-            display: flex;
-            gap: 6px;
-            justify-content: space-between;
-            margin-bottom: 15px;
+        /* Platforme med store firkantede logoer */
+        .modal-platforms-grid { 
+            display: grid; 
+            grid-template-columns: repeat(6, 1fr); 
+            gap: 6px; 
+            margin-bottom: 12px; 
         }
-        .modal-platform-option {
+        .modal-platform-option { 
             border: 2px solid #eee; 
             border-radius: 8px; 
-            padding: 4px; 
+            padding: 6px; 
             cursor: pointer; 
             background: #f8f9fa; 
-            transition: all 0.2s;
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            width: 36px;
-            height: 36px;
+            aspect-ratio: 1/1; 
+            transition: all 0.2s;
         }
-        .modal-platform-option img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
+        .modal-platform-option img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
         .modal-platform-option:hover, .modal-platform-option.selected { border-color: #000; background: #e9ecef; }
+
+        /* Destinationer (Danmark, Sverige, Polen, Finland, Tyskland) */
+        .modal-destinations-grid { 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 6px; 
+            margin-bottom: 15px; 
+        }
+        .modal-destination-option { 
+            border: 2px solid #eee; 
+            border-radius: 8px; 
+            padding: 6px; 
+            cursor: pointer; 
+            background: #f8f9fa; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            aspect-ratio: 1/1; 
+            transition: all 0.2s;
+        }
+        .modal-destination-option img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+        .modal-destination-option:hover, .modal-destination-option.selected { border-color: #000; background: #e9ecef; }
 
         /* Fragtfirmaer */
         .modal-shipping-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 15px; }
-        .modal-shipping-option { border: 2px solid #eee; border-radius: 8px; padding: 6px; cursor: pointer; background: #f8f9fa; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; }
+        .modal-shipping-option { border: 2px solid #eee; border-radius: 8px; padding: 6px; cursor: pointer; background: #f8f9fa; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; transition: all 0.2s; }
         .modal-shipping-option img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
         .modal-shipping-option:hover, .modal-shipping-option.selected { border-color: #000; background: #e9ecef; }
         
@@ -553,7 +573,7 @@
         <div class="sold-orders-container" id="soldContainer"></div>
     </div>
 
-    <!-- OPDATERET POP-UP VINDUE (Rækkefølge og platform-logoer) -->
+    <!-- POP-UP VINDUE MED PLATFORME, DESTINATIONER OG FRAGTFIRMAER -->
     <div class="modal-overlay" id="saleModal">
         <div class="modal-card">
             <div class="modal-title" id="modalTitleText">Marker vare som solgt</div>
@@ -562,7 +582,7 @@
                 <!-- 1. Platform -->
                 <div>
                     <label>Platform:</label>
-                    <div class="modal-platforms-row">
+                    <div class="modal-platforms-grid">
                         <div class="modal-platform-option" data-platform="vinted" onclick="selectModalPlatform('vinted')" title="Vinted"><img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM" alt="Vinted"></div>
                         <div class="modal-platform-option" data-platform="tradera" onclick="selectModalPlatform('tradera')" title="Tradera"><img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn" alt="Tradera"></div>
                         <div class="modal-platform-option" data-platform="tise" onclick="selectModalPlatform('tise')" title="Tise"><img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O" alt="Tise"></div>
@@ -572,25 +592,37 @@
                     </div>
                 </div>
 
-                <!-- 2. Salgsdato -->
+                <!-- 2. Destination (Danmark, Sverige, Polen, Finland, Tyskland) -->
+                <div>
+                    <label>Destination:</label>
+                    <div class="modal-destinations-grid">
+                        <div class="modal-destination-option" data-destination="DK" onclick="selectModalDestination('DK')" title="Danmark"><img src="https://lh3.googleusercontent.com/d/1U4iM9v_gL9v6q1y8C_8q9gZg8q9gZg8q" alt="Danmark"></div>
+                        <div class="modal-destination-option" data-destination="SE" onclick="selectModalDestination('SE')" title="Sverige"><img src="https://lh3.googleusercontent.com/d/1U4iM9v_gL9v6q1y8C_8q9gZg8q9gZg8q" alt="Sverige"></div>
+                        <div class="modal-destination-option" data-destination="PL" onclick="selectModalDestination('PL')" title="Polen"><img src="https://lh3.googleusercontent.com/d/1U4iM9v_gL9v6q1y8C_8q9gZg8q9gZg8q" alt="Polen"></div>
+                        <div class="modal-destination-option" data-destination="FI" onclick="selectModalDestination('FI')" title="Finland"><img src="https://lh3.googleusercontent.com/d/1U4iM9v_gL9v6q1y8C_8q9gZg8q9gZg8q" alt="Finland"></div>
+                        <div class="modal-destination-option" data-destination="DE" onclick="selectModalDestination('DE')" title="Tyskland"><img src="https://lh3.googleusercontent.com/d/1U4iM9v_gL9v6q1y8C_8q9gZg8q9gZg8q" alt="Tyskland"></div>
+                    </div>
+                </div>
+
+                <!-- 3. Salgsdato -->
                 <div>
                     <label>Salgsdato:</label>
                     <input type="date" id="modalSaleDate">
                 </div>
 
-                <!-- 3. Salgspris -->
+                <!-- 4. Salgspris -->
                 <div>
                     <label>Salgspris:</label>
                     <input type="number" id="modalSalePrice" placeholder="F.eks. 150">
                 </div>
 
-                <!-- 4. Købers brugernavn -->
+                <!-- 5. Købers brugernavn -->
                 <div>
                     <label>Købers brugernavn:</label>
                     <input type="text" id="modalBuyer" placeholder="F.eks. brugernavn123" style="max-width:100%;">
                 </div>
 
-                <!-- 5. Fragtfirma -->
+                <!-- 6. Fragtfirma -->
                 <div>
                     <label>Fragtfirma:</label>
                     <div class="modal-shipping-grid">
@@ -603,7 +635,7 @@
                     </div>
                 </div>
 
-                <!-- 6. Sporingsnummer -->
+                <!-- 7. Sporingsnummer -->
                 <div>
                     <label>Sporingsnummer:</label>
                     <input type="text" id="modalTracking" placeholder="Indtast sporingsnummer" style="max-width:100%;">
@@ -646,6 +678,7 @@
         let saveTimeout = null;
         let activeModalItemId = null;
         let selectedModalPlatformName = '';
+        let selectedModalDestinationName = '';
         let selectedModalShippingName = '';
 
         const bannerImageIds = {
@@ -701,6 +734,7 @@
                         itemStates[id] = {
                             sold: Boolean(st.sold),
                             platform: st.platform || '',
+                            destination: st.destination || '',
                             saleDate: st.saleDate || '',
                             salePrice: st.salePrice || '',
                             shipping: st.shipping || '',
@@ -935,7 +969,6 @@
 
             document.getElementById('mainContainer').innerHTML = `<div class="items-grid">${activeItems.map(i => createCardHTML(i)).join('')}</div>`;
             
-            // Gruppér solgte varer efter salgsdato og køber
             let soldGroupsMap = {};
             soldItems.forEach(item => {
                 const st = itemStates[item.id] || {};
@@ -949,40 +982,61 @@
                 soldGroupsMap[groupKey].push(item);
             });
 
-            // Byg rækker og tætsiddende rammer for solgte bundles, fordelt over maks 6 varer pr. række
-            let soldHtml = '';
+            let allGroupedItems = [];
             Object.keys(soldGroupsMap).forEach(key => {
-                const groupItems = soldGroupsMap[key];
-                let remainingItems = [...groupItems];
+                allGroupedItems.push(soldGroupsMap[key]);
+            });
 
-                while (remainingItems.length > 0) {
-                    // Beregn hvor mange pladser der er tilbage på den aktuelle række (totalt 6 varer pr række)
-                    // For enkelhedens skyld spænder vi et bundle ud på rækken:
-                    const itemsInThisRow = remainingItems.slice(0, 6);
-                    const count = itemsInThisRow.length;
+            let renderedRows = [];
+            let currentRowItems = [];
+            
+            allGroupedItems.forEach(bundleItems => {
+                let bundleRemaining = [...bundleItems];
+                
+                while (bundleRemaining.length > 0) {
+                    let spacesLeftInRow = 6 - (currentRowItems.length);
+                    let takeCount = Math.min(bundleRemaining.length, spacesLeftInRow);
+                    
+                    let chunk = bundleRemaining.slice(0, takeCount);
+                    currentRowItems.push({ bundleId: bundleItems[0].id, items: chunk, isFirstChunk: bundleRemaining.length === bundleItems.length });
+                    
+                    bundleRemaining = bundleRemaining.slice(takeCount);
 
-                    // Tjek om et enkelt bundle strækker sig over flere rækker (mere end 6 varer totalt i bundlet)
-                    const isMultiRow = groupItems.length > 6;
-                    const isFirstRowOfMulti = isMultiRow && remainingItems.length === groupItems.length;
-                    const isSubsequentRow = isMultiRow && remainingItems.length < groupItems.length;
+                    if (currentRowItems.reduce((acc, curr) => acc + curr.items.length, 0) === 6) {
+                        renderedRows.push([...currentRowItems]);
+                        currentRowItems = [];
+                    }
+                }
+            });
+            if (currentRowItems.length > 0) {
+                renderedRows.push([...currentRowItems]);
+            }
 
-                    let boxClass = `bundle-span-${count}`;
-                    if (isFirstRowOfMulti && count === 6) {
-                        boxClass = 'bundle-break-right';
-                    } else if (isSubsequentRow) {
-                        boxClass = `bundle-span-${count} bundle-break-left`;
+            let soldHtml = '';
+            renderedRows.forEach(row => {
+                soldHtml += `<div class="sold-row-wrapper">`;
+                
+                row.forEach(cell => {
+                    let totalInBundle = allGroupedItems.find(b => b[0].id === cell.bundleId).length;
+                    let isMultiRow = totalInBundle > 6;
+                    
+                    let boxClass = `bundle-span-${cell.items.length}`;
+                    if (isMultiRow) {
+                        if (cell.isFirstChunk && cell.items.length < totalInBundle) {
+                            boxClass = 'bundle-break-right';
+                        } else if (!cell.isFirstChunk) {
+                            boxClass = `bundle-span-${cell.items.length} bundle-break-left`;
+                        }
                     }
 
                     soldHtml += `
-                        <div class="sold-row-wrapper">
-                            <div class="bundle-box ${boxClass}">
-                                ${itemsInThisRow.map(i => createCardHTML(i)).join('')}
-                            </div>
+                        <div class="bundle-box ${boxClass}">
+                            ${cell.items.map(i => createCardHTML(i)).join('')}
                         </div>
                     `;
+                });
 
-                    remainingItems = remainingItems.slice(6);
-                }
+                soldHtml += `</div>`;
             });
 
             document.getElementById('soldContainer').innerHTML = soldHtml;
@@ -1102,6 +1156,7 @@
             activeModalItemId = id;
             const st = itemStates[id] || {};
             selectedModalPlatformName = st.platform || '';
+            selectedModalDestinationName = st.destination || '';
             selectedModalShippingName = st.shipping || '';
             
             const unsoldBtn = document.getElementById('modalUnsoldBtn');
@@ -1125,6 +1180,11 @@
                 else el.classList.remove('selected');
             });
 
+            document.querySelectorAll('.modal-destination-option').forEach(el => {
+                if (el.dataset.destination === selectedModalDestinationName) el.classList.add('selected');
+                else el.classList.remove('selected');
+            });
+
             document.querySelectorAll('.modal-shipping-option').forEach(el => {
                 if (el.dataset.shipping === selectedModalShippingName) el.classList.add('selected');
                 else el.classList.remove('selected');
@@ -1137,6 +1197,14 @@
             selectedModalPlatformName = platform;
             document.querySelectorAll('.modal-platform-option').forEach(el => {
                 if (el.dataset.platform === platform) el.classList.add('selected');
+                else el.classList.remove('selected');
+            });
+        }
+
+        function selectModalDestination(dest) {
+            selectedModalDestinationName = dest;
+            document.querySelectorAll('.modal-destination-option').forEach(el => {
+                if (el.dataset.destination === dest) el.classList.add('selected');
                 else el.classList.remove('selected');
             });
         }
@@ -1160,6 +1228,7 @@
             
             itemStates[activeModalItemId].sold = true;
             itemStates[activeModalItemId].platform = selectedModalPlatformName;
+            itemStates[activeModalItemId].destination = selectedModalDestinationName;
             itemStates[activeModalItemId].shipping = selectedModalShippingName;
             itemStates[activeModalItemId].saleDate = document.getElementById('modalSaleDate').value;
             itemStates[activeModalItemId].salePrice = document.getElementById('modalSalePrice').value;
@@ -1177,6 +1246,7 @@
 
             itemStates[activeModalItemId].sold = false;
             itemStates[activeModalItemId].platform = '';
+            itemStates[activeModalItemId].destination = '';
             itemStates[activeModalItemId].shipping = '';
             itemStates[activeModalItemId].saleDate = '';
             itemStates[activeModalItemId].salePrice = '';
