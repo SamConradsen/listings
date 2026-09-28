@@ -220,6 +220,21 @@
         @media (min-width: 768px) { .items-grid { grid-template-columns: repeat(5, 1fr); gap: 12px; } }
         @media (min-width: 1200px) { .items-grid { grid-template-columns: repeat(6, 1fr); gap: 15px; } }
 
+        /* Sektion til sorte rammer om solgte ordrer */
+        .sold-orders-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+        .sold-order-group {
+            border: 2px solid #000;
+            border-radius: 16px;
+            padding: 12px;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
         .item-card {
             background: #fff;
             border-radius: 12px;
@@ -475,7 +490,7 @@
 
     <div class="main-content sold-section" id="soldSectionContainer">
         <div class="category-title">Solgte varer</div>
-        <div class="items-grid" id="soldContainer"></div>
+        <div class="sold-orders-container" id="soldContainer"></div>
     </div>
 
     <div class="modal-overlay" id="saleModal">
@@ -842,7 +857,34 @@
             }
 
             document.getElementById('mainContainer').innerHTML = `<div class="items-grid">${activeItems.map(i => createCardHTML(i)).join('')}</div>`;
-            document.getElementById('soldContainer').innerHTML = soldItems.map(i => createCardHTML(i)).join('');
+            
+            // Gruppér solgte varer efter saleDate og buyerUsername
+            let soldGroupsMap = {};
+            soldItems.forEach(item => {
+                const st = itemStates[item.id] || {};
+                const sDate = st.saleDate || 'ingen-dato';
+                const bUser = (st.buyerUsername || 'ingen-køber').trim().toLowerCase();
+                const groupKey = `${sDate}_${bUser}`;
+
+                if (!soldGroupsMap[groupKey]) {
+                    soldGroupsMap[groupKey] = [];
+                }
+                soldGroupsMap[groupKey].push(item);
+            });
+
+            let soldHtml = '';
+            Object.keys(soldGroupsMap).forEach(key => {
+                const groupItems = soldGroupsMap[key];
+                soldHtml += `
+                    <div class="sold-order-group">
+                        <div class="items-grid">
+                            ${groupItems.map(i => createCardHTML(i)).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('soldContainer').innerHTML = soldHtml;
         }
 
         function createCardHTML(item) {
