@@ -49,7 +49,6 @@
             overflow-x: hidden;
         }
 
-        /* KLÆBRIG HORISONTAL TOPMENU */
         .sticky-top-menu {
             position: sticky;
             top: 0;
@@ -220,7 +219,6 @@
         @media (min-width: 768px) { .items-grid { grid-template-columns: repeat(5, 1fr); gap: 12px; } }
         @media (min-width: 1200px) { .items-grid { grid-template-columns: repeat(6, 1fr); gap: 15px; } }
 
-        /* Sektion til sorte rammer om solgte ordrer */
         .sold-orders-container {
             display: flex;
             flex-direction: column;
@@ -233,6 +231,21 @@
             padding: 12px;
             background: #fff;
             box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            width: fit-content;
+            max-width: 100%;
+        }
+        .sold-order-group .items-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .sold-order-group .item-card {
+            width: 180px;
+            flex-shrink: 0;
+        }
+        @media (max-width: 768px) {
+            .sold-order-group { width: 100%; }
+            .sold-order-group .item-card { width: 100%; }
         }
 
         .item-card {
@@ -561,7 +574,8 @@
 
         const sizeOrder = ["XXS", "EU 32", "XS", "EU 34", "XS/S", "S", "EU 36", "S/M", "M", "EU 38", "M/L", "L", "EU 40", "L/XL", "XL", "EU 42", "XL/XXL", "XXL", "EU 44", "XXXL", "EU 46", "EU 48", "EU 50"];
 
-        const scriptURL = "https://script.google.com/macros/s/AKfycby70FTVKZ3kBwu5iUeAz11Y51nIpNSCqpQ25fnScQ1BNsasCM6fkHcjAIKYEprBo1CFYw/exec?action=data";
+        // Fjernet ?action=data i POST url for at sikre at doPost rammes rent
+        const scriptURL = "https://script.google.com/macros/s/AKfycby70FTVKZ3kBwu5iUeAz11Y51nIpNSCqpQ25fnScQ1BNsasCM6fkHcjAIKYEprBo1CFYw/exec";
 
         let itemStates = {};
         let items = [];
@@ -591,22 +605,11 @@
 
         function formatDate(dateStr) {
             if (!dateStr) return '';
-            // Håndter datoformatering sikkert uansett om det kommer som YYYY-MM-DD eller et Date-objekt
-            let str = dateStr;
-            if (dateStr instanceof Date || (typeof dateStr === 'string' && dateStr.includes('T'))) {
-                const d = new Date(dateStr);
-                if (!isNaN(d.getTime())) {
-                    const year = d.getFullYear();
-                    const month = String(d.getMonth() + 1).padStart(2, '0');
-                    const day = String(d.getDate()).padStart(2, '0');
-                    str = `${year}-${month}-${day}`;
-                }
-            }
-            const parts = str.split('-');
+            const parts = dateStr.split('-');
             if (parts.length === 3) {
                 return `${parts[2]}-${parts[1]}-${parts[0]}`;
             }
-            return str;
+            return dateStr;
         }
 
         function formatCurrency(priceVal) {
@@ -618,7 +621,7 @@
 
         async function loadCloudData() {
             try {
-                const response = await fetch(scriptURL);
+                const response = await fetch(scriptURL + "?action=data");
                 const data = await response.json();
                 if (data) {
                     const rawItems = data.items || [];
@@ -631,22 +634,11 @@
                     const rawStates = data.states || {};
                     Object.keys(rawStates).forEach(id => {
                         const st = rawStates[id] || {};
-                        // Konverter datoer korrekt til 'YYYY-MM-DD' format til input-felter
-                        let cleanDate = '';
-                        if (st.saleDate) {
-                            const d = new Date(st.saleDate);
-                            if (!isNaN(d.getTime())) {
-                                cleanDate = d.toISOString().split('T')[0];
-                            } else {
-                                cleanDate = st.saleDate.toString().split('T')[0];
-                            }
-                        }
-
                         itemStates[id] = {
                             sold: Boolean(st.sold),
                             platform: st.platform || '',
-                            saleDate: cleanDate,
-                            salePrice: st.salePrice !== undefined && st.salePrice !== null ? st.salePrice : '',
+                            saleDate: st.saleDate || '',
+                            salePrice: st.salePrice || '',
                             shipping: st.shipping || '',
                             tracking: st.tracking || '',
                             buyerUsername: st.buyerUsername || '',
@@ -879,7 +871,6 @@
 
             document.getElementById('mainContainer').innerHTML = `<div class="items-grid">${activeItems.map(i => createCardHTML(i)).join('')}</div>`;
             
-            // Gruppér solgte varer efter saleDate og buyerUsername (samlet sort ramme om varer med præcis samme salgsdato og køber)
             let soldGroupsMap = {};
             soldItems.forEach(item => {
                 const st = itemStates[item.id] || {};
@@ -1036,7 +1027,7 @@
             }
 
             document.getElementById('modalSaleDate').value = st.saleDate || new Date().toISOString().split('T')[0];
-            document.getElementById('modalSalePrice').value = st.salePrice !== undefined ? st.salePrice : '';
+            document.getElementById('modalSalePrice').value = st.salePrice || '';
             document.getElementById('modalTracking').value = st.tracking || '';
             document.getElementById('modalBuyer').value = st.buyerUsername || '';
             
