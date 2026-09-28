@@ -225,27 +225,24 @@
             gap: 15px;
             width: 100%;
         }
+        
+        /* Flydende sammenhængende ordrekasser præcis som på FlowFrame skærmbilledet */
         .sold-order-group {
-    border: 2px solid #000;
-    border-radius: 16px;
-    padding: 12px;
-    background: #fff;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-    width: 100%;
-}
+            border: 2px solid #000;
+            border-radius: 16px;
+            padding: 12px;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            width: 100%;
+        }
         .sold-order-group .items-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            width: 100%;
         }
-        .sold-order-group .item-card {
-            width: 180px;
-            flex-shrink: 0;
-        }
-        @media (max-width: 768px) {
-            .sold-order-group { width: 100%; }
-            .sold-order-group .item-card { width: 100%; }
-        }
+        @media (min-width: 768px) { .sold-order-group .items-grid { grid-template-columns: repeat(5, 1fr); gap: 12px; } }
+        @media (min-width: 1200px) { .sold-order-group .items-grid { grid-template-columns: repeat(6, 1fr); gap: 15px; } }
 
         .item-card {
             background: #fff;
@@ -357,11 +354,16 @@
         .sold-row-item {
             display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: space-between;
             color: #444;
             font-weight: 600;
         }
-        .sold-row-item img {
+        .sold-row-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sold-row-left img {
             width: 18px;
             height: 18px;
             object-fit: cover;
@@ -402,14 +404,21 @@
         }
         .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
         .modal-platforms { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
-        .modal-platform-option, .modal-shipping-option {
+        .modal-platform-option, .modal-shipping-option, .modal-destination-option {
             border: 2px solid #eee; border-radius: 12px; padding: 10px; cursor: pointer; background: #f8f9fa; transition: all 0.2s;
             display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1;
         }
+        /* Fragtfirmaer placeret på én række med tilpasset størrelse */
         .modal-shipping-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 15px; }
-        .modal-shipping-option { padding: 6px; border-radius: 8px; }
-        .modal-platform-option img, .modal-shipping-option img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
-        .modal-platform-option:hover, .modal-platform-option.selected, .modal-shipping-option:hover, .modal-shipping-option.selected { border-color: #000; background: #e9ecef; }
+        .modal-shipping-option { padding: 4px; border-radius: 8px; aspect-ratio: 1/1; }
+        /* Destinationer / Lande grid */
+        .modal-destination-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 15px; }
+        .modal-destination-option { padding: 4px; border-radius: 8px; aspect-ratio: 1/1; }
+
+        .modal-platform-option img, .modal-shipping-option img, .modal-destination-option img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+        .modal-platform-option:hover, .modal-platform-option.selected, 
+        .modal-shipping-option:hover, .modal-shipping-option.selected,
+        .modal-destination-option:hover, .modal-destination-option.selected { border-color: #000; background: #e9ecef; }
         
         .modal-inputs { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; text-align: left; }
         .modal-inputs label { font-size: 11px; font-weight: 600; color: #555; }
@@ -527,6 +536,15 @@
                 <div class="modal-shipping-option" data-shipping="Pick up" onclick="selectModalShipping('Pick up')" title="Pick up"><img src="https://lh3.googleusercontent.com/d/1xSmh1G9Iv4AVEzz9hZTn47RascL1Zuhe" alt="Pick up"></div>
             </div>
 
+            <div style="font-size:11px; font-weight:600; color:#555; text-align:left; margin-bottom:6px;">Destination:</div>
+            <div class="modal-destination-grid">
+                <div class="modal-destination-option" data-destination="DK" onclick="selectModalDestination('DK')" title="Danmark"><img src="https://lh3.googleusercontent.com/d/1QfCpaOqCNVumzDYYc6a3hZ2hW9JENd_z" alt="Danmark"></div>
+                <div class="modal-destination-option" data-destination="SE" onclick="selectModalDestination('SE')" title="Sverige"><img src="https://lh3.googleusercontent.com/d/1w3SD7UngoarbExDKYCRmmJ9sLz2Y-KO-" alt="Sverige"></div>
+                <div class="modal-destination-option" data-destination="PL" onclick="selectModalDestination('PL')" title="Polen"><img src="https://lh3.googleusercontent.com/d/1gcBINCEO5FC3e-EAQ37rxFu-EGB3HIwy" alt="Polen"></div>
+                <div class="modal-destination-option" data-destination="FI" onclick="selectModalDestination('FI')" title="Finland"><img src="https://lh3.googleusercontent.com/d/1LXV20Mqzanu-DkhNDyKq7At7qmzwWQeI" alt="Finland"></div>
+                <div class="modal-destination-option" data-destination="DE" onclick="selectModalDestination('DE')" title="Tyskland"><img src="https://lh3.googleusercontent.com/d/1VPIJDkp1DS9A5Aurx_7RaR-hKcJg9m12" alt="Tyskland"></div>
+            </div>
+
             <div class="modal-inputs">
                 <div>
                     <label>Salgsdato:</label>
@@ -582,6 +600,7 @@
         let activeModalItemId = null;
         let selectedModalPlatformName = '';
         let selectedModalShippingName = '';
+        let selectedModalDestinationName = '';
 
         const bannerImageIds = {
             vinted: "1RQnjA5kqV4_QtAh6PLshhiox1TZKZtyb",
@@ -599,6 +618,14 @@
             "Instabox": "1wA2dxUH0ohjnp-hPPUpsWnDquiaDyTl9",
             "Bring": "1EZ8n_L73USyKXR977WvpJJrnwEm7OmYF",
             "Pick up": "1xSmh1G9Iv4AVEzz9hZTn47RascL1Zuhe"
+        };
+
+        const destinationLogoIds = {
+            "DK": "1QfCpaOqCNVumzDYYc6a3hZ2hW9JENd_z",
+            "SE": "1w3SD7UngoarbExDKYCRmmJ9sLz2Y-KO-",
+            "PL": "1gcBINCEO5FC3e-EAQ37rxFu-EGB3HIwy",
+            "FI": "1LXV20Mqzanu-DkhNDyKq7At7qmzwWQeI",
+            "DE": "1VPIJDkp1DS9A5Aurx_7RaR-hKcJg9m12"
         };
 
         function formatDate(dateStr) {
@@ -641,6 +668,7 @@
                             shipping: st.shipping || '',
                             tracking: st.tracking || '',
                             buyerUsername: st.buyerUsername || '',
+                            destination: st.destination || '',
                             vinted_up: Boolean(st.vinted_up),
                             vinted_mod: Boolean(st.vinted_mod),
                             tradera_up: Boolean(st.tradera_up),
@@ -909,11 +937,17 @@
                 const bannerHtml = bannerId ? `<div class="sold-banner"><img src="https://lh3.googleusercontent.com/d/${bannerId}" alt="${st.platform}"></div>` : '';
                 
                 let buyerHtml = '';
-                if (st.buyerUsername) {
+                if (st.buyerUsername || (st.destination && destinationLogoIds[st.destination])) {
+                    const destLogoId = st.destination ? destinationLogoIds[st.destination] : '';
+                    const destHtml = destLogoId ? `<img src="https://lh3.googleusercontent.com/d/${destLogoId}" alt="${st.destination}" style="width:16px; height:12px; object-fit:cover; border-radius:2px;">` : '';
+
                     buyerHtml = `
                         <div class="sold-row-item">
-                            <img src="https://lh3.googleusercontent.com/d/1gk0EVPng0AbQjaoU5TZQItTC795zanvF" alt="Bruger">
-                            <span>${st.buyerUsername}</span>
+                            <div class="sold-row-left">
+                                <img src="https://lh3.googleusercontent.com/d/1gk0EVPng0AbQjaoU5TZQItTC795zanvF" alt="Bruger">
+                                <span>${st.buyerUsername}</span>
+                            </div>
+                            <div>${destHtml}</div>
                         </div>
                     `;
                 }
@@ -935,8 +969,10 @@
                     shippingHtml = `
                         <div class="sold-row-item">
                             <a href="${trackUrl}" target="_blank" class="sold-shipping-link" title="Spor pakke">
-                                <img src="https://lh3.googleusercontent.com/d/${shipLogoId}" alt="${st.shipping}">
-                                <span>${trackingNo}</span>
+                                <div class="sold-row-left">
+                                    <img src="https://lh3.googleusercontent.com/d/${shipLogoId}" alt="${st.shipping}">
+                                    <span>${trackingNo}</span>
+                                </div>
                             </a>
                         </div>
                     `;
@@ -947,7 +983,7 @@
                     const formattedDate = formatDate(st.saleDate);
                     const formattedPrice = formatCurrency(st.salePrice);
                     saleDetailsHtml = `
-                        <div class="sold-row-item" style="justify-content: space-between; font-size: 10px; color: #666; margin-top: 2px;">
+                        <div class="sold-row-item" style="font-size: 10px; color: #666; margin-top: 2px;">
                             <span>${formattedDate}</span>
                             <span><b>${formattedPrice}</b></span>
                         </div>
@@ -1013,6 +1049,7 @@
             const st = itemStates[id] || {};
             selectedModalPlatformName = st.platform || '';
             selectedModalShippingName = st.shipping || '';
+            selectedModalDestinationName = st.destination || '';
             
             const unsoldBtn = document.getElementById('modalUnsoldBtn');
             const titleText = document.getElementById('modalTitleText');
@@ -1040,6 +1077,11 @@
                 else el.classList.remove('selected');
             });
 
+            document.querySelectorAll('.modal-destination-option').forEach(el => {
+                if (el.dataset.destination === selectedModalDestinationName) el.classList.add('selected');
+                else el.classList.remove('selected');
+            });
+
             document.getElementById('saleModal').classList.add('show');
         }
 
@@ -1059,6 +1101,14 @@
             });
         }
 
+        function selectModalDestination(destination) {
+            selectedModalDestinationName = destination;
+            document.querySelectorAll('.modal-destination-option').forEach(el => {
+                if (el.dataset.destination === destination) el.classList.add('selected');
+                else el.classList.remove('selected');
+            });
+        }
+
         function closeSaleModal() {
             document.getElementById('saleModal').classList.remove('show');
             activeModalItemId = null;
@@ -1071,6 +1121,7 @@
             itemStates[activeModalItemId].sold = true;
             itemStates[activeModalItemId].platform = selectedModalPlatformName;
             itemStates[activeModalItemId].shipping = selectedModalShippingName;
+            itemStates[activeModalItemId].destination = selectedModalDestinationName;
             itemStates[activeModalItemId].saleDate = document.getElementById('modalSaleDate').value;
             itemStates[activeModalItemId].salePrice = document.getElementById('modalSalePrice').value;
             itemStates[activeModalItemId].tracking = document.getElementById('modalTracking').value;
@@ -1088,6 +1139,7 @@
             itemStates[activeModalItemId].sold = false;
             itemStates[activeModalItemId].platform = '';
             itemStates[activeModalItemId].shipping = '';
+            itemStates[activeModalItemId].destination = '';
             itemStates[activeModalItemId].saleDate = '';
             itemStates[activeModalItemId].salePrice = '';
             itemStates[activeModalItemId].tracking = '';
