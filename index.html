@@ -591,11 +591,22 @@
 
         function formatDate(dateStr) {
             if (!dateStr) return '';
-            const parts = dateStr.split('-');
+            // Håndter datoformatering sikkert uansett om det kommer som YYYY-MM-DD eller et Date-objekt
+            let str = dateStr;
+            if (dateStr instanceof Date || (typeof dateStr === 'string' && dateStr.includes('T'))) {
+                const d = new Date(dateStr);
+                if (!isNaN(d.getTime())) {
+                    const year = d.getFullYear();
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    str = `${year}-${month}-${day}`;
+                }
+            }
+            const parts = str.split('-');
             if (parts.length === 3) {
                 return `${parts[2]}-${parts[1]}-${parts[0]}`;
             }
-            return dateStr;
+            return str;
         }
 
         function formatCurrency(priceVal) {
@@ -610,7 +621,6 @@
                 const response = await fetch(scriptURL);
                 const data = await response.json();
                 if (data) {
-                   
                     const rawItems = data.items || [];
                     items = rawItems.map(item => ({
                         ...item,
@@ -621,11 +631,22 @@
                     const rawStates = data.states || {};
                     Object.keys(rawStates).forEach(id => {
                         const st = rawStates[id] || {};
+                        // Konverter datoer korrekt til 'YYYY-MM-DD' format til input-felter
+                        let cleanDate = '';
+                        if (st.saleDate) {
+                            const d = new Date(st.saleDate);
+                            if (!isNaN(d.getTime())) {
+                                cleanDate = d.toISOString().split('T')[0];
+                            } else {
+                                cleanDate = st.saleDate.toString().split('T')[0];
+                            }
+                        }
+
                         itemStates[id] = {
                             sold: Boolean(st.sold),
                             platform: st.platform || '',
-                            saleDate: st.saleDate || '',
-                            salePrice: st.salePrice || '',
+                            saleDate: cleanDate,
+                            salePrice: st.salePrice !== undefined && st.salePrice !== null ? st.salePrice : '',
                             shipping: st.shipping || '',
                             tracking: st.tracking || '',
                             buyerUsername: st.buyerUsername || '',
@@ -650,12 +671,12 @@
         }
 
         function saveAndSync() {
-    	fetch(scriptURL, {
-      	  method: 'POST',
-      	  mode: 'no-cors',
-     	   body: JSON.stringify({ states: itemStates })
-  	  }).then(() => showToast("Gemt til Google Sheets!")).catch(err => console.error('Synkroniseringsfejl:', err));
-	}
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({ states: itemStates })
+            }).then(() => showToast("Gemt til Google Sheets!")).catch(err => console.error('Synkroniseringsfejl:', err));
+        }
 
         function triggerAutoSave() {
             if (saveTimeout) clearTimeout(saveTimeout);
@@ -858,7 +879,7 @@
 
             document.getElementById('mainContainer').innerHTML = `<div class="items-grid">${activeItems.map(i => createCardHTML(i)).join('')}</div>`;
             
-            // Gruppér solgte varer efter saleDate og buyerUsername
+            // Gruppér solgte varer efter saleDate og buyerUsername (samlet sort ramme om varer med præcis samme salgsdato og køber)
             let soldGroupsMap = {};
             soldItems.forEach(item => {
                 const st = itemStates[item.id] || {};
@@ -1015,7 +1036,7 @@
             }
 
             document.getElementById('modalSaleDate').value = st.saleDate || new Date().toISOString().split('T')[0];
-            document.getElementById('modalSalePrice').value = st.salePrice || '';
+            document.getElementById('modalSalePrice').value = st.salePrice !== undefined ? st.salePrice : '';
             document.getElementById('modalTracking').value = st.tracking || '';
             document.getElementById('modalBuyer').value = st.buyerUsername || '';
             
