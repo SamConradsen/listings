@@ -13,7 +13,6 @@
             --dba-color: #003366;
             --marketplace-color: #1877f2;
             --bought-color: #6c757d;
-            --primary-radius: 16px;
         }
 
         .toast {
@@ -41,7 +40,7 @@
 
         * { box-sizing: border-box; }
         body {
-           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #f8f9fa;
             color: #333;
             margin: 0;
@@ -219,59 +218,24 @@
         @media (min-width: 768px) { .items-grid { grid-template-columns: repeat(5, 1fr); gap: 12px; } }
         @media (min-width: 1200px) { .items-grid { grid-template-columns: repeat(6, 1fr); gap: 15px; } }
 
-        .sold-orders-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-        }
-
-        /* NY LOGIK FOR KORREKTE BUNDLE-RAMMER OG RÆKKER (Max 6 varer pr række) */
-        .sold-row-wrapper {
+        /* Solgte varer grid med 6 faste kolonner */
+        .sold-flow-container {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
             width: 100%;
-            margin-bottom: 15px;
         }
+        @media (min-width: 768px) { .sold-flow-container { grid-template-columns: repeat(5, 1fr); gap: 12px; } }
+        @media (min-width: 1200px) { .sold-flow-container { grid-template-columns: repeat(6, 1fr); gap: 15px; } }
 
-        .bundle-box {
-            border: 2px solid #000;
-            background: #fff;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-            padding: 10px;
-            display: contents; /* Gør at kortene i gridden respekterer 6-kolonners layoutet, men omsluttes visuelt af boksen via grid-column */
-        }
-
-        /* Specifikke klasser til de tætsiddende rammer afhængigt af hvor mange varer bundlet fylder */
-        .bundle-span-1 { grid-column: span 1; border-radius: 16px; }
-        .bundle-span-2 { grid-column: span 2; border-radius: 16px; }
-        .bundle-span-3 { grid-column: span 3; border-radius: 16px; }
-        .bundle-span-4 { grid-column: span 4; border-radius: 16px; }
-        .bundle-span-5 { grid-column: span 5; border-radius: 16px; }
-        .bundle-span-6 { grid-column: span 6; border-radius: 16px; }
-
-        /* Ramme der starter på rækken og går ud af billedet til højre (ingen højre kant / afrunding) */
-        .bundle-break-right {
-            grid-column: span 6; /* Fylder resten af rækken ud til højre kant */
-            border-top-left-radius: 16px;
-            border-bottom-left-radius: 16px;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-            border-right: none;
-        }
-
-        /* Ramme der kommer ind fra venstre på næste række (ingen venstre kant / afrunding) */
-        .bundle-break-left {
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-            border-top-right-radius: 16px;
-            border-bottom-right-radius: 16px;
-            border-left: none;
-        }
-
-        .sold-order-group {
-            display: contents;
+        .sold-bundle-segment {
+            border-radius: 16px;
+            padding: 8px;
+            margin: -4px;
+            display: grid;
+            grid-template-columns: repeat(var(--seg-cols), 1fr);
+            gap: inherit;
+            border: 2px dashed rgba(0,0,0,0.15);
         }
 
         .item-card {
@@ -284,6 +248,9 @@
             justify-content: space-between;
             width: 100%;
             min-width: 0;
+            border: 1px solid #e0e0e0;
+            position: relative;
+            z-index: 2;
         }
 
         .item-image-container {
@@ -299,15 +266,15 @@
         .item-image-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
         
         .item-card.sold .item-image-container img {
-            filter: grayscale(50%);
-            opacity: 0.75;
+            filter: saturate(30%) brightness(85%);
+            opacity: 0.7;
         }
         
         .sold-icon-btn { position: absolute; top: 6px; left: 6px; background: rgba(255,255,255,0.9); border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; padding: 0; opacity: 0.6; transition: opacity 0.2s ease; }
         .item-image-container:hover .sold-icon-btn { opacity: 1; }
         .sold-icon-btn img { width: 14px; height: 14px; object-fit: contain; }
 
-        .item-info { font-size: 11px; margin-bottom: 6px; }
+        .item-info { font-size: 11px; margin-bottom: 6px; height: 42px; display: flex; flex-direction: column; justify-content: space-between; }
         .item-name { font-weight: 600; height: 26px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 3px; }
         .item-meta { display: flex; justify-content: space-between; color: #666; font-size: 10px; }
         
@@ -369,6 +336,7 @@
             align-items: center;
             justify-content: center;
             background: #eee;
+            flex-shrink: 0;
         }
         .sold-banner img { width: 100%; height: 100%; object-fit: cover; }
         
@@ -380,6 +348,8 @@
             gap: 4px;
             border-top: 1px solid #eee;
             padding-top: 6px;
+            min-height: 58px;
+            justify-content: space-between;
         }
         .sold-row-item {
             display: flex;
@@ -405,7 +375,6 @@
         }
         .sold-shipping-link:hover { opacity: 0.7; }
 
-        /* OPDRATERET POP-UP DESIGN: Mindre platform-logoer på én samlet række & korrekt rækkefølge */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -422,44 +391,30 @@
             padding: 20px;
             border-radius: 20px;
             width: 90%;
-            max-width: 420px;
+            max-width: 400px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            text-align: left;
+            text-align: center;
             max-height: 90vh;
             overflow-y: auto;
         }
-        .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; text-align: center; }
-        
-        /* Platforme samlet på ÉN række med mindre logoer */
-        .modal-platforms-row {
-            display: flex;
-            gap: 6px;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
+        .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+        .modal-platforms { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 12px; }
         .modal-platform-option {
-            border: 2px solid #eee; 
-            border-radius: 8px; 
-            padding: 4px; 
-            cursor: pointer; 
-            background: #f8f9fa; 
-            transition: all 0.2s;
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            width: 36px;
-            height: 36px;
+            border: 2px solid #eee; border-radius: 8px; padding: 6px; cursor: pointer; background: #f8f9fa; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1;
         }
-        .modal-platform-option img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
-        .modal-platform-option:hover, .modal-platform-option.selected { border-color: #000; background: #e9ecef; }
-
-        /* Fragtfirmaer */
-        .modal-shipping-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 15px; }
+        .modal-shipping-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 12px; }
         .modal-shipping-option { border: 2px solid #eee; border-radius: 8px; padding: 6px; cursor: pointer; background: #f8f9fa; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; }
-        .modal-shipping-option img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
-        .modal-shipping-option:hover, .modal-shipping-option.selected { border-color: #000; background: #e9ecef; }
         
-        .modal-inputs { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .modal-flag-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 15px; }
+        .modal-flag-option { border: 2px solid #eee; border-radius: 8px; padding: 6px; cursor: pointer; background: #f8f9fa; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; }
+
+        .modal-platform-option img, .modal-shipping-option img, .modal-flag-option img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
+        .modal-platform-option:hover, .modal-platform-option.selected, 
+        .modal-shipping-option:hover, .modal-shipping-option.selected,
+        .modal-flag-option:hover, .modal-flag-option.selected { border-color: #000; background: #e9ecef; }
+        
+        .modal-inputs { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; text-align: left; }
         .modal-inputs label { font-size: 11px; font-weight: 600; color: #555; }
         .modal-inputs input { width: 100%; }
         .modal-buttons { display: flex; gap: 10px; justify-content: space-between; align-items: center; }
@@ -487,38 +442,7 @@
                 </button>
                 <div class="filter-dropdown-content" id="filterDropdownContent">
                     <div class="filter-grid-menu">
-                        <div class="filter-icon-option" onclick="selectFilter('uploaded_vinted', '1VdXuN0PudeFxIJ590l6bhPtchavyCTCi')" title="Vinted_up TRUE"><img src="https://lh3.googleusercontent.com/d/1VdXuN0PudeFxIJ590l6bhPtchavyCTCi" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_vinted', '16u5fxUnP281EavM-VHRHkb-7H8z19u8o')" title="Vinted_up FALSE"><img src="https://lh3.googleusercontent.com/d/16u5fxUnP281EavM-VHRHkb-7H8z19u8o" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('updated_vinted', '1mu_FPjt5TBJFfXyEd8NKy0voitdcQZv-')" title="Vinted_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1mu_FPjt5TBJFfXyEd8NKy0voitdcQZv-" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_update_vinted', '1Wdo-lpD2u7GgJA-MCSzSurnwG54yFhSV')" title="Vinted_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1Wdo-lpD2u7GgJA-MCSzSurnwG54yFhSV" alt=""></div>
-
-                        <div class="filter-icon-option" onclick="selectFilter('uploaded_tradera', '1IW8lCw7_6z9tsnhQOeLgoukBQDIL3BpY')" title="Tradera_up TRUE"><img src="https://lh3.googleusercontent.com/d/1IW8lCw7_6z9tsnhQOeLgoukBQDIL3BpY" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_tradera', '1kWW_YorB9XkthkmsobVLnRT4XuDcBV79')" title="Tradera_up FALSE"><img src="https://lh3.googleusercontent.com/d/1kWW_YorB9XkthkmsobVLnRT4XuDcBV79" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('updated_tradera', '1NhQ_lrxoVFWpflitUBKqzKjeFjfF-af_')" title="Tradera_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1NhQ_lrxoVFWpflitUBKqzKjeFjfF-af_" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_update_tradera', '1PmZJY8lEqJRaeRjsh1_FMTWE795hITpt')" title="Tradera_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1PmZJY8lEqJRaeRjsh1_FMTWE795hITpt" alt=""></div>
-
-                        <div class="filter-icon-option" onclick="selectFilter('uploaded_tise', '1fefGg1dChY02fifWuQaMZ7dQLJ-0vGk-')" title="Tise_up TRUE"><img src="https://lh3.googleusercontent.com/d/1fefGg1dChY02fifWuQaMZ7dQLJ-0vGk-" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_tise', '1YlsBHulq-uX18FLQErAVPcmhFGDd38Vq')" title="Tise_up FALSE"><img src="https://lh3.googleusercontent.com/d/1YlsBHulq-uX18FLQErAVPcmhFGDd38Vq" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('updated_tise', '1PaZoFz2T1lKlFjCowiAI89zqDvlQzUUx')" title="Tise_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1PaZoFz2T1lKlFjCowiAI89zqDvlQzUUx" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_update_tise', '1M6MVtuysr4pOsDjdgklgKY2tOxJaV6AR')" title="Tise_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1M6MVtuysr4pOsDjdgklgKY2tOxJaV6AR" alt=""></div>
-
-                        <div class="filter-icon-option" onclick="selectFilter('uploaded_dba', '1O0f2Yl1oyQnt5pAlyZ-mSSm89Q67bSFT')" title="DBA_up TRUE"><img src="https://lh3.googleusercontent.com/d/1O0f2Yl1oyQnt5pAlyZ-mSSm89Q67bSFT" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_dba', '1qaVaiDvNJLiuqc0Z89qXUZ5xSPmsD0uK')" title="DBA_up FALSE"><img src="https://lh3.googleusercontent.com/d/1qaVaiDvNJLiuqc0Z89qXUZ5xSPmsD0uK" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('updated_dba', '1v-SN2HwIJgmQpK-rq7AU550UaExjth56')" title="DBA_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1v-SN2HwIJgmQpK-rq7AU550UaExjth56" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_update_dba', '1PmfhNlIH6JCSHRwi88jpp1OH27ofKzsj')" title="DBA_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1PmfhNlIH6JCSHRwi88jpp1OH27ofKzsj" alt=""></div>
-
-                        <div class="filter-icon-option" onclick="selectFilter('uploaded_marketplace', '13mjiXSf4i7Br36LblnCbGIH5qtZ-88dR')" title="Marketplace_up TRUE"><img src="https://lh3.googleusercontent.com/d/13mjiXSf4i7Br36LblnCbGIH5qtZ-88dR" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_marketplace', '125JG0PQs1qGLJAod7ew0jbkm1RszVkkJ')" title="Marketplace_up FALSE"><img src="https://lh3.googleusercontent.com/d/125JG0PQs1qGLJAod7ew0jbkm1RszVkkJ" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('updated_marketplace', '1Nm4oopogDH71oEzky0jVwLrSM8LMfdPb')" title="Marketplace_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1Nm4oopogDH71oEzky0jVwLrSM8LMfdPb" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_update_marketplace', '1eGdSC2q5_wG3ShnarRYEO6hKoLzP2IIL')" title="Marketplace_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1eGdSC2q5_wG3ShnarRYEO6hKoLzP2IIL" alt=""></div>
-
-                        <div class="filter-icon-option" onclick="selectFilter('uploaded_bought', '1OZDyqpmhh1O1oxGUhl2HNcIBpN_kYUA-')" title="Bought_up TRUE"><img src="https://lh3.googleusercontent.com/d/1OZDyqpmhh1O1oxGUhl2HNcIBpN_kYUA-" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_upload_bought', '1zwMC4Dme4K8nOQseE5sXkCWB0p8addsq')" title="Bought_up FALSE"><img src="https://lh3.googleusercontent.com/d/1zwMC4Dme4K8nOQseE5sXkCWB0p8addsq" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('updated_bought', '1nHO1GCcFRZyETtdpBtRN9vNZJGy0XJGH')" title="Bought_mod TRUE"><img src="https://lh3.googleusercontent.com/d/1nHO1GCcFRZyETtdpBtRN9vNZJGy0XJGH" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('missing_update_bought', '1izpCumFPltbP8cEg00wzMWA6nxTr2yYU')" title="Bought_mod FALSE"><img src="https://lh3.googleusercontent.com/d/1izpCumFPltbP8cEg00wzMWA6nxTr2yYU" alt=""></div>
-
                         <div class="filter-icon-option" onclick="selectFilter('all', '1cGZUk6k4pxoVXSPS4aOmMaN_iJ4dPyQU')" title="Show all"><img src="https://lh3.googleusercontent.com/d/1cGZUk6k4pxoVXSPS4aOmMaN_iJ4dPyQU" alt=""></div>
-                        <div class="filter-icon-option" onclick="selectFilter('partial_update', '1pIzJRBdTdWIra_vlKNhKrGT2ZS3wUE_k')" title="Work in Progress"><img src="https://lh3.googleusercontent.com/d/1pIzJRBdTdWIra_vlKNhKrGT2ZS3wUE_k" alt=""></div>
                     </div>
                 </div>
             </div>
@@ -550,76 +474,63 @@
 
     <div class="main-content sold-section" id="soldSectionContainer">
         <div class="category-title">Solgte varer</div>
-        <div class="sold-orders-container" id="soldContainer"></div>
+        <div class="sold-flow-container" id="soldContainer"></div>
     </div>
 
-    <!-- OPDATERET POP-UP VINDUE (Rækkefølge og platform-logoer) -->
     <div class="modal-overlay" id="saleModal">
         <div class="modal-card">
             <div class="modal-title" id="modalTitleText">Marker vare som solgt</div>
             
+            <div style="font-size:11px; font-weight:600; color:#555; text-align:left; margin-bottom:4px;">Solgt på platform:</div>
+            <div class="modal-platforms">
+                <div class="modal-platform-option" data-platform="vinted" onclick="selectModalPlatform('vinted')"><img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM" alt="Vinted"></div>
+                <div class="modal-platform-option" data-platform="tradera" onclick="selectModalPlatform('tradera')"><img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn" alt="Tradera"></div>
+                <div class="modal-platform-option" data-platform="tise" onclick="selectModalPlatform('tise')"><img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O" alt="Tise"></div>
+                <div class="modal-platform-option" data-platform="dba" onclick="selectModalPlatform('dba')"><img src="https://lh3.googleusercontent.com/d/1r1Tp6i4cZcLN44YoWOcH52g5EmXNS8Ty" alt="DBA"></div>
+                <div class="modal-platform-option" data-platform="marketplace" onclick="selectModalPlatform('marketplace')"><img src="https://lh3.googleusercontent.com/d/1aZ0cmmO6d5tAlEq_mb8kh4gY46P6EgZg" alt="Marketplace"></div>
+                <div class="modal-platform-option" data-platform="bought" onclick="selectModalPlatform('bought')"><img src="https://lh3.googleusercontent.com/d/1y5Qz_HfyQFyYd5g8dJoztdh3-KhgBQoB" alt="Bought"></div>
+            </div>
+
             <div class="modal-inputs">
-                <!-- 1. Platform -->
                 <div>
-                    <label>Platform:</label>
-                    <div class="modal-platforms-row">
-                        <div class="modal-platform-option" data-platform="vinted" onclick="selectModalPlatform('vinted')" title="Vinted"><img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM" alt="Vinted"></div>
-                        <div class="modal-platform-option" data-platform="tradera" onclick="selectModalPlatform('tradera')" title="Tradera"><img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn" alt="Tradera"></div>
-                        <div class="modal-platform-option" data-platform="tise" onclick="selectModalPlatform('tise')" title="Tise"><img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O" alt="Tise"></div>
-                        <div class="modal-platform-option" data-platform="dba" onclick="selectModalPlatform('dba')" title="DBA"><img src="https://lh3.googleusercontent.com/d/1r1Tp6i4cZcLN44YoWOcH52g5EmXNS8Ty" alt="DBA"></div>
-                        <div class="modal-platform-option" data-platform="marketplace" onclick="selectModalPlatform('marketplace')" title="Marketplace"><img src="https://lh3.googleusercontent.com/d/1aZ0cmmO6d5tAlEq_mb8kh4gY46P6EgZg" alt="Marketplace"></div>
-                        <div class="modal-platform-option" data-platform="bought" onclick="selectModalPlatform('bought')" title="Bought"><img src="https://lh3.googleusercontent.com/d/1y5Qz_HfyQFyYd5g8dJoztdh3-KhgBQoB" alt="Bought"></div>
-                    </div>
+                    <label>Salgsdato (DD/MM/ÅÅÅÅ):</label>
+                    <input type="text" id="modalSaleDate" placeholder="DD/MM/ÅÅÅÅ" onblur="formatDateOnBlur(this)">
                 </div>
-
-                <!-- 2. Salgsdato -->
                 <div>
-                    <label>Salgsdato:</label>
-                    <input type="date" id="modalSaleDate">
+                    <label>Salgspris (f.eks. 1.000,00 kr.):</label>
+                    <input type="text" id="modalSalePrice" placeholder="1.000,00 kr." onblur="formatPriceOnBlur(this)">
                 </div>
-
-                <!-- 3. Salgspris -->
-                <div>
-                    <label>Salgspris:</label>
-                    <input type="number" id="modalSalePrice" placeholder="F.eks. 150">
-                </div>
-
-                <!-- 4. Købers brugernavn -->
                 <div>
                     <label>Købers brugernavn:</label>
-                    <input type="text" id="modalBuyer" placeholder="F.eks. brugernavn123" style="max-width:100%;">
-                </div>
-
-                <!-- 5. Fragtfirma -->
-                <div>
-                    <label>Fragtfirma:</label>
-                    <div class="modal-shipping-grid">
-                        <div class="modal-shipping-option" data-shipping="PostNord" onclick="selectModalShipping('PostNord')" title="PostNord"><img src="https://lh3.googleusercontent.com/d/1S-kOgbjDGZ_oZHDTr4q3f9yu4pHwJjHd" alt="PostNord"></div>
-                        <div class="modal-shipping-option" data-shipping="DAO" onclick="selectModalShipping('DAO')" title="DAO"><img src="https://lh3.googleusercontent.com/d/1FlWhNM9wOQAG5Zv14nwoQazQemiDr4-N" alt="DAO"></div>
-                        <div class="modal-shipping-option" data-shipping="GLS" onclick="selectModalShipping('GLS')" title="GLS"><img src="https://lh3.googleusercontent.com/d/1re8v1E5OUdFW9IH30xleTYhju3Z-YSTx" alt="GLS"></div>
-                        <div class="modal-shipping-option" data-shipping="Instabox" onclick="selectModalShipping('Instabox')" title="Instabox"><img src="https://lh3.googleusercontent.com/d/1wA2dxUH0ohjnp-hPPUpsWnDquiaDyTl9" alt="Instabox"></div>
-                        <div class="modal-shipping-option" data-shipping="Bring" onclick="selectModalShipping('Bring')" title="Bring"><img src="https://lh3.googleusercontent.com/d/1EZ8n_L73USyKXR977WvpJJrnwEm7OmYF" alt="Bring"></div>
-                        <div class="modal-shipping-option" data-shipping="Pick up" onclick="selectModalShipping('Pick up')" title="Pick up"><img src="https://lh3.googleusercontent.com/d/1xSmh1G9Iv4AVEzz9hZTn47RascL1Zuhe" alt="Pick up"></div>
-                    </div>
-                </div>
-
-                <!-- 6. Sporingsnummer -->
-                <div>
-                    <label>Sporingsnummer:</label>
-                    <input type="text" id="modalTracking" placeholder="Indtast sporingsnummer" style="max-width:100%;">
+                    <input type="text" id="modalBuyer" placeholder="Brugernavn">
                 </div>
             </div>
-			<!-- 7. Destination (Danmark, Sverige, Polen, Finland, Tyskland) -->
+
+            <div style="font-size:11px; font-weight:600; color:#555; text-align:left; margin-bottom:4px;">Fragtfirma:</div>
+            <div class="modal-shipping-grid">
+                <div class="modal-shipping-option" data-shipping="PostNord" onclick="selectModalShipping('PostNord')" title="PostNord"><img src="https://lh3.googleusercontent.com/d/1S-kOgbjDGZ_oZHDTr4q3f9yu4pHwJjHd" alt="PostNord"></div>
+                <div class="modal-shipping-option" data-shipping="DAO" onclick="selectModalShipping('DAO')" title="DAO"><img src="https://lh3.googleusercontent.com/d/1FlWhNM9wOQAG5Zv14nwoQazQemiDr4-N" alt="DAO"></div>
+                <div class="modal-shipping-option" data-shipping="GLS" onclick="selectModalShipping('GLS')" title="GLS"><img src="https://lh3.googleusercontent.com/d/1re8v1E5OUdFW9IH30xleTYhju3Z-YSTx" alt="GLS"></div>
+                <div class="modal-shipping-option" data-shipping="Instabox" onclick="selectModalShipping('Instabox')" title="Instabox"><img src="https://lh3.googleusercontent.com/d/1wA2dxUH0ohjnp-hPPUpsWnDquiaDyTl9" alt="Instabox"></div>
+                <div class="modal-shipping-option" data-shipping="Bring" onclick="selectModalShipping('Bring')" title="Bring"><img src="https://lh3.googleusercontent.com/d/1EZ8n_L73USyKXR977WvpJJrnwEm7OmYF" alt="Bring"></div>
+                <div class="modal-shipping-option" data-shipping="Pick up" onclick="selectModalShipping('Pick up')" title="Pick up"><img src="https://lh3.googleusercontent.com/d/1xSmh1G9Iv4AVEzz9hZTn47RascL1Zuhe" alt="Pick up"></div>
+            </div>
+
+            <div style="font-size:11px; font-weight:600; color:#555; text-align:left; margin-bottom:4px;">Destination:</div>
+            <div class="modal-flag-grid">
+                <div class="modal-flag-option" data-destination="DK" onclick="selectModalDestination('DK')" title="Danmark"><img src="https://lh3.googleusercontent.com/d/1QfCpaOqCNVumzDYYc6a3hZ2hW9JENd_z" alt="DK"></div>
+                <div class="modal-flag-option" data-destination="SE" onclick="selectModalDestination('SE')" title="Sverige"><img src="https://lh3.googleusercontent.com/d/1w3SD7UngoarbExDKYCRmmJ9sLz2Y-KO-" alt="SE"></div>
+                <div class="modal-flag-option" data-destination="PL" onclick="selectModalDestination('PL')" title="Polen"><img src="https://lh3.googleusercontent.com/d/1gcBINCEO5FC3e-EAQ37rxFu-EGB3HIwy" alt="PL"></div>
+                <div class="modal-flag-option" data-destination="FI" onclick="selectModalDestination('FI')" title="Finland"><img src="https://lh3.googleusercontent.com/d/1LXV20Mqzanu-DkhNDyKq7At7qmzwWQeI" alt="FI"></div>
+                <div class="modal-flag-option" data-destination="DE" onclick="selectModalDestination('DE')" title="Tyskland"><img src="https://lh3.googleusercontent.com/d/1VPIJDkp1DS9A5Aurx_7RaR-hKcJg9m12" alt="DE"></div>
+            </div>
+
+            <div class="modal-inputs">
                 <div>
-                    <label>Destination:</label>
-                    <div class="modal-destinations-grid">
-                        <div class="modal-destination-option" data-destination="DK" onclick="selectModalDestination('DK')" title="Danmark"><img src="https://lh3.googleusercontent.com/d/1U4iM9v_gL9v6q1y8C_8q9gZg8q9gZg8q" alt="Danmark"></div>
-                        <div class="modal-destination-option" data-destination="SE" onclick="selectModalDestination('SE')" title="Sverige"><img src="https://lh3.googleusercontent.com/d/1U4iM9v_gL9v6q1y8C_8q9gZg8q9gZg8q" alt="Sverige"></div>
-                        <div class="modal-destination-option" data-destination="PL" onclick="selectModalDestination('PL')" title="Polen"><img src="https://lh3.googleusercontent.com/d/1U4iM9v_gL9v6q1y8C_8q9gZg8q9gZg8q" alt="Polen"></div>
-                        <div class="modal-destination-option" data-destination="FI" onclick="selectModalDestination('FI')" title="Finland"><img src="https://lh3.googleusercontent.com/d/1U4iM9v_gL9v6q1y8C_8q9gZg8q9gZg8q" alt="Finland"></div>
-                        <div class="modal-destination-option" data-destination="DE" onclick="selectModalDestination('DE')" title="Tyskland"><img src="https://lh3.googleusercontent.com/d/1U4iM9v_gL9v6q1y8C_8q9gZg8q9gZg8q" alt="Tyskland"></div>
-                    </div>
+                    <label>Pakkenummer / Sporingsnummer:</label>
+                    <input type="text" id="modalTracking" placeholder="Indtast pakkenummer">
                 </div>
+            </div>
 
             <div class="modal-buttons">
                 <button class="modal-btn modal-btn-cancel" onclick="closeSaleModal()">Annuller</button>
@@ -647,8 +558,6 @@
 			{ name: "Entertainment", subs: ["Books", "Crafts", "Other"] }
         ];
 
-        const sizeOrder = ["XXS", "EU 32", "XS", "EU 34", "XS/S", "S", "EU 36", "S/M", "M", "EU 38", "M/L", "L", "EU 40", "L/XL", "XL", "EU 42", "XL/XXL", "XXL", "EU 44", "XXXL", "EU 46", "EU 48", "EU 50"];
-
         const scriptURL = "https://script.google.com/macros/s/AKfycbxeo26AS1wMO2itVnyiSXRlvrfUo2ei0UASOa88xiCOwT2QGJTmJ___WqTC6IxILIkk/exec";
 
         let itemStates = {};
@@ -658,6 +567,7 @@
         let activeModalItemId = null;
         let selectedModalPlatformName = '';
         let selectedModalShippingName = '';
+        let selectedModalDestinationCode = '';
 
         const bannerImageIds = {
             vinted: "1RQnjA5kqV4_QtAh6PLshhiox1TZKZtyb",
@@ -677,20 +587,66 @@
             "Pick up": "1xSmh1G9Iv4AVEzz9hZTn47RascL1Zuhe"
         };
 
-        function formatDate(dateStr) {
+        const flagImageIds = {
+            "DK": "1QfCpaOqCNVumzDYYc6a3hZ2hW9JENd_z",
+            "SE": "1w3SD7UngoarbExDKYCRmmJ9sLz2Y-KO-",
+            "PL": "1gcBINCEO5FC3e-EAQ37rxFu-EGB3HIwy",
+            "FI": "1LXV20Mqzanu-DkhNDyKq7At7qmzwWQeI",
+            "DE": "1VPIJDkp1DS9A5Aurx_7RaR-hKcJg9m12"
+        };
+
+        const bundleColors = [
+            { bg: "rgba(124, 180, 255, 0.2)", border: "#000000" },
+            { bg: "rgba(54, 100, 255, 0.2)", border: "#000000" },
+            { bg: "rgba(32, 84, 255, 0.2)", border: "#000000" },
+            { bg: "rgba(11, 25, 255, 0.2)", border: "#000000" },
+            { bg: "rgba(0, 7, 146, 0.2)", border: "#000000" }
+        ];
+
+        function normalizeToDDMMYYYY(dateStr) {
             if (!dateStr) return '';
-            const parts = dateStr.split('-');
-            if (parts.length === 3) {
-                return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            let clean = dateStr.toString().trim();
+            if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(clean)) {
+                let parts = clean.split('-');
+                return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
             }
-            return dateStr;
+            return clean;
         }
 
-        function formatCurrency(priceVal) {
-            if (priceVal === '' || priceVal === null || priceVal === undefined) return '';
-            const num = parseFloat(priceVal);
-            if (isNaN(num)) return priceVal + ' kr.';
-            return num.toLocaleString('da-DK', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kr.';
+        function formatDateOnBlur(input) {
+            let val = input.value.trim();
+            if (!val) return;
+            input.value = normalizeToDDMMYYYY(val);
+        }
+
+        function formatPriceOnBlur(input) {
+            let val = input.value.trim();
+            if (!val) return;
+            let cleanVal = val.replace(/kr\.?/gi, '').trim();
+            
+            let num = parseFloat(cleanVal.replace(/\./g, '').replace(',', '.'));
+            if (isNaN(num)) {
+                input.value = '';
+                return;
+            }
+            
+            let parts = num.toFixed(2).split('.');
+            let intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            let decPart = parts[1];
+            
+            input.value = `${intPart},${decPart} kr.`;
+        }
+
+        function formatDisplayPrice(priceStr) {
+            if (!priceStr) return '';
+            let clean = priceStr.toString().trim();
+            let cleanVal = clean.replace(/kr\.?/gi, '').trim();
+            let num = parseFloat(cleanVal.replace(/\./g, '').replace(',', '.'));
+            if (isNaN(num)) return clean;
+            
+            let parts = num.toFixed(2).split('.');
+            let intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return `${intPart},${parts[1]} kr.`;
         }
 
         async function loadCloudData() {
@@ -712,11 +668,12 @@
                         itemStates[id] = {
                             sold: Boolean(st.sold),
                             platform: st.platform || '',
-                            saleDate: st.saleDate || '',
-                            salePrice: st.salePrice || '',
+                            saleDate: normalizeToDDMMYYYY(st.saleDate || ''),
+                            salePrice: st.salePrice ? formatDisplayPrice(st.salePrice) : '',
                             shipping: st.shipping || '',
+                            destination: st.destination || '',
                             tracking: st.tracking || '',
-                            buyerUsername: st.buyerUsername || '',
+                            buyerusername: st.buyerusername || st.buyerUsername || '',
                             vinted_up: Boolean(st.vinted_up),
                             vinted_mod: Boolean(st.vinted_mod),
                             tradera_up: Boolean(st.tradera_up),
@@ -775,7 +732,7 @@
 
                 html += `
                     <div class="cat-bubble-wrapper">
-                        <div class="cat-bubble" style="background-color: ${bgColor};" onclick="handleCategorySingleClick(event, '${catObj.name}')" ondblclick="scrollToCategory('${catObj.name}')" title="${catObj.name}"></div>
+                        <div class="cat-bubble" style="background-color: ${bgColor};" onclick="handleCategorySingleClick(event, '${catObj.name}')" title="${catObj.name}"></div>
                         <div class="sub-menu-dropdown">
                             <div class="sub-menu-title">${catObj.name}</div>
                             <div class="sub-menu-item" onclick="scrollToCategory('${catObj.name}')"><b>Se hele kategorien</b></div>
@@ -887,11 +844,8 @@
                 </div>
             `;
 
-            const searchVal = document.getElementById('searchInput').value.toLowerCase();
-            const sortType = document.getElementById('sortSelect').value;
-
             let filtered = items.filter(item => {
-                const st = itemStates[item.id] || {};
+                const searchVal = document.getElementById('searchInput').value.toLowerCase();
                 const matchesSearch = !searchVal || 
                     (item.name && item.name.toLowerCase().includes(searchVal)) ||
                     (item.brand && item.brand.toLowerCase().includes(searchVal)) ||
@@ -900,59 +854,57 @@
                     (item.category && item.category.toLowerCase().includes(searchVal)) ||
                     (item.id && item.id.toString().toLowerCase().includes(searchVal));
 
-                if (!matchesSearch) return false;
-
-                if (currentFilter.startsWith('uploaded_')) return st[currentFilter.replace('uploaded_', '') + '_up'];
-                if (currentFilter.startsWith('missing_upload_')) return !st[currentFilter.replace('missing_upload_', '') + '_up'];
-                if (currentFilter.startsWith('updated_')) return st[currentFilter.replace('updated_', '') + '_mod'];
-                if (currentFilter.startsWith('missing_update_')) return !st[currentFilter.replace('missing_update_', '') + '_mod'];
-
-                if (currentFilter === 'partial_update') {
-                    const mods = ['vinted', 'tradera', 'tise', 'dba', 'marketplace', 'bought'].map(p => st[p + '_mod'] === true);
-                    const trueCount = mods.filter(Boolean).length;
-                    return trueCount >= 1 && trueCount < 6;
-                }
-                return true;
+                return matchesSearch;
             });
 
             let activeItems = filtered.filter(i => !(itemStates[i.id] && itemStates[i.id].sold));
             let soldItems = filtered.filter(i => (itemStates[i.id] && itemStates[i.id].sold));
 
-            soldItems.sort((a, b) => {
-                const dateA = (itemStates[a.id] && itemStates[a.id].saleDate) ? new Date(itemStates[a.id].saleDate) : new Date(0);
-                const dateB = (itemStates[b.id] && itemStates[b.id].saleDate) ? new Date(itemStates[b.id].saleDate) : new Date(0);
-                return dateB - dateA;
-            });
-
-            if (sortType === 'category_custom') {
+            const sortVal = document.getElementById('sortSelect').value;
+            if (sortVal === 'category_custom') {
+                const catOrder = categoriesData.map(c => c.name);
                 activeItems.sort((a, b) => {
-                    let catIdxA = categoriesData.findIndex(c => c.name === a.category);
-                    let catIdxB = categoriesData.findIndex(c => c.name === b.category);
-                    if (catIdxA === -1) catIdxA = 999;
-                    if (catIdxB === -1) catIdxB = 999;
-                    if (catIdxA !== catIdxB) return catIdxA - catIdxB;
-
-                    let subList = categoriesData[catIdxA] ? categoriesData[catIdxA].subs : [];
-                    return (subList.indexOf(a.subCategory) === -1 ? 999 : subList.indexOf(a.subCategory)) - 
-                           (subList.indexOf(b.subCategory) === -1 ? 999 : subList.indexOf(b.subCategory));
+                    let idxA = catOrder.indexOf(a.category);
+                    let idxB = catOrder.indexOf(b.category);
+                    if (idxA === -1) idxA = 999;
+                    if (idxB === -1) idxB = 999;
+                    if (idxA !== idxB) return idxA - idxB;
+                    
+                    let subList = (categoriesData.find(c => c.name === a.category) || {}).subs || [];
+                    let subIdxA = subList.indexOf(a.subCategory);
+                    let subIdxB = subList.indexOf(b.subCategory);
+                    if (subIdxA === -1) subIdxA = 999;
+                    if (subIdxB === -1) subIdxB = 999;
+                    return subIdxA - subIdxB;
                 });
-            } else if (sortType === 'size') {
-                activeItems.sort((a, b) => (sizeOrder.indexOf(a.size) === -1 ? 999 : sizeOrder.indexOf(a.size)) - (sizeOrder.indexOf(b.size) === -1 ? 999 : sizeOrder.indexOf(b.size)));
-            } else if (sortType === 'brand') {
-                activeItems.sort((a, b) => (a.brand || "").localeCompare(b.brand || ""));
-            } else if (sortType === 'id') {
-                activeItems.sort((a, b) => a.id - b.id);
+            } else if (sortVal === 'size') {
+                activeItems.sort((a, b) => (a.size || '').localeCompare(b.size || ''));
+            } else if (sortVal === 'brand') {
+                activeItems.sort((a, b) => (a.brand || '').localeCompare(b.brand || ''));
+            } else if (sortVal === 'id') {
+                activeItems.sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
             }
+
+            soldItems.sort((a, b) => {
+                const parseDate = (dateStr) => {
+                    if (!dateStr) return 0;
+                    const parts = dateStr.split('/');
+                    if (parts.length === 3) {
+                        return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`).getTime();
+                    }
+                    return 0;
+                };
+                return parseDate(itemStates[b.id]?.saleDate) - parseDate(itemStates[a.id]?.saleDate);
+            });
 
             document.getElementById('mainContainer').innerHTML = `<div class="items-grid">${activeItems.map(i => createCardHTML(i)).join('')}</div>`;
             
-            // Gruppér solgte varer efter salgsdato og køber
             let soldGroupsMap = {};
             soldItems.forEach(item => {
                 const st = itemStates[item.id] || {};
-                const sDate = st.saleDate || 'ingen-dato';
-                const bUser = (st.buyerUsername || 'ingen-køber').trim().toLowerCase();
-                const groupKey = `${sDate}_${bUser}`;
+                const sDate = (st.saleDate || '').trim();
+                const bUser = (st.buyerusername || '').trim().toLowerCase();
+                const groupKey = `${sDate}__${bUser}`;
 
                 if (!soldGroupsMap[groupKey]) {
                     soldGroupsMap[groupKey] = [];
@@ -960,40 +912,38 @@
                 soldGroupsMap[groupKey].push(item);
             });
 
-            // Byg rækker og tætsiddende rammer for solgte bundles, fordelt over maks 6 varer pr. række
             let soldHtml = '';
+            let globalIdx = 0;
+            let bundleColorIndex = 0;
+
             Object.keys(soldGroupsMap).forEach(key => {
                 const groupItems = soldGroupsMap[key];
-                let remainingItems = [...groupItems];
+                const bundleStartIndex = globalIdx;
+                const bundleEndIndex = globalIdx + groupItems.length - 1;
+                
+                const colorObj = bundleColors[bundleColorIndex % bundleColors.length];
+                bundleColorIndex++;
 
-                while (remainingItems.length > 0) {
-                    // Beregn hvor mange pladser der er tilbage på den aktuelle række (totalt 6 varer pr række)
-                    // For enkelhedens skyld spænder vi et bundle ud på rækken:
-                    const itemsInThisRow = remainingItems.slice(0, 6);
-                    const count = itemsInThisRow.length;
+                let currentIdx = bundleStartIndex;
+                while (currentIdx <= bundleEndIndex) {
+                    const startRow = Math.floor(currentIdx / 6);
+                    const startCol = (currentIdx % 6) + 1;
+                    const rowEndIdx = startRow * 6 + 5;
+                    const segEndIdx = Math.min(bundleEndIndex, rowEndIdx);
+                    const segLength = segEndIdx - currentIdx + 1;
 
-                    // Tjek om et enkelt bundle strækker sig over flere rækker (mere end 6 varer totalt i bundlet)
-                    const isMultiRow = groupItems.length > 6;
-                    const isFirstRowOfMulti = isMultiRow && remainingItems.length === groupItems.length;
-                    const isSubsequentRow = isMultiRow && remainingItems.length < groupItems.length;
-
-                    let boxClass = `bundle-span-${count}`;
-                    if (isFirstRowOfMulti && count === 6) {
-                        boxClass = 'bundle-break-right';
-                    } else if (isSubsequentRow) {
-                        boxClass = `bundle-span-${count} bundle-break-left`;
-                    }
+                    const segItems = groupItems.slice(currentIdx - bundleStartIndex, segEndIdx - bundleStartIndex + 1);
 
                     soldHtml += `
-                        <div class="sold-row-wrapper">
-                            <div class="bundle-box ${boxClass}">
-                                ${itemsInThisRow.map(i => createCardHTML(i)).join('')}
-                            </div>
+                        <div class="sold-bundle-segment" style="grid-column: ${startCol} / span ${segLength}; --seg-cols: ${segLength}; background-color: ${colorObj.bg}; border-color: ${colorObj.border};">
+                            ${segItems.map(i => createCardHTML(i)).join('')}
                         </div>
                     `;
 
-                    remainingItems = remainingItems.slice(6);
+                    currentIdx = segEndIdx + 1;
                 }
+
+                globalIdx += groupItems.length;
             });
 
             document.getElementById('soldContainer').innerHTML = soldHtml;
@@ -1007,19 +957,23 @@
             let bottomSection = '';
             if (st.sold) {
                 const bannerId = bannerImageIds[st.platform];
-                const bannerHtml = bannerId ? `<div class="sold-banner"><img src="https://lh3.googleusercontent.com/d/${bannerId}" alt="${st.platform}"></div>` : '';
+                const bannerHtml = bannerId ? `<div class="sold-banner"><img src="https://lh3.googleusercontent.com/d/${bannerId}" alt="${st.platform}"></div>` : '<div class="sold-banner" style="background:transparent;"></div>';
                 
-                let buyerHtml = '';
-                if (st.buyerUsername) {
-                    buyerHtml = `
+                let buyerRowHtml = '';
+                if (st.destination || st.buyerusername) {
+                    const flagId = flagImageIds[st.destination];
+                    const flagHtml = flagId ? `<img src="https://lh3.googleusercontent.com/d/${flagId}" alt="${st.destination}" style="width:16px; height:12px; object-fit:cover; border-radius:2px;">` : '';
+                    const userIconId = "1gk0EVPng0AbQjaoU5TZQItTC795zanvF";
+                    buyerRowHtml = `
                         <div class="sold-row-item">
-                            <img src="https://lh3.googleusercontent.com/d/1gk0EVPng0AbQjaoU5TZQItTC795zanvF" alt="Bruger">
-                            <span>${st.buyerUsername}</span>
+                            ${flagHtml}
+                            <img src="https://lh3.googleusercontent.com/d/${userIconId}" alt="Bruger">
+                            <span>${st.buyerusername || ''}</span>
                         </div>
                     `;
                 }
 
-                let shippingHtml = '';
+                let shippingRowHtml = '';
                 if (st.shipping && shippingLogoIds[st.shipping]) {
                     const shipLogoId = shippingLogoIds[st.shipping];
                     const trackingNo = st.tracking || '';
@@ -1033,9 +987,9 @@
                         else if (st.shipping === 'Bring') trackUrl = `https://tracking.bring.com/tracking/${trackingNo}`;
                     }
 
-                    shippingHtml = `
+                    shippingRowHtml = `
                         <div class="sold-row-item">
-                            <a href="${trackUrl}" target="_blank" class="sold-shipping-link" title="Spor pakke">
+                            <a href="${trackUrl}" target="_blank" class="sold-shipping-link" title="Spor pakke i ny fane">
                                 <img src="https://lh3.googleusercontent.com/d/${shipLogoId}" alt="${st.shipping}">
                                 <span>${trackingNo}</span>
                             </a>
@@ -1045,11 +999,10 @@
 
                 let saleDetailsHtml = '';
                 if (st.saleDate || st.salePrice) {
-                    const formattedDate = formatDate(st.saleDate);
-                    const formattedPrice = formatCurrency(st.salePrice);
+                    const formattedPrice = formatDisplayPrice(st.salePrice);
                     saleDetailsHtml = `
-                        <div class="sold-row-item" style="justify-content: space-between; font-size: 10px; color: #666; margin-top: 2px;">
-                            <span>${formattedDate}</span>
+                        <div class="sold-row-item" style="justify-content: space-between; font-size: 10px; color: #444; margin-top: 4px;">
+                            <span>${st.saleDate || ''}</span>
                             <span><b>${formattedPrice}</b></span>
                         </div>
                     `;
@@ -1058,8 +1011,10 @@
                 bottomSection = `
                     ${bannerHtml}
                     <div class="sold-meta-info">
-                        ${buyerHtml}
-                        ${shippingHtml}
+                        <div>
+                            ${buyerRowHtml}
+                            ${shippingRowHtml}
+                        </div>
                         ${saleDetailsHtml}
                     </div>
                 `;
@@ -1106,7 +1061,8 @@
                         </div>
                     </div>
                     ${bottomSection}
-                </div>`;
+                </div>
+            `;
         }
 
         function openSaleModal(id) {
@@ -1114,6 +1070,7 @@
             const st = itemStates[id] || {};
             selectedModalPlatformName = st.platform || '';
             selectedModalShippingName = st.shipping || '';
+            selectedModalDestinationCode = st.destination || '';
             
             const unsoldBtn = document.getElementById('modalUnsoldBtn');
             const titleText = document.getElementById('modalTitleText');
@@ -1126,10 +1083,11 @@
                 unsoldBtn.style.display = "none";
             }
 
-            document.getElementById('modalSaleDate').value = st.saleDate || new Date().toISOString().split('T')[0];
-            document.getElementById('modalSalePrice').value = st.salePrice || '';
+            let defaultDate = st.saleDate || new Date().toLocaleDateString('da-DK', {day: '2-digit', month: '2-digit', year: 'numeric'});
+            document.getElementById('modalSaleDate').value = defaultDate;
+            document.getElementById('modalSalePrice').value = st.salePrice ? formatDisplayPrice(st.salePrice) : '';
             document.getElementById('modalTracking').value = st.tracking || '';
-            document.getElementById('modalBuyer').value = st.buyerUsername || '';
+            document.getElementById('modalBuyer').value = st.buyerusername || '';
             
             document.querySelectorAll('.modal-platform-option').forEach(el => {
                 if (el.dataset.platform === selectedModalPlatformName) el.classList.add('selected');
@@ -1138,6 +1096,11 @@
 
             document.querySelectorAll('.modal-shipping-option').forEach(el => {
                 if (el.dataset.shipping === selectedModalShippingName) el.classList.add('selected');
+                else el.classList.remove('selected');
+            });
+
+            document.querySelectorAll('.modal-flag-option').forEach(el => {
+                if (el.dataset.destination === selectedModalDestinationCode) el.classList.add('selected');
                 else el.classList.remove('selected');
             });
 
@@ -1160,6 +1123,14 @@
             });
         }
 
+        function selectModalDestination(code) {
+            selectedModalDestinationCode = code;
+            document.querySelectorAll('.modal-flag-option').forEach(el => {
+                if (el.dataset.destination === code) el.classList.add('selected');
+                else el.classList.remove('selected');
+            });
+        }
+
         function closeSaleModal() {
             document.getElementById('saleModal').classList.remove('show');
             activeModalItemId = null;
@@ -1172,10 +1143,18 @@
             itemStates[activeModalItemId].sold = true;
             itemStates[activeModalItemId].platform = selectedModalPlatformName;
             itemStates[activeModalItemId].shipping = selectedModalShippingName;
-            itemStates[activeModalItemId].saleDate = document.getElementById('modalSaleDate').value;
-            itemStates[activeModalItemId].salePrice = document.getElementById('modalSalePrice').value;
+            itemStates[activeModalItemId].destination = selectedModalDestinationCode;
+            
+            let dateInput = document.getElementById('modalSaleDate');
+            formatDateOnBlur(dateInput);
+            itemStates[activeModalItemId].saleDate = dateInput.value;
+            
+            let priceInput = document.getElementById('modalSalePrice');
+            formatPriceOnBlur(priceInput);
+            itemStates[activeModalItemId].salePrice = priceInput.value;
+
             itemStates[activeModalItemId].tracking = document.getElementById('modalTracking').value;
-            itemStates[activeModalItemId].buyerUsername = document.getElementById('modalBuyer').value;
+            itemStates[activeModalItemId].buyerusername = document.getElementById('modalBuyer').value;
 
             closeSaleModal();
             renderItems();
@@ -1189,10 +1168,11 @@
             itemStates[activeModalItemId].sold = false;
             itemStates[activeModalItemId].platform = '';
             itemStates[activeModalItemId].shipping = '';
+            itemStates[activeModalItemId].destination = '';
             itemStates[activeModalItemId].saleDate = '';
             itemStates[activeModalItemId].salePrice = '';
             itemStates[activeModalItemId].tracking = '';
-            itemStates[activeModalItemId].buyerUsername = '';
+            itemStates[activeModalItemId].buyerusername = '';
 
             closeSaleModal();
             renderItems();
