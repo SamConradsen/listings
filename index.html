@@ -253,6 +253,7 @@
 
         .sold-bundle-segment {
             display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 8px;
             border-radius: 14px;
             padding: 8px;
@@ -260,12 +261,14 @@
         }
         @media (min-width: 768px) {
             .sold-bundle-segment {
+                grid-template-columns: repeat(5, 1fr);
                 gap: 10px;
                 padding: 10px;
             }
         }
         @media (min-width: 1200px) {
             .sold-bundle-segment {
+                grid-template-columns: repeat(6, 1fr);
                 gap: 12px;
                 padding: 12px;
             }
@@ -303,14 +306,26 @@
             filter: saturate(30%) brightness(85%);
             opacity: 0.7;
         }
-        
         .sold-icon-btn { position: absolute; top: 4px; left: 4px; background: rgba(255,255,255,0.9); border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; padding: 0; opacity: 0.6; transition: opacity 0.2s ease; }
         .item-image-container:hover .sold-icon-btn { opacity: 1; }
         .sold-icon-btn img { width: 13px; height: 13px; object-fit: contain; }
 
-        .item-info { font-size: 11px; margin-bottom: 4px; height: 38px; display: flex; flex-direction: column; justify-content: space-between; }
-        .item-name { font-weight: 600; height: 24px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 2px; }
-        .item-meta { display: flex; justify-content: space-between; color: #666; font-size: 10px; }
+        /* Rettet for at undgå at titlen skæres over lodret på mobil/tablet */
+        .item-info { font-size: 11px; margin-bottom: 4px; display: flex; flex-direction: column; justify-content: space-between; min-height: 40px; }
+        .item-name { 
+            font-weight: 600; 
+            font-size: 10.5px;
+            line-height: 1.25;
+            max-height: 2.5em; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            display: -webkit-box; 
+            -webkit-line-clamp: 2; 
+            -webkit-box-orient: vertical; 
+            margin-bottom: 2px; 
+            word-break: break-word;
+        }
+        .item-meta { display: flex; justify-content: space-between; color: #666; font-size: 9.5px; }
         
         .platforms-grid { 
             display: grid; 
@@ -421,6 +436,7 @@
             white-space: nowrap;
         }
 
+        /* Modal / Sold pop-up tilpasninger til mobil og tablet */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -430,39 +446,81 @@
             z-index: 100000;
             align-items: center;
             justify-content: center;
+            padding: 10px;
         }
         .modal-overlay.show { display: flex; }
         .modal-card {
             background: #fff;
             padding: 14px 16px;
             border-radius: 16px;
-            width: 90%;
-            max-width: 380px;
+            width: 100%;
+            max-width: 360px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             text-align: center;
             max-height: 92vh;
             overflow-y: auto;
+            box-sizing: border-box;
         }
         .modal-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
-        .modal-platforms { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 8px; }
-        .modal-platform-option {
-            border: 2px solid #eee; border-radius: 6px; padding: 4px; cursor: pointer; background: #f8f9fa; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1;
-        }
-        .modal-shipping-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 8px; }
-        .modal-shipping-option { border: 2px solid #eee; border-radius: 6px; padding: 4px; cursor: pointer; background: #f8f9fa; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; }
         
-        .modal-flag-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-bottom: 10px; }
-        .modal-flag-option { border: 2px solid #eee; border-radius: 6px; padding: 4px; cursor: pointer; background: #f8f9fa; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; }
+        .modal-platforms, .modal-shipping-grid { 
+            display: grid; 
+            grid-template-columns: repeat(6, 1fr); 
+            gap: 4px; 
+            margin-bottom: 8px; 
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .modal-platform-option, .modal-shipping-option { 
+            border: 2px solid #eee; 
+            border-radius: 6px; 
+            padding: 3px; 
+            cursor: pointer; 
+            background: #f8f9fa; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            aspect-ratio: 1/1; 
+            box-sizing: border-box;
+            min-width: 0;
+        }
+        
+        .modal-flag-grid { 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 4px; 
+            margin-bottom: 10px; 
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .modal-flag-option { 
+            border: 2px solid #eee; 
+            border-radius: 6px; 
+            padding: 3px; 
+            cursor: pointer; 
+            background: #f8f9fa; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            aspect-ratio: 1/1; 
+            box-sizing: border-box;
+            min-width: 0;
+        }
 
-        .modal-platform-option img, .modal-shipping-option img, .modal-flag-option img { width: 100%; height: 100%; object-fit: cover; border-radius: 3px; }
+        .modal-platform-option img, .modal-shipping-option img, .modal-flag-option img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; 
+            border-radius: 3px; 
+            display: block;
+        }
         .modal-platform-option:hover, .modal-platform-option.selected, 
         .modal-shipping-option:hover, .modal-shipping-option.selected,
         .modal-flag-option:hover, .modal-flag-option.selected { border-color: #000; background: #e9ecef; }
         
         .modal-inputs { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; text-align: left; }
         .modal-inputs label { font-size: 11px; font-weight: 600; color: #555; }
-        .modal-inputs input { width: 100%; padding: 5px 10px; font-size: 12px; }
+        .modal-inputs input { width: 100%; padding: 5px 10px; font-size: 12px; box-sizing: border-box; }
         .modal-buttons { display: flex; gap: 8px; justify-content: space-between; align-items: center; margin-top: 4px; }
         .modal-btn { padding: 6px 14px; border-radius: 20px; border: none; font-size: 12px; cursor: pointer; font-weight: 600; }
         .modal-btn-cancel { background: #e9ecef; color: #333; }
@@ -768,7 +826,6 @@
         function formatDisplayDate(dateStr) {
             if (!dateStr) return '';
             let clean = dateStr.toString().trim();
-            // Hvis skærmbredden er under 768px (typiskmobil/tablet-visning), forkortes årstallet
             if (window.innerWidth < 768) {
                 let parts = clean.split('/');
                 if (parts.length === 3 && parts[2].length === 4) {
@@ -794,6 +851,7 @@
                     const rawStates = data.states || {};
                     Object.keys(rawStates).forEach(id => {
                         const st = rawStates[id] || {};
+                        const bUser = (st.buyerusername || st.buyerUsername || '').trim();
                         itemStates[id] = {
                             sold: Boolean(st.sold),
                             platform: st.platform || '',
@@ -802,7 +860,7 @@
                             shipping: st.shipping || '',
                             destination: st.destination || '',
                             tracking: st.tracking || '',
-                            buyerusername: (st.buyerusername || st.buyerUsername || '').trim(),
+                            buyerusername: bUser,
                             vinted_up: Boolean(st.vinted_up),
                             vinted_mod: Boolean(st.vinted_mod),
                             tradera_up: Boolean(st.tradera_up),
