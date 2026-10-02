@@ -226,26 +226,53 @@
         @media (min-width: 1200px) { .items-grid { grid-template-columns: repeat(6, 1fr); gap: 12px; } }
 
         .sold-flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .sold-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
             width: 100%;
         }
-        @media (min-width: 768px) { .sold-flow-container { grid-template-columns: repeat(5, 1fr); gap: 10px; } }
-        @media (min-width: 1200px) { .sold-flow-container { grid-template-columns: repeat(6, 1fr); gap: 12px; } }
+        @media (min-width: 768px) {
+            .sold-row {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 10px;
+            }
+        }
+        @media (min-width: 1200px) {
+            .sold-row {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 12px;
+            }
+        }
 
         .sold-bundle-segment {
-            border-radius: 14px;
-            padding: 6px;
-            margin: -3px;
             display: grid;
-            grid-template-columns: repeat(var(--seg-cols), 1fr);
-            gap: inherit;
-            border: 2px dashed rgba(0,0,0,0.15);
+            gap: 8px;
+            border-radius: 14px;
+            padding: 8px;
+            border: 2px dashed;
+        }
+        @media (min-width: 768px) {
+            .sold-bundle-segment {
+                gap: 10px;
+                padding: 10px;
+            }
+        }
+        @media (min-width: 1200px) {
+            .sold-bundle-segment {
+                gap: 12px;
+                padding: 12px;
+            }
         }
 
         .item-card {
-            background: #fff;
+            background: #f2f4f7;
             border-radius: 10px;
             padding: 6px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
@@ -364,6 +391,9 @@
             gap: 5px;
             color: #444;
             font-weight: 600;
+            overflow: hidden;
+            white-space: nowrap;
+            min-width: 0;
         }
         .sold-row-item img {
             width: 16px;
@@ -379,8 +409,17 @@
             align-items: center;
             gap: 5px;
             transition: opacity 0.15s;
+            overflow: hidden;
+            white-space: nowrap;
+            min-width: 0;
+            width: 100%;
         }
         .sold-shipping-link:hover { opacity: 0.7; }
+        .sold-shipping-link span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
         .modal-overlay {
             display: none;
@@ -638,11 +677,12 @@
         };
 
         const bundleColors = [
-            { bg: "rgba(124, 180, 255, 0.2)", border: "#000000" },
-            { bg: "rgba(54, 100, 255, 0.2)", border: "#000000" },
-            { bg: "rgba(32, 84, 255, 0.2)", border: "#000000" },
-            { bg: "rgba(11, 25, 255, 0.2)", border: "#000000" },
-            { bg: "rgba(0, 7, 146, 0.2)", border: "#000000" }
+            { bg: "rgba(124, 180, 255, 0.15)", border: "#017782" },
+            { bg: "rgba(255, 143, 119, 0.15)", border: "#ff8f77" },
+            { bg: "rgba(254, 248, 128, 0.2)", border: "#d4ac0d" },
+            { bg: "rgba(0, 51, 102, 0.1)", border: "#003366" },
+            { bg: "rgba(24, 119, 242, 0.15)", border: "#1877f2" },
+            { bg: "rgba(108, 117, 125, 0.15)", border: "#6c757d" }
         ];
 
         function normalizeToDDMMYYYY(dateStr) {
@@ -725,6 +765,19 @@
             return `${intPart},${parts[1]} kr.`;
         }
 
+        function formatDisplayDate(dateStr) {
+            if (!dateStr) return '';
+            let clean = dateStr.toString().trim();
+            // Hvis skærmbredden er under 768px (typiskmobil/tablet-visning), forkortes årstallet
+            if (window.innerWidth < 768) {
+                let parts = clean.split('/');
+                if (parts.length === 3 && parts[2].length === 4) {
+                    return `${parts[0]}/${parts[1]}/${parts[2].slice(2)}`;
+                }
+            }
+            return clean;
+        }
+
         async function loadCloudData() {
             try {
                 const response = await fetch(scriptURL + "?action=data");
@@ -749,7 +802,7 @@
                             shipping: st.shipping || '',
                             destination: st.destination || '',
                             tracking: st.tracking || '',
-                            buyerusername: st.buyerusername || st.buyerUsername || '',
+                            buyerusername: (st.buyerusername || st.buyerUsername || '').trim(),
                             vinted_up: Boolean(st.vinted_up),
                             vinted_mod: Boolean(st.vinted_mod),
                             tradera_up: Boolean(st.tradera_up),
@@ -798,7 +851,6 @@
             const nav = document.getElementById('stickyNav');
             let html = '';
             
-            // TOP knap med det faste, korrekte ikon (ID 1IPeU2HEIrjb2fZB51Rgj4Vkw0aXYe3S7)
             html += `<div class="cat-bubble top-bubble" onclick="scrollToTop()" title="Til toppen"><img src="https://lh3.googleusercontent.com/d/1NIfUFbbyZhgFQPCDpZ0ATJgBweJDdsY2" alt="TOP"></div>`;
 
             const totalCategories = categoriesData.length;
@@ -823,7 +875,6 @@
                 `;
             });
 
-            // SOLD knap med det faste, korrekte ikon (ID 1rd7B8HCtrqtYBsCDxr34Kf7NHrVYdXPO)
             html += `<div class="cat-bubble sold-bubble" onclick="scrollToSold()" title="Solgte varer"><img src="https://lh3.googleusercontent.com/d/1i583mUsElq7L9KIsg9mmizVUPflcOMq7" alt="SOLD"></div>`;
             nav.innerHTML = html;
         }
@@ -900,8 +951,6 @@
                 }
             });
 
-            // Varen skal kun vises, hvis mindst én platform er opdateret,
-            // og den IKKE er opdateret på alle de platforme, hvor den faktisk er uploaded.
             if (updatedCount === 0) return false;
             if (uploadedPlatforms.length > 0 && updatedCount >= uploadedPlatforms.length) return false;
             
@@ -1051,7 +1100,8 @@
                 const st = itemStates[item.id] || {};
                 const sDate = (st.saleDate || '').trim();
                 const bUser = (st.buyerusername || '').trim().toLowerCase();
-                const groupKey = `${sDate}__${bUser}`;
+                const platform = (st.platform || '').trim().toLowerCase();
+                const groupKey = `${sDate}__${bUser}__${platform}`;
 
                 if (!soldGroupsMap[groupKey]) {
                     soldGroupsMap[groupKey] = [];
@@ -1059,38 +1109,69 @@
                 soldGroupsMap[groupKey].push(item);
             });
 
-            let soldHtml = '';
-            let globalIdx = 0;
+            let soldBundles = [];
             let bundleColorIndex = 0;
 
             Object.keys(soldGroupsMap).forEach(key => {
                 const groupItems = soldGroupsMap[key];
-                const bundleStartIndex = globalIdx;
-                const bundleEndIndex = globalIdx + groupItems.length - 1;
-                
                 const colorObj = bundleColors[bundleColorIndex % bundleColors.length];
                 bundleColorIndex++;
+                soldBundles.push({
+                    id: key,
+                    color: colorObj,
+                    items: groupItems
+                });
+            });
 
-                let currentIdx = bundleStartIndex;
-                while (currentIdx <= bundleEndIndex) {
-                    const startRow = Math.floor(currentIdx / 6);
-                    const startCol = (currentIdx % 6) + 1;
-                    const rowEndIdx = startRow * 6 + 5;
-                    const segEndIdx = Math.min(bundleEndIndex, rowEndIdx);
-                    const segLength = segEndIdx - currentIdx + 1;
+            const maxPerRow = window.innerWidth >= 1200 ? 6 : (window.innerWidth >= 768 ? 5 : 3);
 
-                    const segItems = groupItems.slice(currentIdx - bundleStartIndex, segEndIdx - bundleStartIndex + 1);
+            let flatQueue = [];
+            soldBundles.forEach(bundle => {
+                bundle.items.forEach(item => {
+                    flatQueue.push({
+                        item: item,
+                        bundleId: bundle.id,
+                        color: bundle.color
+                    });
+                });
+            });
 
-                    soldHtml += `
-                        <div class="sold-bundle-segment" style="grid-column: ${startCol} / span ${segLength}; --seg-cols: ${segLength}; background-color: ${colorObj.bg}; border-color: ${colorObj.border};">
-                            ${segItems.map(i => createCardHTML(i)).join('')}
+            let rows = [];
+            for (let i = 0; i < flatQueue.length; i += maxPerRow) {
+                rows.push(flatQueue.slice(i, i + maxPerRow));
+            }
+
+            let soldHtml = '';
+            rows.forEach(rowItems => {
+                let rowSegments = [];
+                rowItems.forEach(qi => {
+                    let lastSeg = rowSegments[rowSegments.length - 1];
+                    if (lastSeg && lastSeg.bundleId === qi.bundleId) {
+                        lastSeg.items.push(qi.item);
+                    } else {
+                        rowSegments.push({
+                            bundleId: qi.bundleId,
+                            color: qi.color,
+                            items: [qi.item]
+                        });
+                    }
+                });
+
+                let segmentsHtml = '';
+                rowSegments.forEach(seg => {
+                    const count = seg.items.length;
+                    segmentsHtml += `
+                        <div class="sold-bundle-segment" style="grid-column: span ${count}; grid-template-columns: repeat(${count}, 1fr); background-color: ${seg.color.bg}; border-color: ${seg.color.border};">
+                            ${seg.items.map(item => createCardHTML(item)).join('')}
                         </div>
                     `;
+                });
 
-                    currentIdx = segEndIdx + 1;
-                }
-
-                globalIdx += groupItems.length;
+                soldHtml += `
+                    <div class="sold-row" style="grid-template-columns: repeat(${maxPerRow}, 1fr);">
+                        ${segmentsHtml}
+                    </div>
+                `;
             });
 
             document.getElementById('soldContainer').innerHTML = soldHtml;
@@ -1115,7 +1196,7 @@
                         <div class="sold-row-item">
                             ${flagHtml}
                             <img src="https://lh3.googleusercontent.com/d/${userIconId}" alt="Bruger">
-                            <span>${st.buyerusername || ''}</span>
+                            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${st.buyerusername || ''}</span>
                         </div>
                     `;
                 }
@@ -1146,11 +1227,12 @@
 
                 let saleDetailsHtml = '';
                 if (st.saleDate || st.salePrice) {
+                    const formattedDate = formatDisplayDate(st.saleDate);
                     const formattedPrice = formatDisplayPrice(st.salePrice);
                     saleDetailsHtml = `
                         <div class="sold-row-item" style="justify-content: space-between; font-size: 10px; color: #444; margin-top: 2px;">
-                            <span>${st.saleDate || ''}</span>
-                            <span><b>${formattedPrice}</b></span>
+                            <span style="white-space: nowrap;">${formattedDate}</span>
+                            <span style="white-space: nowrap;"><b>${formattedPrice}</b></span>
                         </div>
                     `;
                 }
@@ -1309,7 +1391,7 @@
             itemStates[activeModalItemId].salePrice = priceInput.value;
 
             itemStates[activeModalItemId].tracking = document.getElementById('modalTracking').value;
-            itemStates[activeModalItemId].buyerusername = document.getElementById('modalBuyer').value;
+            itemStates[activeModalItemId].buyerusername = (document.getElementById('modalBuyer').value || '').trim();
 
             closeSaleModal();
             renderItems();
