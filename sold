@@ -399,7 +399,7 @@
         async function loadCloudData() {
             try {
                 // Hent udelukkende solgte varer fra Apps Script API'et
-                const response = await fetch(scriptURL + "?action=data&sold=true");
+                const response = await fetch(scriptURL + "?action=data&sold=true", { redirect: "follow" });
                 const data = await response.json();
                 if (data) {
                     items = data.items || [];
