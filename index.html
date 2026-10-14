@@ -583,7 +583,7 @@
                 const r = Math.round(135 - ratio * (135 - 0));
                 const g = Math.round(206 - ratio * (206 - 80));
                 const b = Math.round(250 - ratio * (250 - 160));
-                const bgColor = `rgb(${r}, ${g},${b})`;
+                const bgColor = `rgb(${r}, ${g}, ${b})`;
 
                 html += `
                     <div class="cat-bubble-wrapper">
@@ -598,8 +598,8 @@
                 `;
             });
 
-            // Går direkte til sold.html på GitHub
-            html += `<div class="cat-bubble sold-bubble" onclick="window.location.href='sold.html'" title="Solgte varer"><img src="https://lh3.googleusercontent.com/d/1i583mUsElq7L9KIsg9mmizVUPflcOMq7" alt="SOLD"></div>`;
+            // Peger korrekt på filen 'sold' uden filendelse
+            html += `<div class="cat-bubble sold-bubble" onclick="window.location.href='sold'" title="Solgte varer"><img src="https://lh3.googleusercontent.com/d/1i583mUsElq7L9KIsg9mmizVUPflcOMq7" alt="SOLD"></div>`;
             nav.innerHTML = html;
         }
 
@@ -790,7 +790,7 @@
             const imgUrl = item.image ? `https://lh3.googleusercontent.com/d/${item.image}` : '';
 
             return `
-                <div class="item-card" id="card-${item.id}" data-category-name="${item.category || ''}" data-sub-category="${item.subCategory \vert{}\vert{} ''}" data-size="${item.size || ''}">
+                <div class="item-card" id="card-${item.id}" data-category-name="${item.category || ''}" data-sub-category="${item.subCategory || ''}" data-size="${item.size || ''}">
                     <div class="item-image-container">
                         <button class="sold-icon-btn" onclick="openSaleModal(${item.id})" title="Marker som solgt"><img src="https://lh3.googleusercontent.com/d/19KRRSJU1UkueZhQLvNVuYlai2TyCKjKV" alt="Solgt"></button>
                         <img src="${imgUrl}" alt="${item.name || ''}" loading="lazy">
@@ -798,7 +798,7 @@
                     <div class="item-info">
                         <div class="item-name">${item.name || ''}</div>
                         <div class="item-meta">
-                            <span>${item.brand \vert{}\vert{} ''} • <b>${item.size || ''}</b></span>
+                            <span>${item.brand || ''} • <b>${item.size || ''}</b></span>
                             <span>#${item.id}</span>
                         </div>
                     </div>
