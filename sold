@@ -398,7 +398,6 @@
 
         async function loadCloudData() {
             try {
-                // Hent udelukkende solgte varer fra Apps Script API'et
                 const response = await fetch(scriptURL + "?action=data&sold=true", { redirect: "follow" });
                 const data = await response.json();
                 if (data) {
@@ -529,7 +528,7 @@
                 rowSegments.forEach(seg => {
                     const count = seg.items.length;
                     segmentsHtml += `
-                        <div class="sold-bundle-segment" style="grid-column: span ${count}; grid-template-columns: repeat(${count}, 1fr); background-color: ${seg.color.bg}; border-color:${seg.color.border};">
+                        <div class="sold-bundle-segment" style="grid-column: span ${count}; grid-template-columns: repeat(${count}, 1fr); background-color: ${seg.color.bg}; border-color: ${seg.color.border};">
                             ${seg.items.map(item => createCardHTML(item)).join('')}
                         </div>
                     `;
@@ -550,4 +549,149 @@
             let buyerRowHtml = '';
             if (st.destination || st.buyerusername) {
                 const flagId = flagImageIds[st.destination];
-                const flagHtml = flagId ? `<img src
+                const flagHtml = flagId ? `<img src="https://lh3.googleusercontent.com/d/${flagId}" alt="${st.destination}" style="width:14px; height:10px; object-fit:cover; border-radius:2px;">` : '';
+                buyerRowHtml = `
+                    <div class="sold-row-item">
+                        ${flagHtml}
+                        <img src="https://lh3.googleusercontent.com/d/1gk0EVPng0AbQjaoU5TZQItTC795zanvF" alt="Bruger">
+                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${st.buyerusername || ''}</span>
+                    </div>
+                `;
+            }
+
+            let shippingRowHtml = '';
+            if (st.shipping && shippingLogoIds[st.shipping]) {
+                const shipLogoId = shippingLogoIds[st.shipping];
+                const trackingNo = st.tracking || '';
+                let trackUrl = '#';
+                if (trackingNo) {
+                    if (st.shipping === 'PostNord') trackUrl = `https://www.postnord.dk/varktojer/track-trace/?shipmentId=${trackingNo}`;
+                    else if (st.shipping === 'DAO') trackUrl = `https://dao.as/find-din-pakke/#q=${trackingNo}`;
+                    else if (st.shipping === 'GLS') trackUrl = `https://gls-group.eu/DK/da/find-pakke/?match=${trackingNo}`;
+                    else if (st.shipping === 'Instabox') trackUrl = `https://track.instabox.com/da/${trackingNo}/verify`;
+                    else if (st.shipping === 'Bring') trackUrl = `https://tracking.bring.com/tracking/${trackingNo}`;
+                }
+                shippingRowHtml = `
+                    <div class="sold-row-item">
+                        <a href="${trackUrl}" target="_blank" class="sold-shipping-link" title="Spor pakke i ny fane">
+                            <img src="https://lh3.googleusercontent.com/d/${shipLogoId}" alt="${st.shipping}">
+                            <span>${trackingNo}</span>
+                        </a>
+                    </div>
+                `;
+            }
+
+            let saleDetailsHtml = '';
+            if (st.saleDate || st.salePrice) {
+                saleDetailsHtml = `
+                    <div class="sold-row-item" style="justify-content: space-between; font-size: 10px; color: #444; margin-top: 2px;">
+                        <span style="white-space: nowrap;">${formatDisplayDate(st.saleDate)}</span>
+                        <span style="white-space: nowrap;"><b>${formatDisplayPrice(st.salePrice)}</b></span>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="item-card sold" id="card-${item.id}">
+                    <div class="item-image-container">
+                        <button class="sold-icon-btn" onclick="openSaleModal(${item.id})" title="Rediger salgsdetaljer"><img src="https://lh3.googleusercontent.com/d/19KRRSJU1UkueZhQLvNVuYlai2TyCKjKV" alt="Rediger"></button>
+                        <img src="${imgUrl}" alt="${item.name || ''}" loading="lazy">
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">${item.name || ''}</div>
+                        <div class="item-meta">
+                            <span>${item.brand || ''} • <b>${item.size || ''}</b></span>
+                            <span>#${item.id}</span>
+                        </div>
+                    </div>
+                    ${bannerHtml}
+                    <div class="sold-meta-info">
+                        <div>${buyerRowHtml}${shippingRowHtml}</div>
+                        ${saleDetailsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function openSaleModal(id) {
+            activeModalItemId = id;
+            const st = itemStates[id] || {};
+            selectedModalPlatformName = st.platform || '';
+            selectedModalShippingName = st.shipping || '';
+            selectedModalDestinationCode = st.destination || '';
+
+            document.getElementById('modalSaleDate').value = st.saleDate || '';
+            document.getElementById('modalSalePrice').value = st.salePrice ? formatDisplayPrice(st.salePrice) : '';
+            document.getElementById('modalTracking').value = st.tracking || '';
+            document.getElementById('modalBuyer').value = st.buyerusername || '';
+            
+            document.querySelectorAll('.modal-platform-option').forEach(el => el.classList.toggle('selected', el.dataset.platform === selectedModalPlatformName));
+            document.querySelectorAll('.modal-shipping-option').forEach(el => el.classList.toggle('selected', el.dataset.shipping === selectedModalShippingName));
+            document.querySelectorAll('.modal-flag-option').forEach(el => el.classList.toggle('selected', el.dataset.destination === selectedModalDestinationCode));
+
+            document.getElementById('saleModal').classList.add('show');
+        }
+
+        function selectModalPlatform(p) { selectedModalPlatformName = p; document.querySelectorAll('.modal-platform-option').forEach(el => el.classList.toggle('selected', el.dataset.platform === p)); }
+        function selectModalShipping(s) { selectedModalShippingName = s; document.querySelectorAll('.modal-shipping-option').forEach(el => el.classList.toggle('selected', el.dataset.shipping === s)); }
+        function selectModalDestination(c) { selectedModalDestinationCode = c; document.querySelectorAll('.modal-flag-option').forEach(el => el.classList.toggle('selected', el.dataset.destination === c)); }
+        function closeSaleModal() { document.getElementById('saleModal').classList.remove('show'); activeModalItemId = null; }
+
+        function saveSaleModal() {
+            if (!activeModalItemId) return;
+            if (!itemStates[activeModalItemId]) itemStates[activeModalItemId] = {};
+            itemStates[activeModalItemId].sold = true;
+            itemStates[activeModalItemId].platform = selectedModalPlatformName;
+            itemStates[activeModalItemId].shipping = selectedModalShippingName;
+            itemStates[activeModalItemId].destination = selectedModalDestinationCode;
+            
+            let dateInput = document.getElementById('modalSaleDate');
+            formatDateOnBlur(dateInput);
+            itemStates[activeModalItemId].saleDate = dateInput.value;
+            
+            let priceInput = document.getElementById('modalSalePrice');
+            formatPriceOnBlur(priceInput);
+            itemStates[activeModalItemId].salePrice = priceInput.value;
+            itemStates[activeModalItemId].tracking = document.getElementById('modalTracking').value;
+            itemStates[activeModalItemId].buyerusername = (document.getElementById('modalBuyer').value || '').trim();
+
+            closeSaleModal();
+            renderItems();
+            triggerAutoSave();
+        }
+
+        function markAsUnsoldFromModal() {
+            if (!activeModalItemId) return;
+            if (!itemStates[activeModalItemId]) itemStates[activeModalItemId] = {};
+            itemStates[activeModalItemId].sold = false;
+            itemStates[activeModalItemId].platform = '';
+            itemStates[activeModalItemId].shipping = '';
+            itemStates[activeModalItemId].destination = '';
+            itemStates[activeModalItemId].saleDate = '';
+            itemStates[activeModalItemId].salePrice = '';
+            itemStates[activeModalItemId].tracking = '';
+            itemStates[activeModalItemId].buyerusername = '';
+
+            closeSaleModal();
+            renderItems();
+            triggerAutoSave();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = message;
+            toast.classList.add('show');
+            if (window.toastTimer) clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        window.onload = async function() {
+            renderTopNav();
+            await loadCloudData();
+            renderItems();
+        };
+    </script>
+<div id="toast" class="toast"></div>
+</body>
+</html>
