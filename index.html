@@ -598,8 +598,9 @@
                 `;
             });
 
-            // Skal fører til 'Sold'-siden fra topmenu
-            html += `<a href="sold.html" style="text-decoration: none; display: inline-flex;"><div class="cat-bubble sold-bubble" title="Solgte varer"><img src="https://lh3.googleusercontent.com/d/1i583mUsElq7L9KIsg9mmizVUPflcOMq7" alt="SOLD"></div></a>`;
+            // Sikker omdirigering til sold.html
+            html += `<div class="cat-bubble sold-bubble" onclick="window.location.assign('sold.html')" title="Solgte varer"><img src="https://lh3.googleusercontent.com/d/1i583mUsElq7L9KIsg9mmizVUPflcOMq7" alt="SOLD"></div>`;
+            nav.innerHTML = html;
         }
 
         document.addEventListener('click', function(event) {
