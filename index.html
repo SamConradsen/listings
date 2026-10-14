@@ -507,7 +507,7 @@
 
         async function loadCloudData() {
             try {
-                const response = await fetch(scriptURL + "?action=data&sold=false");
+                const response = await fetch(scriptURL + "?action=data&sold=false", { redirect: "follow" });
                 const data = await response.json();
                 if (data) {
                     items = (data.items || []).map(item => ({
