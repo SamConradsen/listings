@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sam's Listing Organizer - Solgte varer</title>
+	<link rel="icon" href="https://lh3.googleusercontent.com/d/17utevXlqfU3aBBPqflBYUEspJqtevt_4">
+	<style>
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(35, 35, 35, 0.92);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 13px;
+            z-index: 10000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+            text-align: center;
+            max-width: 90%;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .sticky-top-menu {
+            position: sticky;
+            top: 0;
+            background: rgba(248, 249, 250, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            padding: 8px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: visible;
+            white-space: nowrap;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .cat-bubble {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255,255,255,0.6);
+            overflow: hidden;
+        }
+        .cat-bubble:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .cat-bubble img { width: 100%; height: 100%; object-fit: cover; }
+        .top-bubble { background: #c5d4eb !important; border: 1px solid #c5d4eb; }
+        .sold-bubble { background: #c5d4eb !important; border: 1px solid #c5d4eb; }
+
+        header { text-align: center; margin: 10px 0 8px 0; }
+        header img { max-width: 100%; height: auto; max-height: 80px; }
+
+        .controls-container {
+            display: flex; flex-direction: column; gap: 8px;
+            width: 100%; max-width: 1400px; margin: 0 auto 12px auto;
+            background: #fff; padding: 10px 12px; border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .top-bar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; position: relative; }
+        
+        select, input[type="text"], input[type="date"] { padding: 6px 12px; border-radius: 20px; border: 1px solid #ccc; font-size: 13px; outline: none; background: #fff; }
+        select { cursor: pointer; }
+        input[type="text"] { flex-grow: 1; max-width: 280px; }
+        
+        .extra-tools-bar { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 8px; }
+        .total-counter-display { font-size: 11px; font-weight: 600; color: #555; background: #f1f3f5; padding: 2px 8px; border-radius: 10px; border: 1px solid #dee2e6; }
+
+        .floating-save-bubble {
+            position: fixed; bottom: 25px; right: 25px; width: 56px; height: 56px;
+            background: #fff; border-radius: 50%; box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            border: 1px solid #eee; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 2000; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .floating-save-bubble:hover { transform: scale(1.08); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+        .floating-save-bubble img { width: 26px; height: 26px; object-fit: contain; }
+
+        .main-content { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 10px; }
+        .category-title { font-size: 14px; font-weight: 700; color: #444; margin: 14px 0 8px 0; text-align: center; }
+
+        .sold-flow-container { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+
+        .sold-row {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%;
+        }
+        @media (min-width: 768px) { .sold-row { grid-template-columns: repeat(5, 1fr); gap: 10px; } }
+        @media (min-width: 1200px) { .sold-row { grid-template-columns: repeat(6, 1fr); gap: 12px; } }
+
+        .sold-bundle-segment {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+            border-radius: 14px; padding: 8px; border: 2px dashed;
+        }
+        @media (min-width: 768px) { .sold-bundle-segment { grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 10px; } }
+        @media (min-width: 1200px) { .sold-bundle-segment { grid-template-columns: repeat(6, 1fr); gap: 12px; padding: 12px; } }
+
+        .item-card {
+            background: #f2f4f7; border-radius: 10px; padding: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex;
+            flex-direction: column; justify-content: space-between; width: 100%;
+            min-width: 0; border: 1px solid #e0e0e0; position: relative; z-index: 2;
+        }
+
+        .item-image-container {
+            width: 100%; aspect-ratio: 4 / 5; background: #f0f0f0;
+            border-radius: 6px; overflow: hidden; margin-bottom: 4px; position: relative; flex-shrink: 0;
+        }
+        .item-image-container img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(30%) brightness(85%); opacity: 0.7; }
+        
+        .sold-icon-btn {
+            position: absolute; top: 4px; left: 4px; background: rgba(255,255,255,0.9);
+            border: none; width: 26px; height: 26px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; cursor: pointer; z-index: 2; padding: 0; opacity: 0.6; transition: opacity 0.2s ease;
+        }
+        .item-image-container:hover .sold-icon-btn { opacity: 1; }
+        .sold-icon-btn img { width: 13px; height: 13px; object-fit: contain; }
+
+        .item-info { font-size: 11px; margin-bottom: 4px; height: 38px; display: flex; flex-direction: column; justify-content: space-between; }
+        .item-name { font-weight: 600; height: 24px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 2px; }
+        .item-meta { display: flex; justify-content: space-between; color: #666; font-size: 10px; }
+
+        .sold-banner { width: 100%; height: 22px; margin-top: 4px; border-radius: 5px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #eee; flex-shrink: 0; }
+        .sold-banner img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .sold-meta-info {
+            margin-top: 4px; font-size: 10px; display: flex; flex-direction: column;
+            gap: 3px; border-top: 1px solid #eee; padding-top: 4px; min-height: 52px; justify-content: space-between;
+        }
+        .sold-row-item { display: flex; align-items: center; gap: 5px; color: #444; font-weight: 600; overflow: hidden; white-space: nowrap; min-width: 0; }
+        .sold-row-item img { width: 16px; height: 16px; object-fit: cover; border-radius: 3px; flex-shrink: 0; }
+        .sold-shipping-link { text-decoration: none; color: inherit; display: flex; align-items: center; gap: 5px; transition: opacity 0.15s; overflow: hidden; white-space: nowrap; min-width: 0; width: 100%; }
+        .sold-shipping-link:hover { opacity: 0.7; }
+        .sold-shipping-link span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 100000; align-items: center; justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-card {
+            background: #fff; padding: 14px 16px; border-radius: 16px; width: 90%;
+            max-width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; max-height: 92vh; overflow-y: auto;
+        }
+        .modal-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+        .modal-platforms { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 8px; }
+        .modal-platform-option { border: 2px solid #eee; border-radius: 6px; padding: 4px; cursor: pointer; background: #f8f9fa; transition: all 0.2s; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; }
+        .modal-shipping-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 8px; }
+        .modal-shipping-option { border: 2px solid #eee; border-radius: 6px; padding: 4px; cursor: pointer; background: #f8f9fa; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; }
+        .modal-flag-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-bottom: 10px; }
+        .modal-flag-option { border: 2px solid #eee; border-radius: 6px; padding: 4px; cursor: pointer; background: #f8f9fa; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; }
+
+        .modal-platform-option img, .modal-shipping-option img, .modal-flag-option img { width: 100%; height: 100%; object-fit: cover; border-radius: 3px; }
+        .modal-platform-option:hover, .modal-platform-option.selected, 
+        .modal-shipping-option:hover, .modal-shipping-option.selected,
+        .modal-flag-option:hover, .modal-flag-option.selected { border-color: #000; background: #e9ecef; }
+        
+        .modal-inputs { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; text-align: left; }
+        .modal-inputs label { font-size: 11px; font-weight: 600; color: #555; }
+        .modal-inputs input { width: 100%; padding: 5px 10px; font-size: 12px; }
+        .modal-buttons { display: flex; gap: 8px; justify-content: space-between; align-items: center; margin-top: 4px; }
+        .modal-btn { padding: 6px 14px; border-radius: 20px; border: none; font-size: 12px; cursor: pointer; font-weight: 600; }
+        .modal-btn-cancel { background: #e9ecef; color: #333; }
+        .modal-btn-unsolsold { background: #ff4d4d; color: #fff; }
+        .modal-btn-save { background: #000; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <nav class="sticky-top-menu" id="stickyNav"></nav>
+
+    <header>
+        <img src="https://lh3.googleusercontent.com/d/1s6icU39_jsQk5CIyj87T-HLfssre2y5U" alt="Header Logo">
+    </header>
+
+    <div class="controls-container">
+        <div class="top-bar">
+            <select id="sortSelect" onchange="renderItems()">
+                <option value="date_desc">Sorter efter salgsdato (Nyeste først)</option>
+                <option value="date_asc">Sorter efter salgsdato (Ældste først)</option>
+                <option value="price_desc">Sorter efter pris (Højeste først)</option>
+            </select>
+            <input type="text" id="searchInput" placeholder="Søg i solgte varer..." oninput="renderItems()">
+        </div>
+        <div class="extra-tools-bar">
+            <div style="font-size: 12px; color: #555;">Oversigt over solgte genstande</div>
+            <div class="total-counter-display" id="totalCounterDisplay">Solgte varer: 0</div>
+        </div>
+    </div>
+
+    <div class="floating-save-bubble" onclick="saveAndSync()" title="Gem til Google Sheets">
+        <img src="https://lh3.googleusercontent.com/d/1ummUBoIj819X4mhvSn_UQkSl0CI-bklh" alt="Gem">
+    </div>
+
+    <div class="main-content">
+        <div class="category-title">Solgte varer</div>
+        <div class="sold-flow-container" id="soldContainer"></div>
+    </div>
+
+    <div class="modal-overlay" id="saleModal">
+        <div class="modal-card">
+            <div class="modal-title" id="modalTitleText">Rediger salgsdetaljer</div>
+            
+            <div style="font-size:11px; font-weight:600; color:#555; text-align:left; margin-bottom:3px;">Solgt på platform:</div>
+            <div class="modal-platforms">
+                <div class="modal-platform-option" data-platform="vinted" onclick="selectModalPlatform('vinted')"><img src="https://lh3.googleusercontent.com/d/1rk0GbaSoybAddYqUllBMIGBYJVZhpxLM" alt="Vinted"></div>
+                <div class="modal-platform-option" data-platform="tradera" onclick="selectModalPlatform('tradera')"><img src="https://lh3.googleusercontent.com/d/1I9nHERePvx31jEHReVvdgn23H9G8Q_gn" alt="Tradera"></div>
+                <div class="modal-platform-option" data-platform="tise" onclick="selectModalPlatform('tise')"><img src="https://lh3.googleusercontent.com/d/1kTLVAoyVJrKk9q9lmcdLVS2V3j6-J10O" alt="Tise"></div>
+                <div class="modal-platform-option" data-platform="dba" onclick="selectModalPlatform('dba')"><img src="https://lh3.googleusercontent.com/d/1r1Tp6i4cZcLN44YoWOcH52g5EmXNS8Ty" alt="DBA"></div>
+                <div class="modal-platform-option" data-platform="marketplace" onclick="selectModalPlatform('marketplace')"><img src="https://lh3.googleusercontent.com/d/1aZ0cmmO6d5tAlEq_mb8kh4gY46P6EgZg" alt="Marketplace"></div>
+                <div class="modal-platform-option" data-platform="bought" onclick="selectModalPlatform('bought')"><img src="https://lh3.googleusercontent.com/d/1y5Qz_HfyQFyYd5g8dJoztdh3-KhgBQoB" alt="Bought"></div>
+            </div>
+
+            <div class="modal-inputs">
+                <div>
+                    <label>Salgsdato (DD/MM/ÅÅÅÅ):</label>
+                    <input type="date" id="modalSaleDateNative" style="display:none;" onchange="syncNativeToText(this)">
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <input type="text" id="modalSaleDate" placeholder="DD/MM/ÅÅÅÅ" onblur="formatDateOnBlur(this)" style="flex-grow: 1;">
+                        <button type="button" onclick="openNativeDatePicker()" style="padding: 5px 8px; border-radius: 20px; border: 1px solid #ccc; background: #f8f9fa; cursor: pointer; font-size: 13px;" title="Vælg dato i kalender">📅</button>
+                    </div>
+                </div>
+                <div>
+                    <label>Salgspris (f.eks. 1.000,00 kr.):</label>
+                    <input type="text" id="modalSalePrice" placeholder="1.000,00 kr." onblur="formatPriceOnBlur(this)">
+                </div>
+                <div>
+                    <label>Købers brugernavn:</label>
+                    <input type="text" id="modalBuyer" placeholder="Brugernavn">
+                </div>
+            </div>
+
+            <div style="font-size:11px; font-weight:600; color:#555; text-align:left; margin-bottom:3px;">Fragtfirma:</div>
+            <div class="modal-shipping-grid">
+                <div class="modal-shipping-option" data-shipping="PostNord" onclick="selectModalShipping('PostNord')" title="PostNord"><img src="https://lh3.googleusercontent.com/d/1S-kOgbjDGZ_oZHDTr4q3f9yu4pHwJjHd" alt="PostNord"></div>
+                <div class="modal-shipping-option" data-shipping="DAO" onclick="selectModalShipping('DAO')" title="DAO"><img src="https://lh3.googleusercontent.com/d/1FlWhNM9wOQAG5Zv14nwoQazQemiDr4-N" alt="DAO"></div>
+                <div class="modal-shipping-option" data-shipping="GLS" onclick="selectModalShipping('GLS')" title="GLS"><img src="https://lh3.googleusercontent.com/d/1re8v1E5OUdFW9IH30xleTYhju3Z-YSTx" alt="GLS"></div>
+                <div class="modal-shipping-option" data-shipping="Instabox" onclick="selectModalShipping('Instabox')" title="Instabox"><img src="https://lh3.googleusercontent.com/d/1wA2dxUH0ohjnp-hPPUpsWnDquiaDyTl9" alt="Instabox"></div>
+                <div class="modal-shipping-option" data-shipping="Bring" onclick="selectModalShipping('Bring')" title="Bring"><img src="https://lh3.googleusercontent.com/d/1EZ8n_L73USyKXR977WvpJJrnwEm7OmYF" alt="Bring"></div>
+                <div class="modal-shipping-option" data-shipping="Pick up" onclick="selectModalShipping('Pick up')" title="Pick up"><img src="https://lh3.googleusercontent.com/d/1xSmh1G9Iv4AVEzz9hZTn47RascL1Zuhe" alt="Pick up"></div>
+            </div>
+
+            <div style="font-size:11px; font-weight:600; color:#555; text-align:left; margin-bottom:3px;">Destination:</div>
+            <div class="modal-flag-grid">
+                <div class="modal-flag-option" data-destination="DK" onclick="selectModalDestination('DK')" title="Danmark"><img src="https://lh3.googleusercontent.com/d/1QfCpaOqCNVumzDYYc6a3hZ2hW9JENd_z" alt="DK"></div>
+                <div class="modal-flag-option" data-destination="SE" onclick="selectModalDestination('SE')" title="Sverige"><img src="https://lh3.googleusercontent.com/d/1w3SD7UngoarbExDKYCRmmJ9sLz2Y-KO-" alt="SE"></div>
+                <div class="modal-flag-option" data-destination="PL" onclick="selectModalDestination('PL')" title="Polen"><img src="https://lh3.googleusercontent.com/d/1gcBINCEO5FC3e-EAQ37rxFu-EGB3HIwy" alt="PL"></div>
+                <div class="modal-flag-option" data-destination="FI" onclick="selectModalDestination('FI')" title="Finland"><img src="https://lh3.googleusercontent.com/d/1LXV20Mqzanu-DkhNDyKq7At7qmzwWQeI" alt="FI"></div>
+                <div class="modal-flag-option" data-destination="DE" onclick="selectModalDestination('DE')" title="Tyskland"><img src="https://lh3.googleusercontent.com/d/1VPIJDkp1DS9A5Aurx_7RaR-hKcJg9m12" alt="DE"></div>
+            </div>
+
+            <div class="modal-inputs" style="margin-bottom: 6px;">
+                <div>
+                    <label>Pakkenummer / Sporingsnummer:</label>
+                    <input type="text" id="modalTracking" placeholder="Indtast pakkenummer">
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeSaleModal()">Annuller</button>
+                <button class="modal-btn modal-btn-unsolsold" onclick="markAsUnsoldFromModal()">Ikke solgt</button>
+                <button class="modal-btn modal-btn-save" onclick="saveSaleModal()">Gem</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scriptURL = "https://script.google.com/macros/s/AKfycbxeo26AS1wMO2itVnyiSXRlvrfUo2ei0UASOa88xiCOwT2QGJTmJ___WqTC6IxILIkk/exec";
+
+        let itemStates = {};
+        let items = [];
+        let saveTimeout = null;
+        let activeModalItemId = null;
+        let selectedModalPlatformName = '';
+        let selectedModalShippingName = '';
+        let selectedModalDestinationCode = '';
+
+        const bannerImageIds = {
+            vinted: "1RQnjA5kqV4_QtAh6PLshhiox1TZKZtyb",
+            tradera: "1TiA7NniIpgNR_TeRK4KFkGgTKWA4xzvf",
+            tise: "1iBMenFqcOouv_bh0s7J2ifkR53KFQBNx",
+            dba: "18pdHBIVxWvQKdn3XCtezYNioj2cB1E9w",
+            marketplace: "14Lm0UBT2770o-TWXOrOzM_qYrgcgjdk0",
+            bought: "1491dztR4QJ4hmoKI93Ec_Y5-jdlGJTpb"
+        };
+
+        const shippingLogoIds = {
+            "PostNord": "1S-kOgbjDGZ_oZHDTr4q3f9yu4pHwJjHd",
+            "DAO": "1FlWhNM9wOQAG5Zv14nwoQazQemiDr4-N",
+            "GLS": "1re8v1E5OUdFW9IH30xleTYhju3Z-YSTx",
+            "Instabox": "1wA2dxUH0ohjnp-hPPUpsWnDquiaDyTl9",
+            "Bring": "1EZ8n_L73USyKXR977WvpJJrnwEm7OmYF",
+            "Pick up": "1xSmh1G9Iv4AVEzz9hZTn47RascL1Zuhe"
+        };
+
+        const flagImageIds = {
+            "DK": "1QfCpaOqCNVumzDYYc6a3hZ2hW9JENd_z",
+            "SE": "1w3SD7UngoarbExDKYCRmmJ9sLz2Y-KO-",
+            "PL": "1gcBINCEO5FC3e-EAQ37rxFu-EGB3HIwy",
+            "FI": "1LXV20Mqzanu-DkhNDyKq7At7qmzwWQeI",
+            "DE": "1VPIJDkp1DS9A5Aurx_7RaR-hKcJg9m12"
+        };
+
+        const bundleColors = [
+            { bg: "rgba(124, 180, 255, 0.15)", border: "#017782" },
+            { bg: "rgba(255, 143, 119, 0.15)", border: "#ff8f77" },
+            { bg: "rgba(254, 248, 128, 0.2)", border: "#d4ac0d" },
+            { bg: "rgba(0, 51, 102, 0.1)", border: "#003366" },
+            { bg: "rgba(24, 119, 242, 0.15)", border: "#1877f2" },
+            { bg: "rgba(108, 117, 125, 0.15)", border: "#6c757d" }
+        ];
+
+        function normalizeToDDMMYYYY(dateStr) {
+            if (!dateStr) return '';
+            let clean = dateStr.toString().trim().replace(/\./g, '/');
+            if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(clean)) {
+                let parts = clean.split('-');
+                return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+            }
+            return clean;
+        }
+
+        function formatDateOnBlur(input) {
+            let val = input.value.trim().replace(/\./g, '/');
+            input.value = normalizeToDDMMYYYY(val);
+        }
+
+        function openNativeDatePicker() {
+            const textInput = document.getElementById('modalSaleDate');
+            const nativeInput = document.getElementById('modalSaleDateNative');
+            let val = textInput.value.trim();
+            let parts = val.split('/');
+            if (parts.length === 3 && parts[2].length === 4) {
+                nativeInput.value = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            } else {
+                let now = new Date();
+                nativeInput.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+            }
+            if (typeof nativeInput.showPicker === 'function') nativeInput.showPicker();
+            else nativeInput.click();
+        }
+
+        function syncNativeToText(nativeInput) {
+            let val = nativeInput.value;
+            if (!val) return;
+            let parts = val.split('-');
+            if (parts.length === 3) document.getElementById('modalSaleDate').value = `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+
+        function formatPriceOnBlur(input) {
+            let val = input.value.trim();
+            if (!val) return;
+            let num = parseFloat(val.replace(/kr\.?/gi, '').trim().replace(/\./g, '').replace(',', '.'));
+            if (isNaN(num)) { input.value = ''; return; }
+            let parts = num.toFixed(2).split('.');
+            input.value = `${parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.')},${parts[1]} kr.`;
+        }
+
+        function formatDisplayPrice(priceStr) {
+            if (!priceStr) return '';
+            let num = parseFloat(priceStr.toString().trim().replace(/kr\.?/gi, '').trim().replace(/\./g, '').replace(',', '.'));
+            if (isNaN(num)) return priceStr;
+            let parts = num.toFixed(2).split('.');
+            return `${parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.')},${parts[1]} kr.`;
+        }
+
+        function formatDisplayDate(dateStr) {
+            if (!dateStr) return '';
+            let clean = dateStr.toString().trim();
+            if (window.innerWidth < 768) {
+                let parts = clean.split('/');
+                if (parts.length === 3 && parts[2].length === 4) return `${parts[0]}/${parts[1]}/${parts[2].slice(2)}`;
+            }
+            return clean;
+        }
+
+        async function loadCloudData() {
+            try {
+                const response = await fetch(scriptURL + "?action=data&sold=true", { redirect: "follow" });
+                const data = await response.json();
+                if (data) {
+                    items = data.items || [];
+                    itemStates = {};
+                    const rawStates = data.states || {};
+                    Object.keys(rawStates).forEach(id => {
+                        const st = rawStates[id] || {};
+                        itemStates[id] = {
+                            sold: Boolean(st.sold),
+                            platform: st.platform || '',
+                            saleDate: normalizeToDDMMYYYY(st.saleDate || ''),
+                            salePrice: st.salePrice ? formatDisplayPrice(st.salePrice) : '',
+                            shipping: st.shipping || '',
+                            destination: st.destination || '',
+                            tracking: st.tracking || '',
+                            buyerusername: (st.buyerusername || st.buyerUsername || '').trim()
+                        };
+                    });
+                }
+            } catch (error) {
+                console.error("Fejl ved indlæsning af solgte varer:", error);
+            }
+        }
+
+        function saveAndSync() {
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({ states: itemStates })
+            }).then(() => showToast("Gemt til Google Sheets!")).catch(err => console.error('Synkroniseringsfejl:', err));
+        }
+
+        function triggerAutoSave() {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => { saveAndSync(); }, 600);
+        }
+
+        function renderTopNav() {
+            const nav = document.getElementById('stickyNav');
+            nav.innerHTML = `
+                <div class="cat-bubble top-bubble" onclick="window.location.href='index.html'" title="Tilbage til forsiden"><img src="https://lh3.googleusercontent.com/d/1NIfUFbbyZhgFQPCDpZ0ATJgBweJDdsY2" alt="HOME"></div>
+                <div class="cat-bubble sold-bubble" onclick="window.scrollTo({top:0, behavior:'smooth'})" title="Solgte varer"><img src="https://lh3.googleusercontent.com/d/1i583mUsElq7L9KIsg9mmizVUPflcOMq7" alt="SOLD"></div>
+            `;
+        }
+
+        function renderItems() {
+            let searchVal = document.getElementById('searchInput').value.toLowerCase();
+            let filtered = items.filter(item => {
+                const st = itemStates[item.id] || {};
+                if (!st.sold) return false;
+                return !searchVal || 
+                    (item.name && item.name.toLowerCase().includes(searchVal)) ||
+                    (item.brand && item.brand.toLowerCase().includes(searchVal)) ||
+                    (item.size && item.size.toLowerCase().includes(searchVal)) ||
+                    (st.buyerusername && st.buyerusername.toLowerCase().includes(searchVal)) ||
+                    (item.id && item.id.toString().toLowerCase().includes(searchVal));
+            });
+
+            document.getElementById('totalCounterDisplay').textContent = `Solgte varer: ${filtered.length}`;
+
+            const sortVal = document.getElementById('sortSelect').value;
+            filtered.sort((a, b) => {
+                const parseDate = (dateStr) => {
+                    if (!dateStr) return 0;
+                    const parts = dateStr.split('/');
+                    if (parts.length === 3) return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`).getTime();
+                    return 0;
+                };
+                const dateA = parseDate(itemStates[a.id]?.saleDate);
+                const dateB = parseDate(itemStates[b.id]?.saleDate);
+
+                if (sortVal === 'date_asc') return dateA - dateB;
+                if (sortVal === 'price_desc') {
+                    let pA = parseFloat((itemStates[a.id]?.salePrice || '0').replace(/kr\.?/gi, '').replace(/\./g, '').replace(',', '.')) || 0;
+                    let pB = parseFloat((itemStates[b.id]?.salePrice || '0').replace(/kr\.?/gi, '').replace(/\./g, '').replace(',', '.')) || 0;
+                    return pB - pA;
+                }
+                return dateB - dateA;
+            });
+
+            let soldGroupsMap = {};
+            filtered.forEach(item => {
+                const st = itemStates[item.id] || {};
+                const sDate = (st.saleDate || '').trim();
+                const bUser = (st.buyerusername || '').trim().toLowerCase();
+                const platform = (st.platform || '').trim().toLowerCase();
+                const groupKey = `${sDate}__${bUser}__${platform}`;
+
+                if (!soldGroupsMap[groupKey]) soldGroupsMap[groupKey] = [];
+                soldGroupsMap[groupKey].push(item);
+            });
+
+            let soldBundles = [];
+            let bundleColorIndex = 0;
+            Object.keys(soldGroupsMap).forEach(key => {
+                const colorObj = bundleColors[bundleColorIndex % bundleColors.length];
+                bundleColorIndex++;
+                soldBundles.push({ id: key, color: colorObj, items: soldGroupsMap[key] });
+            });
+
+            const maxPerRow = window.innerWidth >= 1200 ? 6 : (window.innerWidth >= 768 ? 5 : 3);
+            let flatQueue = [];
+            soldBundles.forEach(bundle => {
+                bundle.items.forEach(item => {
+                    flatQueue.push({ item: item, bundleId: bundle.id, color: bundle.color });
+                });
+            });
+
+            let rows = [];
+            for (let i = 0; i < flatQueue.length; i += maxPerRow) {
+                rows.push(flatQueue.slice(i, i + maxPerRow));
+            }
+
+            let soldHtml = '';
+            rows.forEach(rowItems => {
+                let rowSegments = [];
+                rowItems.forEach(qi => {
+                    let lastSeg = rowSegments[rowSegments.length - 1];
+                    if (lastSeg && lastSeg.bundleId === qi.bundleId) {
+                        lastSeg.items.push(qi.item);
+                    } else {
+                        rowSegments.push({ bundleId: qi.bundleId, color: qi.color, items: [qi.item] });
+                    }
+                });
+
+                let segmentsHtml = '';
+                rowSegments.forEach(seg => {
+                    const count = seg.items.length;
+                    segmentsHtml += `
+                        <div class="sold-bundle-segment" style="grid-column: span ${count}; grid-template-columns: repeat(${count}, 1fr); background-color: ${seg.color.bg}; border-color: ${seg.color.border};">
+                            ${seg.items.map(item => createCardHTML(item)).join('')}
+                        </div>
+                    `;
+                });
+
+                soldHtml += `<div class="sold-row" style="grid-template-columns: repeat(${maxPerRow}, 1fr);">${segmentsHtml}</div>`;
+            });
+
+            document.getElementById('soldContainer').innerHTML = soldHtml;
+        }
+
+        function createCardHTML(item) {
+            const st = itemStates[item.id] || {};
+            const imgUrl = item.image ? `https://lh3.googleusercontent.com/d/${item.image}` : '';
+            const bannerId = bannerImageIds[st.platform];
+            const bannerHtml = bannerId ? `<div class="sold-banner"><img src="https://lh3.googleusercontent.com/d/${bannerId}" alt="${st.platform}"></div>` : '<div class="sold-banner" style="background:transparent;"></div>';
+            
+            let buyerRowHtml = '';
+            if (st.destination || st.buyerusername) {
+                const flagId = flagImageIds[st.destination];
+                const flagHtml = flagId ? `<img src="https://lh3.googleusercontent.com/d/${flagId}" alt="${st.destination}" style="width:14px; height:10px; object-fit:cover; border-radius:2px;">` : '';
+                buyerRowHtml = `
+                    <div class="sold-row-item">
+                        ${flagHtml}
+                        <img src="https://lh3.googleusercontent.com/d/1gk0EVPng0AbQjaoU5TZQItTC795zanvF" alt="Bruger">
+                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${st.buyerusername || ''}</span>
+                    </div>
+                `;
+            }
+
+            let shippingRowHtml = '';
+            if (st.shipping && shippingLogoIds[st.shipping]) {
+                const shipLogoId = shippingLogoIds[st.shipping];
+                const trackingNo = st.tracking || '';
+                let trackUrl = '#';
+                if (trackingNo) {
+                    if (st.shipping === 'PostNord') trackUrl = `https://www.postnord.dk/varktojer/track-trace/?shipmentId=${trackingNo}`;
+                    else if (st.shipping === 'DAO') trackUrl = `https://dao.as/find-din-pakke/#q=${trackingNo}`;
+                    else if (st.shipping === 'GLS') trackUrl = `https://gls-group.eu/DK/da/find-pakke/?match=${trackingNo}`;
+                    else if (st.shipping === 'Instabox') trackUrl = `https://track.instabox.com/da/${trackingNo}/verify`;
+                    else if (st.shipping === 'Bring') trackUrl = `https://tracking.bring.com/tracking/${trackingNo}`;
+                }
+                shippingRowHtml = `
+                    <div class="sold-row-item">
+                        <a href="${trackUrl}" target="_blank" class="sold-shipping-link" title="Spor pakke i ny fane">
+                            <img src="https://lh3.googleusercontent.com/d/${shipLogoId}" alt="${st.shipping}">
+                            <span>${trackingNo}</span>
+                        </a>
+                    </div>
+                `;
+            }
+
+            let saleDetailsHtml = '';
+            if (st.saleDate || st.salePrice) {
+                saleDetailsHtml = `
+                    <div class="sold-row-item" style="justify-content: space-between; font-size: 10px; color: #444; margin-top: 2px;">
+                        <span style="white-space: nowrap;">${formatDisplayDate(st.saleDate)}</span>
+                        <span style="white-space: nowrap;"><b>${formatDisplayPrice(st.salePrice)}</b></span>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="item-card sold" id="card-${item.id}">
+                    <div class="item-image-container">
+                        <button class="sold-icon-btn" onclick="openSaleModal(${item.id})" title="Rediger salgsdetaljer"><img src="https://lh3.googleusercontent.com/d/19KRRSJU1UkueZhQLvNVuYlai2TyCKjKV" alt="Rediger"></button>
+                        <img src="${imgUrl}" alt="${item.name || ''}" loading="lazy">
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">${item.name || ''}</div>
+                        <div class="item-meta">
+                            <span>${item.brand || ''} • <b>${item.size || ''}</b></span>
+                            <span>#${item.id}</span>
+                        </div>
+                    </div>
+                    ${bannerHtml}
+                    <div class="sold-meta-info">
+                        <div>${buyerRowHtml}${shippingRowHtml}</div>
+                        ${saleDetailsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function openSaleModal(id) {
+            activeModalItemId = id;
+            const st = itemStates[id] || {};
+            selectedModalPlatformName = st.platform || '';
+            selectedModalShippingName = st.shipping || '';
+            selectedModalDestinationCode = st.destination || '';
+
+            document.getElementById('modalSaleDate').value = st.saleDate || '';
+            document.getElementById('modalSalePrice').value = st.salePrice ? formatDisplayPrice(st.salePrice) : '';
+            document.getElementById('modalTracking').value = st.tracking || '';
+            document.getElementById('modalBuyer').value = st.buyerusername || '';
+            
+            document.querySelectorAll('.modal-platform-option').forEach(el => el.classList.toggle('selected', el.dataset.platform === selectedModalPlatformName));
+            document.querySelectorAll('.modal-shipping-option').forEach(el => el.classList.toggle('selected', el.dataset.shipping === selectedModalShippingName));
+            document.querySelectorAll('.modal-flag-option').forEach(el => el.classList.toggle('selected', el.dataset.destination === selectedModalDestinationCode));
+
+            document.getElementById('saleModal').classList.add('show');
+        }
+
+        function selectModalPlatform(p) { selectedModalPlatformName = p; document.querySelectorAll('.modal-platform-option').forEach(el => el.classList.toggle('selected', el.dataset.platform === p)); }
+        function selectModalShipping(s) { selectedModalShippingName = s; document.querySelectorAll('.modal-shipping-option').forEach(el => el.classList.toggle('selected', el.dataset.shipping === s)); }
+        function selectModalDestination(c) { selectedModalDestinationCode = c; document.querySelectorAll('.modal-flag-option').forEach(el => el.classList.toggle('selected', el.dataset.destination === c)); }
+        function closeSaleModal() { document.getElementById('saleModal').classList.remove('show'); activeModalItemId = null; }
+
+        function saveSaleModal() {
+            if (!activeModalItemId) return;
+            if (!itemStates[activeModalItemId]) itemStates[activeModalItemId] = {};
+            itemStates[activeModalItemId].sold = true;
+            itemStates[activeModalItemId].platform = selectedModalPlatformName;
+            itemStates[activeModalItemId].shipping = selectedModalShippingName;
+            itemStates[activeModalItemId].destination = selectedModalDestinationCode;
+            
+            let dateInput = document.getElementById('modalSaleDate');
+            formatDateOnBlur(dateInput);
+            itemStates[activeModalItemId].saleDate = dateInput.value;
+            
+            let priceInput = document.getElementById('modalSalePrice');
+            formatPriceOnBlur(priceInput);
+            itemStates[activeModalItemId].salePrice = priceInput.value;
+            itemStates[activeModalItemId].tracking = document.getElementById('modalTracking').value;
+            itemStates[activeModalItemId].buyerusername = (document.getElementById('modalBuyer').value || '').trim();
+
+            closeSaleModal();
+            renderItems();
+            triggerAutoSave();
+        }
+
+        function markAsUnsoldFromModal() {
+            if (!activeModalItemId) return;
+            if (!itemStates[activeModalItemId]) itemStates[activeModalItemId] = {};
+            itemStates[activeModalItemId].sold = false;
+            itemStates[activeModalItemId].platform = '';
+            itemStates[activeModalItemId].shipping = '';
+            itemStates[activeModalItemId].destination = '';
+            itemStates[activeModalItemId].saleDate = '';
+            itemStates[activeModalItemId].salePrice = '';
+            itemStates[activeModalItemId].tracking = '';
+            itemStates[activeModalItemId].buyerusername = '';
+
+            closeSaleModal();
+            renderItems();
+            triggerAutoSave();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = message;
+            toast.classList.add('show');
+            if (window.toastTimer) clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        window.onload = async function() {
+            renderTopNav();
+            await loadCloudData();
+            renderItems();
+        };
+    </script>
+<div id="toast" class="toast"></div>
+</body>
+</html>
