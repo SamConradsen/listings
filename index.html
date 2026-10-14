@@ -599,7 +599,7 @@
             });
 
             // Skal fører til 'Sold'-siden fra topmenu
-            html += `<div class="cat-bubble sold-bubble" onclick="window.location.href='sold.html'" title="Solgte varer"><img src="https://lh3.googleusercontent.com/d/1i583mUsElq7L9KIsg9mmizVUPflcOMq7" alt="SOLD"></div>`;
+            html += `<a href="sold.html" style="text-decoration: none; display: inline-flex;"><div class="cat-bubble sold-bubble" title="Solgte varer"><img src="https://lh3.googleusercontent.com/d/1i583mUsElq7L9KIsg9mmizVUPflcOMq7" alt="SOLD"></div></a>`;
         }
 
         document.addEventListener('click', function(event) {
